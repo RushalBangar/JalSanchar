@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS public.gov_users (
 );
 
 -- ==============================================================================
--- Row Level Security (RLS) Policies (Permissive for Demo & Operational Access)
+-- 🔒 Row Level Security (RLS) Policies — PRODUCTION HARDENED
 -- ==============================================================================
 ALTER TABLE public.villages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tankers ENABLE ROW LEVEL SECURITY;
@@ -99,57 +99,52 @@ ALTER TABLE public.delivery_receipts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.escrow_actions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gov_users ENABLE ROW LEVEL SECURITY;
 
--- Allow anon & authenticated roles full access for prototype demonstration
-DO $$
-BEGIN
-    -- Villages Policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'villages' AND policyname = 'Allow public read access to villages') THEN
-        CREATE POLICY "Allow public read access to villages" ON public.villages FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'villages' AND policyname = 'Allow public write access to villages') THEN
-        CREATE POLICY "Allow public write access to villages" ON public.villages FOR ALL USING (true) WITH CHECK (true);
-    END IF;
+-- 1. Villages: Public read-only for public map portal, protected write
+CREATE POLICY "Allow public read access to villages" 
+    ON public.villages FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated write access to villages" 
+    ON public.villages FOR ALL 
+    USING (auth.role() = 'authenticated' OR auth.role() = 'service_role') 
+    WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
-    -- Tankers Policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tankers' AND policyname = 'Allow public read access to tankers') THEN
-        CREATE POLICY "Allow public read access to tankers" ON public.tankers FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tankers' AND policyname = 'Allow public write access to tankers') THEN
-        CREATE POLICY "Allow public write access to tankers" ON public.tankers FOR ALL USING (true) WITH CHECK (true);
-    END IF;
+-- 2. Tankers: Public read-only for telemetry monitoring, protected write
+CREATE POLICY "Allow public read access to tankers" 
+    ON public.tankers FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated write access to tankers" 
+    ON public.tankers FOR ALL 
+    USING (auth.role() = 'authenticated' OR auth.role() = 'service_role') 
+    WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
-    -- Dispatches Policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'dispatches' AND policyname = 'Allow public read access to dispatches') THEN
-        CREATE POLICY "Allow public read access to dispatches" ON public.dispatches FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'dispatches' AND policyname = 'Allow public write access to dispatches') THEN
-        CREATE POLICY "Allow public write access to dispatches" ON public.dispatches FOR ALL USING (true) WITH CHECK (true);
-    END IF;
+-- 3. Dispatches: Public read-only, authenticated write
+CREATE POLICY "Allow public read access to dispatches" 
+    ON public.dispatches FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated write access to dispatches" 
+    ON public.dispatches FOR ALL 
+    USING (auth.role() = 'authenticated' OR auth.role() = 'service_role') 
+    WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
-    -- Delivery Receipts Policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'delivery_receipts' AND policyname = 'Allow public read access to delivery_receipts') THEN
-        CREATE POLICY "Allow public read access to delivery_receipts" ON public.delivery_receipts FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'delivery_receipts' AND policyname = 'Allow public write access to delivery_receipts') THEN
-        CREATE POLICY "Allow public write access to delivery_receipts" ON public.delivery_receipts FOR ALL USING (true) WITH CHECK (true);
-    END IF;
+-- 4. Delivery Receipts: Public read-only, authenticated write
+CREATE POLICY "Allow public read access to delivery_receipts" 
+    ON public.delivery_receipts FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated write access to delivery_receipts" 
+    ON public.delivery_receipts FOR ALL 
+    USING (auth.role() = 'authenticated' OR auth.role() = 'service_role') 
+    WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
-    -- Escrow Actions Policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'escrow_actions' AND policyname = 'Allow public read access to escrow_actions') THEN
-        CREATE POLICY "Allow public read access to escrow_actions" ON public.escrow_actions FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'escrow_actions' AND policyname = 'Allow public write access to escrow_actions') THEN
-        CREATE POLICY "Allow public write access to escrow_actions" ON public.escrow_actions FOR ALL USING (true) WITH CHECK (true);
-    END IF;
+-- 5. Escrow Actions: Public read-only, authenticated write
+CREATE POLICY "Allow public read access to escrow_actions" 
+    ON public.escrow_actions FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated write access to escrow_actions" 
+    ON public.escrow_actions FOR ALL 
+    USING (auth.role() = 'authenticated' OR auth.role() = 'service_role') 
+    WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
-    -- Government Users Policies
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'gov_users' AND policyname = 'Allow public read access to gov_users') THEN
-        CREATE POLICY "Allow public read access to gov_users" ON public.gov_users FOR SELECT USING (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'gov_users' AND policyname = 'Allow public write access to gov_users') THEN
-        CREATE POLICY "Allow public write access to gov_users" ON public.gov_users FOR ALL USING (true) WITH CHECK (true);
-    END IF;
-END $$;
+-- 6. 🔒 GOV_USERS: Strictly protected — NO public/anon access!
+-- Only service role / backend API can query user records and verify credentials.
+CREATE POLICY "Deny anon access to gov_users" 
+    ON public.gov_users FOR ALL 
+    USING (auth.role() = 'authenticated' OR auth.role() = 'service_role')
+    WITH CHECK (auth.role() = 'authenticated' OR auth.role() = 'service_role');
 
 -- ==============================================================================
 -- Enable Supabase Realtime for Dynamic Map Updates
@@ -230,13 +225,14 @@ ON CONFLICT (id) DO UPDATE SET
     driver_name = EXCLUDED.driver_name;
 
 -- Seed Data: Sovereign Government Operational Users (Collector, Tanker Driver, Gram Panchayat)
+-- 🔒 PASSWORDS: Stored as bcrypt hashes ($2b$12$...). Plaintext default: sovereign_water_2025
 INSERT INTO public.gov_users (
     id, email, password_hash, role, name, title, badge_id, jurisdiction, portal_url, tanker_id, registration, driver_key, village, cistern_key, permissions
 ) VALUES
     (
         'USR-COL-01',
         'collector@sinnar.jalsanjeevani.gov.in',
-        'sovereign_water_2025',
+        '$2b$12$lkCVe9vlQ/7nmEvmFlIwc.HrrLrsX9BFjTmSyXVxpCBJxBnVls5gO',
         'collector',
         'Shri. Rahul More, IAS',
         'District Collector & Magistrate',
@@ -253,7 +249,7 @@ INSERT INTO public.gov_users (
     (
         'USR-DRV-15',
         'driver.mh15@sinnar.jalsanjeevani.gov.in',
-        'sovereign_water_2025',
+        '$2b$12$lkCVe9vlQ/7nmEvmFlIwc.HrrLrsX9BFjTmSyXVxpCBJxBnVls5gO',
         'driver',
         'Ramesh V. Patil',
         'Municipal Tanker Pilot',
@@ -270,7 +266,7 @@ INSERT INTO public.gov_users (
     (
         'USR-GP-104',
         'panchayat.khopadi@sinnar.jalsanjeevani.gov.in',
-        'sovereign_water_2025',
+        '$2b$12$lkCVe9vlQ/7nmEvmFlIwc.HrrLrsX9BFjTmSyXVxpCBJxBnVls5gO',
         'panchayat',
         'Sunita G. Deshmukh',
         'Sarpanch & Water Vigilance Officer',

@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 🔒 Security Headers -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co http://localhost:* http://127.0.0.1:* https://jalsanjeevani.onrender.com; frame-ancestors 'none';">
   <title>Sovereign Operational Portal | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   
@@ -132,10 +137,9 @@
               type="email" 
               id="email" 
               class="form-control" 
-              placeholder="collector@sinnar.jalsanjeevani.gov.in" 
+              placeholder="Enter your government service email" 
               required 
               autocomplete="email"
-              value="collector@sinnar.jalsanjeevani.gov.in"
             >
           </div>
         </div>
@@ -157,10 +161,10 @@
               type="password" 
               id="password" 
               class="form-control" 
-              placeholder="••••••••••••" 
+              placeholder="Enter your access key" 
               required 
               autocomplete="current-password"
-              value="sovereign_water_2025"
+              minlength="8"
             >
           </div>
         </div>

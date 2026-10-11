@@ -437,9 +437,13 @@ document.addEventListener("DOMContentLoaded", () => {
         ? '/api/verify-delivery'
         : 'https://jalsanjeevani.onrender.com/api/verify-delivery';
 
+      const authHeaders = window.JalAuth ? window.JalAuth.getAuthHeaders() : {};
       fetch(backendUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
         body: JSON.stringify({
           tanker_id: tankerId,
           target_village: targetVillage,

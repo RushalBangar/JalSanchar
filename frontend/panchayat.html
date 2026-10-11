@@ -4,6 +4,35 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
   <meta content="mobile_tab" name="shell-type"/>
+  <!-- 🔒 Security Headers -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* https://jalsanjeevani.onrender.com; frame-ancestors 'none';">
+
+  <!-- 🔒 Early Blocking Auth Guard: Prevents unauthorized DOM inspection and content flash -->
+  <script>
+    (function() {
+      try {
+        var raw = sessionStorage.getItem('jalsanjeevani_gov_session') || localStorage.getItem('jalsanjeevani_gov_session');
+        if (!raw) {
+          window.location.replace('login.html?redirect=panchayat.html&notice=required');
+          return;
+        }
+        var s = JSON.parse(raw);
+        if (!s || !s.token || Date.now() > s.expiresAt) {
+          window.location.replace('login.html?redirect=panchayat.html&notice=required');
+          return;
+        }
+        if (s.role !== 'panchayat' && s.role !== 'collector') {
+          window.location.replace(s.role === 'driver' ? 'driver.html' : 'login.html');
+        }
+      } catch(e) {
+        window.location.replace('login.html?redirect=panchayat.html&notice=required');
+      }
+    })();
+  </script>
+
   <title>Panchayat Verifier | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="manifest" href="manifest.json">

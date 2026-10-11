@@ -1,9 +1,9 @@
 /**
  * JalSanjeevani - Sovereign Portal Login Controller
- * Backed by Supabase PostgreSQL Database ('gov_users' table).
+ * 🔒 SECURED: No hardcoded passwords. All auth via backend API with bcrypt.
  *
- * Manages role switching, dynamic user loading from Supabase,
- * 1-tap demo sign-in, password visibility toggle, and error handling.
+ * Manages role switching, dynamic user loading,
+ * password visibility toggle, and error handling.
  */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -61,19 +61,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     showAlert("Signed Out", "You have successfully signed out of the operational portal.", "info");
   }
 
-  // 1. Fetch live user accounts dynamically from Supabase database
-  if (window.JalAuth && window.JalAuth.fetchUsersFromSupabase) {
-    await window.JalAuth.fetchUsersFromSupabase();
+  // If already authenticated, redirect to appropriate portal
+  if (window.JalAuth && window.JalAuth.isAuthenticated()) {
+    const session = window.JalAuth.getSession();
+    if (session && !isLogout) {
+      const theme = window.JalAuth.ROLE_THEMES[session.role];
+      if (theme) {
+        window.location.href = redirectTarget || theme.portalUrl;
+        return;
+      }
+    }
   }
 
+  // Role display info (no passwords — purely visual context)
+  const ROLE_DISPLAY = {
+    collector: {
+      email: "collector@sinnar.jalsanjeevani.gov.in",
+      name: "Shri. Rahul More, IAS",
+      badgeId: "Govt ID: MH-IAS-0419",
+      jurisdiction: "Ahilyanagar & Sinnar Disaster Division"
+    },
+    driver: {
+      email: "driver.mh15@sinnar.jalsanjeevani.gov.in",
+      name: "Ramesh V. Patil",
+      badgeId: "RTO: MH15-WT-881",
+      jurisdiction: "Tanker TN-SN-02 (MH-15-TK-5512)"
+    },
+    panchayat: {
+      email: "panchayat.khopadi@sinnar.jalsanjeevani.gov.in",
+      name: "Sunita G. Deshmukh",
+      badgeId: "Panchayat Reg: GP-SN-104",
+      jurisdiction: "Khopadi Gram Panchayat (Sinnar)"
+    }
+  };
+
   /**
-   * Sets the active role tab and synchronizes UI with Supabase data
+   * Sets the active role tab and synchronizes UI
    */
   function setActiveRole(roleKey, shouldUpdateInputs = true) {
     if (!window.JalAuth) return;
     activeRoleKey = roleKey;
     const theme = window.JalAuth.ROLE_THEMES[roleKey] || window.JalAuth.ROLE_THEMES.collector;
-    const supabaseUser = window.JalAuth.getUserByRole(roleKey);
+    const displayInfo = ROLE_DISPLAY[roleKey] || ROLE_DISPLAY.collector;
 
     // Update active tab styles
     roleTabs.forEach(tab => {
@@ -83,40 +112,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       tab.setAttribute("aria-selected", isMatch ? "true" : "false");
     });
 
-    // Update Context Card with Supabase User data if loaded, else fallback to theme
-    const displayName = supabaseUser ? supabaseUser.name : (
-      roleKey === "collector" ? "Shri. Rahul More, IAS" :
-      roleKey === "driver" ? "Ramesh V. Patil" : "Sunita G. Deshmukh"
-    );
-    const displayBadgeId = supabaseUser ? (supabaseUser.badge_id || theme.roleBadge) : (
-      roleKey === "collector" ? "Govt ID: MH-IAS-0419" :
-      roleKey === "driver" ? "RTO: MH15-WT-881" : "Panchayat Reg: GP-SN-104"
-    );
-    const displayJurisdiction = supabaseUser ? (supabaseUser.jurisdiction || supabaseUser.village) : (
-      roleKey === "collector" ? "Ahilyanagar & Sinnar Disaster Division" :
-      roleKey === "driver" ? "Tanker TN-SN-02 (MH-15-TK-5512)" : "Khopadi Gram Panchayat (Sinnar)"
-    );
-    const displayEmail = supabaseUser ? supabaseUser.email : (
-      roleKey === "collector" ? "collector@sinnar.jalsanjeevani.gov.in" :
-      roleKey === "driver" ? "driver.mh15@sinnar.jalsanjeevani.gov.in" : "panchayat.khopadi@sinnar.jalsanjeevani.gov.in"
-    );
-
+    // Update Context Card
     if (contextRoleIcon) contextRoleIcon.textContent = theme.icon || "verified_user";
     if (contextRoleBadge) contextRoleBadge.textContent = theme.roleBadge;
     if (contextRolePill) {
       contextRolePill.style.color = theme.badgeColor;
       contextRolePill.style.backgroundColor = `${theme.badgeColor}26`;
     }
-    if (contextId) contextId.textContent = displayBadgeId;
-    if (contextName) contextName.textContent = displayName;
-    if (contextJurisdiction) contextJurisdiction.textContent = displayJurisdiction;
+    if (contextId) contextId.textContent = displayInfo.badgeId;
+    if (contextName) contextName.textContent = displayInfo.name;
+    if (contextJurisdiction) contextJurisdiction.textContent = displayInfo.jurisdiction;
 
-    // Update Input values if requested
+    // 🔒 Only auto-fill email, NEVER auto-fill password
     if (shouldUpdateInputs) {
-      if (emailInput) emailInput.value = displayEmail;
-      if (passwordInput && !passwordInput.value) {
-        passwordInput.value = "sovereign_water_2025";
-      }
+      if (emailInput) emailInput.value = displayInfo.email;
+      // Password field is intentionally left empty for security
     }
 
     // Update Submit Button Label
@@ -154,14 +164,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Quick Fill from Helper Drawer Cards
+  // Quick Fill from Helper Drawer Cards (email only, no password)
   document.querySelectorAll(".helper-card").forEach(card => {
     card.addEventListener("click", () => {
       const fillRole = card.getAttribute("data-fill-role");
       if (fillRole) {
         setActiveRole(fillRole, true);
-        passwordInput.value = "sovereign_water_2025";
-        emailInput?.focus();
+        // 🔒 Do NOT pre-fill password — user must type it
+        if (passwordInput) passwordInput.focus();
       }
     });
   });
@@ -196,7 +206,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Form Submission Handler - Authenticates with Supabase
+   * Form Submission Handler — authenticates via secure backend API
    */
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
@@ -211,10 +221,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
+      if (password.length < 8) {
+        showAlert("Weak Credentials", "Access key must be at least 8 characters.");
+        return;
+      }
+
       // Enter Loading State
       if (submitBtn) {
         submitBtn.disabled = true;
-        if (btnText) btnText.textContent = "Verifying with Supabase Cloud...";
+        if (btnText) btnText.textContent = "Verifying credentials securely...";
         if (btnIcon) btnIcon.textContent = "sync";
         btnIcon?.classList.add("animate-spin");
       }
@@ -227,7 +242,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (result.success) {
-          if (btnText) btnText.textContent = "Supabase Approved! Redirecting...";
+          if (btnText) btnText.textContent = "Verified! Redirecting...";
           if (btnIcon) {
             btnIcon.classList.remove("animate-spin");
             btnIcon.textContent = "check_circle";
@@ -244,7 +259,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       } catch (err) {
         console.error("Login submission error:", err);
-        showAlert("Connection Notice", "Verification failed against Supabase database. Please check connection.");
+        showAlert("Connection Notice", "Verification failed. Please check your connection.");
         resetSubmitBtn();
       }
     });
@@ -252,25 +267,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /**
    * Instant 1-Tap Demo Evaluation Button
+   * 🔒 Now requires user to enter password — only auto-fills email
    */
   if (btnInstantDemo) {
     btnInstantDemo.addEventListener("click", async () => {
-      const theme = window.JalAuth.ROLE_THEMES[activeRoleKey] || window.JalAuth.ROLE_THEMES.collector;
-      const supabaseUser = window.JalAuth.getUserByRole(activeRoleKey);
-      const email = supabaseUser ? supabaseUser.email : (
-        activeRoleKey === "collector" ? "collector@sinnar.jalsanjeevani.gov.in" :
-        activeRoleKey === "driver" ? "driver.mh15@sinnar.jalsanjeevani.gov.in" : "panchayat.khopadi@sinnar.jalsanjeevani.gov.in"
-      );
+      const displayInfo = ROLE_DISPLAY[activeRoleKey] || ROLE_DISPLAY.collector;
 
-      if (emailInput) emailInput.value = email;
-      if (passwordInput) passwordInput.value = "sovereign_water_2025";
+      if (emailInput) emailInput.value = displayInfo.email;
+
+      // 🔒 Check if password is already entered, otherwise prompt
+      if (!passwordInput?.value.trim()) {
+        showAlert("Password Required", "Please enter the access key to proceed with demo sign-in.", "info");
+        if (passwordInput) passwordInput.focus();
+        return;
+      }
 
       btnInstantDemo.disabled = true;
-      btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Authorizing via Supabase...`;
+      btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Authorizing securely...`;
 
       const result = await window.JalAuth.login({
-        email: email,
-        password: "sovereign_water_2025",
+        email: displayInfo.email,
+        password: passwordInput.value.trim(),
         role: activeRoleKey
       });
 
@@ -280,7 +297,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           window.location.href = finalUrl;
         }, 300);
       } else {
-        showAlert("Supabase Auth Notice", result.message);
+        showAlert("Authentication Notice", result.message);
         btnInstantDemo.disabled = false;
         btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">bolt</span> Instant 1-Tap Evaluation Sign-In`;
       }

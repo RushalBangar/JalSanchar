@@ -1,12 +1,14 @@
 /**
  * JalSanjeevani (RouteGuard) - Sovereign Government Authentication & Session Guard
- * Connected to Supabase PostgreSQL ('gov_users' table).
+ * 🔒 SECURED: All authentication goes through backend API only.
+ * Frontend NEVER queries gov_users table directly.
  *
  * Provides:
- * 1. Role-Based Access Control (RBAC) queried directly from Supabase.
+ * 1. Role-Based Access Control (RBAC) via backend API.
  * 2. Route Protection Guards for Collector, Driver, and Gram Panchayat consoles.
- * 3. Session Persistence (24h Cryptographic Token in localStorage).
+ * 3. Session Persistence (24h Cryptographic Token in sessionStorage).
  * 4. Tactical Top-Bar User Profile & Logout Widgets.
+ * 5. Auto session verification against backend.
  */
 
 (function (window) {
@@ -43,9 +45,6 @@
     }
   };
 
-  // Cached Supabase users loaded dynamically from the database
-  let _cachedSupabaseUsers = {};
-
   const JalAuth = {
     ROLE_THEMES,
 
@@ -63,68 +62,72 @@
     },
 
     /**
-     * Dynamically fetches registered users from Supabase PostgreSQL ('gov_users' table).
+     * 🔒 Fetches users from backend API only (never direct Supabase query).
+     * Backend strips password_hash before returning.
      */
     async fetchUsersFromSupabase() {
-      // 1. Try via frontend Supabase client if available
-      if (window.JalSupabase && window.JalSupabase.client) {
-        try {
-          const { data, error } = await window.JalSupabase.client
-            .from("gov_users")
-            .select("id, email, role, name, title, badge_id, jurisdiction, portal_url, tanker_id, registration, driver_key, village, cistern_key, permissions, is_active")
-            .eq("is_active", true);
+      // Only fetch user display info via authenticated backend endpoint
+      const session = this.getSession();
+      if (!session || !session.token) return {};
 
-          if (!error && data && data.length > 0) {
-            _cachedSupabaseUsers = {};
-            data.forEach(u => {
-              _cachedSupabaseUsers[u.role] = u;
-            });
-            console.log("🔐 [JalAuth] Loaded users directly from Supabase 'gov_users' table:", data.length);
-            return _cachedSupabaseUsers;
-          }
-        } catch (err) {
-          console.warn("🔐 [JalAuth] Supabase direct query notice:", err);
-        }
-      }
-
-      // 2. Try via FastAPI backend endpoint which queries Supabase
       try {
         const apiBase = this.getApiBase();
-        const res = await fetch(`${apiBase}/api/auth/users`);
+        const res = await fetch(`${apiBase}/api/auth/users`, {
+          headers: {
+            "Authorization": `Bearer ${session.token}`,
+            "Content-Type": "application/json"
+          }
+        });
         if (res.ok) {
           const json = await res.json();
-          if (json.users && json.users.length > 0) {
-            _cachedSupabaseUsers = {};
+          const users = {};
+          if (json.users) {
             json.users.forEach(u => {
-              _cachedSupabaseUsers[u.role] = u;
+              users[u.role] = u;
             });
-            console.log("🔐 [JalAuth] Loaded users from Supabase via backend API:", json.users.length);
-            return _cachedSupabaseUsers;
           }
+          console.log("🔐 [JalAuth] Loaded user registry via secure API:", json.count || 0);
+          return users;
         }
       } catch (err) {
-        console.warn("🔐 [JalAuth] Backend API /api/auth/users notice:", err);
+        console.warn("🔐 [JalAuth] User registry fetch notice:", err.message);
       }
-
-      return _cachedSupabaseUsers;
+      return {};
     },
 
     /**
-     * Gets user data for a specific role from the Supabase cache.
+     * Gets the Authorization header with Bearer token for API calls.
      */
-    getUserByRole(roleKey) {
-      return _cachedSupabaseUsers[roleKey] || null;
+    getAuthHeaders() {
+      const session = this.getSession();
+      if (!session || !session.token) return {};
+      return {
+        "Authorization": `Bearer ${session.token}`,
+        "Content-Type": "application/json"
+      };
     },
 
     /**
-     * Retrieves active authenticated session from localStorage, checking expiration.
+     * 🔒 Retrieves active authenticated session from sessionStorage.
+     * Uses sessionStorage instead of localStorage for better security
+     * (session clears when browser tab closes).
      */
     getSession() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        // Try sessionStorage first (more secure), then localStorage for migration
+        let raw = sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            // Migrate to sessionStorage and remove from localStorage
+            sessionStorage.setItem(STORAGE_KEY, raw);
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        }
         if (!raw) return null;
+
         const session = JSON.parse(raw);
-        if (!session || !session.expiresAt) {
+        if (!session || !session.expiresAt || !session.token) {
           this.logout(false);
           return null;
         }
@@ -176,83 +179,33 @@
     },
 
     /**
-     * Authenticates user against Supabase PostgreSQL 'gov_users' table.
+     * 🔒 Authenticates user via backend API ONLY.
+     * Frontend NEVER touches Supabase gov_users table directly.
+     * Passwords are verified server-side with bcrypt.
      */
     async login({ email, password, role }) {
       const cleanEmail = (email || "").trim().toLowerCase();
       const cleanPwd = (password || "").trim();
       const cleanRole = (role || "").trim().toLowerCase();
 
-      // 1. Direct Supabase Client Query (Client-side directly to Supabase)
-      if (window.JalSupabase && window.JalSupabase.client) {
-        try {
-          const { data, error } = await window.JalSupabase.client
-            .from("gov_users")
-            .select("*")
-            .ilike("email", cleanEmail)
-            .eq("is_active", true);
-
-          if (!error && data && data.length > 0) {
-            const userRecord = data[0];
-            const storedPwd = userRecord.password_hash || userRecord.password;
-
-            if (cleanPwd !== storedPwd) {
-              return {
-                success: false,
-                message: "Invalid cryptographic access key. Access denied by Supabase."
-              };
-            }
-
-            if (cleanRole && userRecord.role !== cleanRole) {
-              return {
-                success: false,
-                message: `Account is registered in Supabase as ${userRecord.role.toUpperCase()}, not ${cleanRole.toUpperCase()}. Please switch tabs.`
-              };
-            }
-
-            // Issue session token
-            const session = {
-              token: "JAL-SUPABASE-" + Math.random().toString(36).substring(2, 12).toUpperCase(),
-              role: userRecord.role,
-              data_source: "Supabase PostgreSQL (gov_users)",
-              user: {
-                id: userRecord.id,
-                name: userRecord.name,
-                title: userRecord.title,
-                email: cleanEmail,
-                role: userRecord.role,
-                badge_id: userRecord.badge_id,
-                jurisdiction: userRecord.jurisdiction || userRecord.village,
-                tanker_id: userRecord.tanker_id,
-                registration: userRecord.registration,
-                driver_key: userRecord.driver_key,
-                village: userRecord.village,
-                cistern_key: userRecord.cistern_key,
-                permissions: userRecord.permissions || []
-              },
-              loginAt: Date.now(),
-              expiresAt: Date.now() + SESSION_TTL_MS
-            };
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-            console.log("🔐 [JalAuth] Authenticated directly via Supabase client:", userRecord.name);
-            return { success: true, redirect: userRecord.portal_url || "dashboard.html", session };
-          }
-        } catch (supabaseErr) {
-          console.warn("🔐 [JalAuth] Supabase direct auth failed, trying backend API:", supabaseErr);
-        }
+      if (!cleanEmail || !cleanPwd) {
+        return { success: false, message: "Email and password are required." };
       }
 
-      // 2. Query via Backend API (which queries Supabase server-side)
+      // All authentication goes through the backend API
       try {
         const apiBase = this.getApiBase();
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
         const response = await fetch(`${apiBase}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: cleanEmail, password: cleanPwd, role: cleanRole || undefined }),
+          body: JSON.stringify({
+            email: cleanEmail,
+            password: cleanPwd,
+            role: cleanRole || undefined
+          }),
           signal: controller.signal
         });
         clearTimeout(timeoutId);
@@ -262,41 +215,97 @@
           const session = {
             token: data.token,
             role: data.role,
-            data_source: data.data_source || "Supabase PostgreSQL",
             user: data.user,
             loginAt: Date.now(),
             expiresAt: Date.now() + SESSION_TTL_MS
           };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-          console.log("🔐 [JalAuth] Authenticated via FastAPI / Supabase API:", session.user.name);
+
+          // 🔒 Store in sessionStorage (not localStorage) for better security
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+          // Also clean any old localStorage sessions
+          localStorage.removeItem(STORAGE_KEY);
+
+          console.log("🔐 [JalAuth] Authenticated via secure backend API:", data.user.name);
           return { success: true, redirect: data.redirect_url, session };
+        } else if (response.status === 429) {
+          const errData = await response.json().catch(() => ({}));
+          return {
+            success: false,
+            message: errData.detail || "Too many login attempts. Please wait before retrying."
+          };
         } else {
           const errData = await response.json().catch(() => ({}));
-          const errMsg = errData.detail || "Authentication rejected by Supabase.";
+          const errMsg = errData.detail || "Authentication failed.";
           return { success: false, message: errMsg };
         }
       } catch (apiErr) {
-        console.error("🔐 [JalAuth] Authentication connection error:", apiErr);
+        if (apiErr.name === "AbortError") {
+          return { success: false, message: "Connection timed out. Please check your internet connection." };
+        }
+        console.error("🔐 [JalAuth] Authentication error:", apiErr);
         return {
           success: false,
-          message: "Unable to reach Supabase database. Please ensure 'supabase_schema.sql' has been executed in the Supabase SQL Editor and internet connection is active."
+          message: "Unable to reach authentication server. Please check your connection."
         };
       }
     },
 
     /**
-     * Signs out the user, removes session, and redirects to login portal.
+     * 🔒 Signs out the user — invalidates session both locally and server-side.
      */
-    logout(redirect = true) {
+    async logout(redirect = true) {
+      const session = this.getSession();
+
+      // Invalidate server-side session
+      if (session && session.token) {
+        try {
+          const apiBase = this.getApiBase();
+          await fetch(`${apiBase}/api/auth/logout`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${session.token}` }
+          });
+        } catch (e) {
+          // Best-effort server-side invalidation
+        }
+      }
+
+      // Clear all local session data
+      sessionStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY);
-      console.log("🔐 [JalAuth] User logged out.");
+      console.log("🔐 [JalAuth] User logged out securely.");
+
       if (redirect) {
         window.location.href = "login.html?logout=true";
       }
     },
 
     /**
-     * Route protection guard for HTML consoles.
+     * 🔒 Verifies current session is still valid server-side.
+     * Call periodically or on page load to prevent stale sessions.
+     */
+    async verifySession() {
+      const session = this.getSession();
+      if (!session || !session.token) return false;
+
+      try {
+        const apiBase = this.getApiBase();
+        const res = await fetch(`${apiBase}/api/auth/verify`, {
+          headers: { "Authorization": `Bearer ${session.token}` }
+        });
+        if (!res.ok) {
+          console.warn("🔐 [JalAuth] Server rejected session token. Logging out.");
+          this.logout(false);
+          return false;
+        }
+        return true;
+      } catch (e) {
+        // If server is unreachable, keep local session valid
+        return true;
+      }
+    },
+
+    /**
+     * 🔒 Route protection guard for HTML consoles.
      * Call at top of dashboard.html, driver.html, panchayat.html.
      */
     protectPage(allowedRoles = []) {
@@ -316,10 +325,14 @@
       if (!hasAccess) {
         console.warn(`🔐 [JalAuth] Role '${userRole}' not authorized for ${currentPage}. Required: [${allowedRoles.join(", ")}]`);
         alert(`Access Restricted: This console is designated for ${allowedRoles.join(" or ").toUpperCase()}. Redirecting you to your authorized portal.`);
-        const targetUrl = session.user.portal_url || "login.html";
+        const theme = ROLE_THEMES[userRole];
+        const targetUrl = theme ? theme.portalUrl : "login.html";
         window.location.href = targetUrl;
         return false;
       }
+
+      // Verify session server-side asynchronously
+      this.verifySession();
 
       return true;
     },
@@ -383,8 +396,8 @@
                 </div>
               </div>
               <div class="mt-2.5 px-2.5 py-1 rounded-md bg-surface-container text-[11px] font-mono text-on-surface-variant flex items-center gap-1.5 border border-white/5">
-                <span class="material-symbols-outlined text-[14px] text-primary">database</span>
-                <span class="truncate">Verified via Supabase Cloud</span>
+                <span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+                <span class="truncate">Verified via Secure Backend API</span>
               </div>
             </div>
 

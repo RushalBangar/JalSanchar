@@ -1,11 +1,21 @@
 import os
 import uuid
+import time
+import json
 import datetime
 import hashlib
-from fastapi import FastAPI, HTTPException, Query
+import secrets
+from functools import wraps
+from collections import defaultdict
+
+from fastapi import FastAPI, HTTPException, Query, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
+
+import bcrypt
 
 try:
     from solver import optimize_routes
@@ -41,36 +51,199 @@ try:
 except ImportError:
     pass
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://vzfddxiiptkeeyvrfkhl.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6ZmRkeGlpcHRrZWV5dnJma2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MDM1OTYsImV4cCI6MjEwNzE3OTU5Nn0.8NA30jSO58gV8vbyvWnsUwdgXsMGFeMtda25lQ8EEFQ")
+# ─── Secure Configuration (secrets from .env ONLY, no hardcoded fallbacks) ────
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000").split(",")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    print("[JalSanjeevani API] [WARNING] SUPABASE_URL or SUPABASE_KEY not set in .env file!")
 
 supabase_client = None
 if SUPABASE_KEY:
     try:
         from supabase import create_client
         supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
-        print("[JalSanjeevani API] Supabase client initialized.")
+        print("[JalSanjeevani API] [OK] Supabase client initialized securely.")
     except Exception as e:
         print(f"[JalSanjeevani API] Supabase client init note: {e}")
+
+# ─── Active Session Store (in-memory; use Redis in production) ────────────────
+_active_sessions: Dict[str, dict] = {}
+SESSION_TTL_SECONDS = 24 * 60 * 60  # 24 hours
+
+# ─── Rate Limiter (in-memory; use Redis in production) ────────────────────────
+_login_attempts: Dict[str, list] = defaultdict(list)
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_WINDOW_SECONDS = 300  # 5-minute window
+
+
+# =============================================================================
+# Security Middleware
+# =============================================================================
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Adds essential security headers to every HTTP response."""
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(self), microphone=(), geolocation=(self)"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+        response.headers["Pragma"] = "no-cache"
+        # CSP header to restrict resource loading
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://*.basemaps.cartocdn.com; "
+            "connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* https://jalsanjeevani.onrender.com; "
+            "frame-ancestors 'none';"
+        )
+        return response
+
 
 app = FastAPI(
     title="JalSanjeevani / HydroPulse Smart Drought Supply Chain Engine",
     description="End-to-end intelligent platform predicting 14-day water scarcity via satellite telemetry, preventing tanker diversion with cryptographic QR proofs, and optimizing emergency logistics using Google OR-Tools.",
-    version="2.0.0"
+    version="2.1.0",
+    docs_url=None if os.getenv("ENVIRONMENT") == "production" else "/docs",
+    redoc_url=None if os.getenv("ENVIRONMENT") == "production" else "/redoc",
 )
 
-# Enable CORS for local development and cloud web deployments
+# Security Headers Middleware
+app.add_middleware(SecurityHeadersMiddleware)
+
+# CORS — restricted to known origins (not wildcard)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# Password Hashing Utilities (bcrypt)
+# =============================================================================
+
+def hash_password(plain_password: str) -> str:
+    """Hashes a plaintext password using bcrypt with auto-generated salt."""
+    return bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verifies a plaintext password against its bcrypt hash."""
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    except (ValueError, TypeError):
+        # If stored password is not a valid bcrypt hash (legacy plaintext),
+        # fall back to direct comparison for migration period only
+        return plain_password == hashed_password
+
+
+# =============================================================================
+# Session Token Management (Cryptographically Secure)
+# =============================================================================
+
+def generate_session_token(email: str, role: str) -> str:
+    """Generates a cryptographically secure, unpredictable session token."""
+    random_bytes = secrets.token_hex(24)
+    timestamp = str(int(time.time()))
+    payload = f"{email}:{role}:{timestamp}:{random_bytes}:{JWT_SECRET}"
+    token = "JAL-" + hashlib.sha256(payload.encode()).hexdigest()[:40]
+    return token
+
+def store_session(token: str, user_data: dict, role: str):
+    """Stores an active session in the session store."""
+    _active_sessions[token] = {
+        "user": user_data,
+        "role": role,
+        "created_at": time.time(),
+        "expires_at": time.time() + SESSION_TTL_SECONDS
+    }
+
+def validate_session(token: str) -> Optional[dict]:
+    """Validates a session token and returns session data if valid."""
+    session = _active_sessions.get(token)
+    if not session:
+        return None
+    if time.time() > session["expires_at"]:
+        _active_sessions.pop(token, None)
+        return None
+    return session
+
+def invalidate_session(token: str):
+    """Removes a session token from the active sessions."""
+    _active_sessions.pop(token, None)
+
+
+# =============================================================================
+# Rate Limiting
+# =============================================================================
+
+def check_rate_limit(identifier: str) -> bool:
+    """Returns True if the identifier is within rate limits."""
+    now = time.time()
+    # Clean old attempts
+    _login_attempts[identifier] = [
+        t for t in _login_attempts[identifier]
+        if now - t < LOGIN_WINDOW_SECONDS
+    ]
+    if len(_login_attempts[identifier]) >= MAX_LOGIN_ATTEMPTS:
+        return False
+    return True
+
+def record_login_attempt(identifier: str):
+    """Records a login attempt for rate limiting."""
+    _login_attempts[identifier].append(time.time())
+
+
+# =============================================================================
+# Authentication Dependency (Protects API Endpoints)
+# =============================================================================
+
+async def require_auth(request: Request) -> dict:
+    """
+    FastAPI dependency that extracts and validates the Bearer token.
+    Returns the session data if authenticated, raises 401 otherwise.
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid Authorization header. Use 'Bearer <token>'."
+        )
+    token = auth_header.replace("Bearer ", "").strip()
+    session = validate_session(token)
+    if not session:
+        raise HTTPException(
+            status_code=401,
+            detail="Session expired or invalid token. Please re-authenticate."
+        )
+    return session
+
+async def require_role(request: Request, allowed_roles: list) -> dict:
+    """Validates that the authenticated user has one of the allowed roles."""
+    session = await require_auth(request)
+    user_role = session.get("role", "")
+    # Collector has supervisory access to all portals
+    if user_role not in allowed_roles and user_role != "collector":
+        raise HTTPException(
+            status_code=403,
+            detail=f"Access denied. Required role(s): {allowed_roles}. Your role: {user_role}."
+        )
+    return session
+
+
+# =============================================================================
 # Pydantic Request & Response Models
-# -----------------------------------------------------------------------------
+# =============================================================================
 
 class VillageModel(BaseModel):
     id: str
@@ -124,18 +297,24 @@ class LoginRequest(BaseModel):
     password: str
     role: Optional[str] = None
 
-# -----------------------------------------------------------------------------
-# Authentication Endpoints (Backed by Supabase PostgreSQL gov_users Table)
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# Authentication Endpoints (Secured with bcrypt + rate limiting)
+# =============================================================================
 
 @app.get("/api/auth/users")
-def get_auth_users():
+async def get_auth_users(session: dict = Depends(require_auth)):
     """
     Fetches registered operational personas directly from Supabase 'gov_users' table.
-    Omits sensitive password hashes.
+    🔒 PROTECTED: Requires valid session token. Never exposes password hashes.
     """
     if not supabase_client:
         raise HTTPException(status_code=503, detail="Supabase client not connected.")
+
+    # Only collectors can view user list
+    if session.get("role") != "collector":
+        raise HTTPException(status_code=403, detail="Only District Collector can view user registry.")
+
     try:
         res = supabase_client.table("gov_users").select(
             "id, email, role, name, title, badge_id, jurisdiction, portal_url, tanker_id, registration, village, is_active"
@@ -143,65 +322,89 @@ def get_auth_users():
         return {"count": len(res.data), "users": res.data}
     except Exception as e:
         print(f"[Supabase Users Query Error]: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to query gov_users table from Supabase: {e}")
+        raise HTTPException(status_code=500, detail="Failed to query user registry.")
 
 @app.post("/api/auth/login")
-def auth_login(req: LoginRequest):
+async def auth_login(req: LoginRequest, request: Request):
     """
     Role-based authentication endpoint for Collector, Driver, and Gram Panchayat.
-    Queries Supabase 'gov_users' table as the single source of truth.
-    Issues cryptographic session bearer token upon verifying credentials.
+    🔒 Features: bcrypt password verification, rate limiting, secure session tokens.
     """
     clean_email = req.email.strip().lower()
     clean_pwd = req.password.strip()
 
+    # 1. Rate Limiting — block brute force attempts
+    client_ip = request.client.host if request.client else "unknown"
+    rate_key = f"{client_ip}:{clean_email}"
+    if not check_rate_limit(rate_key):
+        remaining = LOGIN_WINDOW_SECONDS - (time.time() - min(_login_attempts[rate_key]))
+        raise HTTPException(
+            status_code=429,
+            detail=f"Too many login attempts. Please wait {int(remaining)} seconds before retrying."
+        )
+
     if not supabase_client:
         raise HTTPException(
             status_code=503,
-            detail="Supabase database connection not initialized. Please verify SUPABASE_URL and SUPABASE_KEY in backend/.env."
+            detail="Database connection not initialized. Please verify SUPABASE_URL and SUPABASE_KEY in backend/.env."
         )
 
-    # 1. Fetch user record directly from Supabase 'gov_users' table
+    # 2. Fetch user record from Supabase (server-side only — password_hash never goes to frontend)
     try:
-        res = supabase_client.table("gov_users").select("*").ilike("email", clean_email).eq("is_active", True).execute()
+        res = supabase_client.table("gov_users").select(
+            "id, email, password_hash, role, name, title, badge_id, jurisdiction, "
+            "portal_url, tanker_id, registration, driver_key, village, cistern_key, permissions, is_active"
+        ).ilike("email", clean_email).eq("is_active", True).execute()
         user_records = res.data or []
     except Exception as e:
         print(f"[Supabase Auth Query Error]: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Database error querying Supabase 'gov_users' table: {e}. Please ensure you have run 'supabase_schema.sql' in your Supabase SQL Editor."
+            detail="Database error. Please ensure 'supabase_schema.sql' has been executed."
         )
 
     if not user_records:
+        record_login_attempt(rate_key)
         raise HTTPException(
             status_code=401,
-            detail=f"User '{clean_email}' not found in Supabase database. Please ensure your account exists in 'gov_users' table."
+            detail="Invalid credentials. Please check your email and access key."
         )
 
     user_info = user_records[0]
     matched_role = (user_info.get("role") or "").lower()
 
-    # 2. If client specified a target role, verify role match
+    # 3. Role verification
     if req.role and req.role.strip().lower() != matched_role:
+        record_login_attempt(rate_key)
         raise HTTPException(
             status_code=403,
-            detail=f"Account is registered in Supabase as '{matched_role.upper()}', not '{req.role.upper()}'. Please select the correct portal tab."
+            detail=f"Account is registered as '{matched_role.upper()}', not '{req.role.upper()}'. Please select the correct portal tab."
         )
 
-    # 3. Check password against Supabase stored hash/key
-    stored_pwd = user_info.get("password_hash") or user_info.get("password")
-    if clean_pwd != stored_pwd:
+    # 4. Password verification using bcrypt (with legacy plaintext migration fallback)
+    stored_pwd = user_info.get("password_hash") or ""
+    if not verify_password(clean_pwd, stored_pwd):
+        record_login_attempt(rate_key)
         raise HTTPException(
             status_code=401,
-            detail="Invalid cryptographic access key. Access denied by Supabase."
+            detail="Invalid credentials. Please check your email and access key."
         )
 
-    # 4. Generate deterministic cryptographic session token
-    timestamp = int(time.time())
-    token_seed = f"{clean_email}:{matched_role}:{timestamp}:jalsanjeevani_gov_secret"
-    session_token = "JAL-AUTH-" + hashlib.sha256(token_seed.encode()).hexdigest()[:32]
+    # 5. If password was stored as plaintext (legacy), auto-upgrade to bcrypt hash
+    if not stored_pwd.startswith("$2b$") and not stored_pwd.startswith("$2a$"):
+        try:
+            new_hash = hash_password(clean_pwd)
+            supabase_client.table("gov_users").update(
+                {"password_hash": new_hash}
+            ).eq("id", user_info["id"]).execute()
+            print(f"[Security] Auto-upgraded password to bcrypt for: {clean_email}")
+        except Exception as upgrade_err:
+            print(f"[Security] Password upgrade notice: {upgrade_err}")
 
-    # Parse permissions
+    # 6. Generate cryptographically secure session token
+    session_token = generate_session_token(clean_email, matched_role)
+
+    # Parse permissions safely
     permissions = user_info.get("permissions") or []
     if isinstance(permissions, str):
         try:
@@ -209,46 +412,89 @@ def auth_login(req: LoginRequest):
         except Exception:
             permissions = []
 
+    # Build user data (NEVER include password_hash)
+    user_data = {
+        "id": user_info.get("id"),
+        "name": user_info.get("name"),
+        "title": user_info.get("title"),
+        "email": clean_email,
+        "role": matched_role,
+        "badge_id": user_info.get("badge_id"),
+        "jurisdiction": user_info.get("jurisdiction") or user_info.get("village"),
+        "tanker_id": user_info.get("tanker_id"),
+        "registration": user_info.get("registration"),
+        "driver_key": user_info.get("driver_key"),
+        "village": user_info.get("village"),
+        "cistern_key": user_info.get("cistern_key"),
+        "permissions": permissions
+    }
+
+    # Store session server-side
+    store_session(session_token, user_data, matched_role)
+
     return {
         "status": "success",
-        "data_source": "Supabase PostgreSQL (gov_users)",
-        "message": f"Authentication verified via Supabase for {user_info.get('name')} ({user_info.get('title')}).",
+        "message": f"Authentication verified for {user_data['name']} ({user_data['title']}).",
         "token": session_token,
         "role": matched_role,
         "redirect_url": user_info.get("portal_url", "dashboard.html"),
-        "user": {
-            "id": user_info.get("id"),
-            "name": user_info.get("name"),
-            "title": user_info.get("title"),
-            "email": clean_email,
-            "role": matched_role,
-            "badge_id": user_info.get("badge_id"),
-            "jurisdiction": user_info.get("jurisdiction") or user_info.get("village"),
-            "tanker_id": user_info.get("tanker_id"),
-            "registration": user_info.get("registration"),
-            "driver_key": user_info.get("driver_key"),
-            "village": user_info.get("village"),
-            "cistern_key": user_info.get("cistern_key"),
-            "permissions": permissions
-        },
+        "user": user_data,
         "authenticated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "expires_in_hours": 24
     }
 
+@app.post("/api/auth/logout")
+async def auth_logout(request: Request):
+    """
+    Invalidates the user's session token server-side.
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.replace("Bearer ", "").strip()
+        invalidate_session(token)
+    return {"status": "success", "message": "Session invalidated."}
+
+@app.get("/api/auth/verify")
+async def auth_verify(session: dict = Depends(require_auth)):
+    """
+    Verifies if the current session token is still valid.
+    Returns user data if authenticated.
+    """
+    return {
+        "status": "authenticated",
+        "role": session["role"],
+        "user": session["user"],
+        "expires_at": datetime.datetime.fromtimestamp(
+            session["expires_at"], tz=datetime.timezone.utc
+        ).isoformat()
+    }
+
+
+# =============================================================================
+# Health Check (Public — no auth needed)
+# =============================================================================
+
 @app.get("/health")
 def health_check():
     """Health check endpoint providing API, Supabase, and Google Earth Engine status."""
-    from geospatial import _EE_INITIALIZED, _EE_INIT_ERROR, init_earth_engine
+    try:
+        from geospatial import _EE_INITIALIZED, _EE_INIT_ERROR, init_earth_engine
+    except ImportError:
+        from backend.geospatial import _EE_INITIALIZED, _EE_INIT_ERROR, init_earth_engine
     init_earth_engine()
     return {
         "status": "online",
         "service": "JalSanjeevani Logistics & Anti-Diversion Engine",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "supabase_connected": supabase_client is not None,
-        "database_url": SUPABASE_URL,
         "google_earth_engine_connected": _EE_INITIALIZED,
         "google_earth_engine_notice": _EE_INIT_ERROR
     }
+
+
+# =============================================================================
+# Satellite & Scarcity Endpoints (Public read-only — safe to expose)
+# =============================================================================
 
 @app.get("/api/satellite/telemetry")
 def get_satellite_telemetry():
@@ -293,14 +539,15 @@ def predict_scarcity(req: ScarcityPredictRequest):
         "forecast": forecast
     }
 
-# -----------------------------------------------------------------------------
-# Database Data APIs (Villages & Fleet)
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# Database Data APIs (🔒 Protected — requires authentication)
+# =============================================================================
 
 @app.get("/api/villages")
-def get_villages():
+async def get_villages(session: dict = Depends(require_auth)):
     """
-    Fetches villages from Supabase PostgreSQL enriched with statutory demand quotas
+    🔒 PROTECTED: Fetches villages from Supabase PostgreSQL enriched with statutory demand quotas
     (Qhuman = 40L/capita, Qcattle = 70L/head) and 14-day drought alerts.
     """
     if supabase_client:
@@ -335,9 +582,9 @@ def get_villages():
     return {"count": len(enriched), "villages": enriched}
 
 @app.get("/api/tankers")
-def get_tankers():
+async def get_tankers(session: dict = Depends(require_auth)):
     """
-    Fetches tanker fleet telemetry, GPS coordinates, geofence compliance,
+    🔒 PROTECTED: Fetches tanker fleet telemetry, GPS coordinates, geofence compliance,
     and rogue diversion anomaly states.
     """
     if supabase_client:
@@ -357,11 +604,16 @@ def get_tankers():
     return {"count": len(fallback_tankers), "tankers": fallback_tankers}
 
 @app.post("/api/tankers/telemetry")
-def update_tanker_telemetry(ping: TankerTelemetryPing):
+async def update_tanker_telemetry(ping: TankerTelemetryPing, session: dict = Depends(require_auth)):
     """
-    Ingests live GPS pings from Driver PWA, updates coordinates in Supabase,
+    🔒 PROTECTED: Ingests live GPS pings from Driver PWA, updates coordinates in Supabase,
     and detects route deviation anomalies in real time.
     """
+    # Only drivers and collectors can broadcast telemetry
+    user_role = session.get("role", "")
+    if user_role not in ["driver", "collector"]:
+        raise HTTPException(status_code=403, detail="Only tanker drivers can broadcast telemetry.")
+
     if supabase_client:
         try:
             supabase_client.table("tankers").update({
@@ -380,25 +632,29 @@ def update_tanker_telemetry(ping: TankerTelemetryPing):
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
 
-# -----------------------------------------------------------------------------
-# Layer 3: Logistics Optimization (Google OR-Tools VRP Solver)
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# Layer 3: Logistics Optimization (🔒 Protected — Collector only)
+# =============================================================================
 
 @app.post("/api/allocate")
-async def allocate_tankers(request: DispatchRequest):
+async def allocate_tankers(request_data: DispatchRequest, request: Request, session: dict = Depends(require_auth)):
     """
-    Takes village distress data and calculates optimal CVRP tanker routes
+    🔒 PROTECTED (Collector only): Takes village distress data and calculates optimal CVRP tanker routes
     using Google OR-Tools. Persists the run directly into Supabase 'dispatches'.
     """
-    distressed_villages = [v for v in request.villages if v.status in ["critical", "warning"]]
+    if session.get("role") != "collector":
+        raise HTTPException(status_code=403, detail="Only District Collector can authorize dispatch.")
+
+    distressed_villages = [v for v in request_data.villages if v.status in ["critical", "warning"]]
     
-    depot_coords = (request.depot_lat, request.depot_lng) if (request.depot_lat is not None and request.depot_lng is not None) else None
+    depot_coords = (request_data.depot_lat, request_data.depot_lng) if (request_data.depot_lat is not None and request_data.depot_lng is not None) else None
     routes = optimize_routes(
         distressed_villages,
-        request.num_tankers,
-        request.tanker_capacity,
+        request_data.num_tankers,
+        request_data.tanker_capacity,
         depot_coords=depot_coords,
-        depot_name=request.depot_name
+        depot_name=request_data.depot_name
     )
     total_req = sum([v.human_pop * 40 + v.cattle_pop * 70 for v in distressed_villages])
     
@@ -408,7 +664,7 @@ async def allocate_tankers(request: DispatchRequest):
                 "routes": routes,
                 "total_liters": total_req,
                 "algorithm": "Google OR-Tools CVRP",
-                "dispatched_by": "FastAPI Routing Engine"
+                "dispatched_by": session["user"].get("name", "Collector Command Center")
             }).execute()
         except Exception as err:
             print(f"[Supabase Sync Error]: {err}")
@@ -433,19 +689,25 @@ async def allocate_tankers(request: DispatchRequest):
         }
     }
 
-# -----------------------------------------------------------------------------
-# Layer 2: Anti-Diversion & Cryptographic Proof-of-Delivery
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# Layer 2: Anti-Diversion & Cryptographic Proof-of-Delivery (🔒 Protected)
+# =============================================================================
 
 @app.post("/api/verify-delivery")
-def verify_delivery(req: DeliveryVerificationRequest):
+async def verify_delivery(req: DeliveryVerificationRequest, session: dict = Depends(require_auth)):
     """
-    Enforces 'No Cryptographic Proof, No Bill Payment':
+    🔒 PROTECTED: Enforces 'No Cryptographic Proof, No Bill Payment':
     1. Validates tanker is within 50m geofence perimeter of village cistern.
     2. Verifies cryptographic handshake signature.
     3. Persists delivery receipt to Supabase.
     4. Issues state treasury bill payment authorization token.
     """
+    # Only drivers and panchayat can verify deliveries
+    user_role = session.get("role", "")
+    if user_role not in ["driver", "panchayat", "collector"]:
+        raise HTTPException(status_code=403, detail="Only authorized operational roles can verify deliveries.")
+
     is_valid, report = verify_delivery_handshake(
         tanker_id=req.tanker_id,
         target_village=req.target_village,
@@ -487,16 +749,20 @@ def verify_delivery(req: DeliveryVerificationRequest):
 
     return report
 
-# -----------------------------------------------------------------------------
-# Escrow & State Treasury APIs
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# Escrow & State Treasury APIs (🔒 Protected — Collector only)
+# =============================================================================
 
 @app.post("/api/escrow/freeze")
-def freeze_escrow(req: EscrowFreezeRequest):
+async def freeze_escrow(req: EscrowFreezeRequest, session: dict = Depends(require_auth)):
     """
-    Freezes contractor payment in smart escrow when off-route anomaly is detected.
-    Logs audit trail into Supabase 'escrow_actions'.
+    🔒 PROTECTED (Collector only): Freezes contractor payment in smart escrow
+    when off-route anomaly is detected.
     """
+    if session.get("role") != "collector":
+        raise HTTPException(status_code=403, detail="Only District Collector can freeze escrow.")
+
     record = {
         "id": str(uuid.uuid4()),
         "tanker_id": req.tanker_id,
@@ -525,9 +791,9 @@ def freeze_escrow(req: EscrowFreezeRequest):
     }
 
 @app.get("/api/escrow/status")
-def get_escrow_status():
+async def get_escrow_status(session: dict = Depends(require_auth)):
     """
-    Returns audit status of all escrow actions and penalties.
+    🔒 PROTECTED: Returns audit status of all escrow actions and penalties.
     """
     if supabase_client:
         try:
@@ -548,9 +814,9 @@ def get_escrow_status():
     }
 
 @app.get("/api/manifest/export")
-def export_manifest():
+async def export_manifest(session: dict = Depends(require_auth)):
     """
-    Generates a cryptographically signed JSON manifest for District Collector,
+    🔒 PROTECTED: Generates a cryptographically signed JSON manifest for District Collector,
     RTO patrols, and State Treasury audit clearance.
     """
     timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -567,5 +833,6 @@ def export_manifest():
         },
         "treasury_policy": "No Cryptographic Proof, No Bill Payment",
         "state_escrow_audit": "ACTIVE",
+        "exported_by": session["user"].get("name", "Authorized Officer"),
         "cryptographic_signature": generate_handshake_signature("FLEET", "SINNAR", 455500, timestamp)
     }

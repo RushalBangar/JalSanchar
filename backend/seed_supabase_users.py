@@ -1,10 +1,12 @@
 """
 JalSanjeevani / HydroPulse - Supabase Operational Users Seeder
+🔒 SECURED: Passwords are hashed with bcrypt before storing in Supabase.
 Seeds the 3 authorized government roles (Collector, Driver, Panchayat)
 into the public.gov_users table in Supabase PostgreSQL.
 """
 
 import os
+import bcrypt
 from dotenv import load_dotenv
 from supabase import create_client
 
@@ -19,11 +21,18 @@ if not SUPABASE_KEY:
 
 client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+
+def hash_password(plain_password: str) -> str:
+    """Hashes a plaintext password using bcrypt with auto-generated salt."""
+    return bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+# 🔒 Passwords are bcrypt-hashed before being stored
 GOV_USERS = [
     {
         "id": "USR-COL-01",
         "email": "collector@sinnar.jalsanjeevani.gov.in",
-        "password_hash": "sovereign_water_2025",
+        "password_hash": hash_password("sovereign_water_2025"),
         "role": "collector",
         "name": "Shri. Rahul More, IAS",
         "title": "District Collector & Magistrate",
@@ -41,7 +50,7 @@ GOV_USERS = [
     {
         "id": "USR-DRV-15",
         "email": "driver.mh15@sinnar.jalsanjeevani.gov.in",
-        "password_hash": "sovereign_water_2025",
+        "password_hash": hash_password("sovereign_water_2025"),
         "role": "driver",
         "name": "Ramesh V. Patil",
         "title": "Municipal Tanker Pilot",
@@ -59,7 +68,7 @@ GOV_USERS = [
     {
         "id": "USR-GP-104",
         "email": "panchayat.khopadi@sinnar.jalsanjeevani.gov.in",
-        "password_hash": "sovereign_water_2025",
+        "password_hash": hash_password("sovereign_water_2025"),
         "role": "panchayat",
         "name": "Sunita G. Deshmukh",
         "title": "Sarpanch & Water Vigilance Officer",
@@ -78,6 +87,7 @@ GOV_USERS = [
 
 def seed_users():
     print(f"Connecting to Supabase at: {SUPABASE_URL}")
+    print("🔒 Passwords will be stored as bcrypt hashes (never plaintext).")
     try:
         # Check if table exists by querying 1 row
         res = client.table("gov_users").select("id").limit(1).execute()
@@ -94,8 +104,10 @@ def seed_users():
     # Upsert each user into Supabase
     for user in GOV_USERS:
         try:
+            # Verify the hash is valid bcrypt
+            assert user["password_hash"].startswith("$2b$"), f"Password for {user['email']} is not bcrypt hashed!"
             upsert_res = client.table("gov_users").upsert(user).execute()
-            print(f"[Success] Seeded {user['role'].upper()}: {user['email']} ({user['name']})")
+            print(f"[Success] Seeded {user['role'].upper()}: {user['email']} ({user['name']}) — password bcrypt hashed ✅")
         except Exception as err:
             print(f"[Error] Failed to upsert {user['email']}: {err}")
 

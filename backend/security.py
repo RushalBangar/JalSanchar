@@ -118,8 +118,8 @@ def verify_delivery_handshake(
 
     # 2. Key Pair Validation
     expected_key = village_info["cistern_key"]
-    # Allow either matching key or mock verification test key
-    keys_match = (cistern_key == expected_key) or cistern_key.startswith("0x")
+    # Strict cryptographic key match — no bypass allowed
+    keys_match = hmac.compare_digest(cistern_key, expected_key)
 
     if not keys_match:
         return False, {

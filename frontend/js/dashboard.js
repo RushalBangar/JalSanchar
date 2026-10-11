@@ -2,6 +2,19 @@
 const MAP_CENTER = [19.2500, 74.6500];
 const MAP_ZOOM = 9;
 
+/**
+ * 🔒 XSS Sanitizer: Escapes potentially untrusted HTML entities
+ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Authentication & Access Protection
   if (window.JalAuth) {
@@ -173,6 +186,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     villageListContainer.innerHTML = filtered.map(v => {
+      const safeName = escapeHtml(v.name);
+      const safeStatus = escapeHtml(v.status);
+      const safeCistern = escapeHtml(v.cistern_level);
+      const safeId = escapeHtml(v.id);
       let totalLiters = (v.population * 40 + v.cattle * 70).toLocaleString();
       const badgeClass = v.status === "critical"
         ? "bg-error-container text-on-error-container"
@@ -190,18 +207,18 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "text-warning-amber font-semibold"
         : "text-tertiary font-semibold";
       const reserveLabel = (v.hours_remaining !== undefined && v.hours_remaining < 24)
-        ? `T-${v.hours_remaining}h Deplete`
+        ? `T-${escapeHtml(v.hours_remaining)}h Deplete`
         : `T-${Math.max(1, Math.round((v.hours_remaining || 48)/24))}d Reserve`;
 
       return `
-        <div class="village-card group p-space-sm rounded-lg bg-surface-card hover:bg-surface-container transition-all flex items-center justify-between cursor-pointer border border-border-subtle" data-id="${v.id}">
+        <div class="village-card group p-space-sm rounded-lg bg-surface-card hover:bg-surface-container transition-all flex items-center justify-between cursor-pointer border border-border-subtle" data-id="${safeId}">
           <div class="flex flex-col gap-0.5">
             <div class="flex items-center gap-space-xs">
-              <span class="font-headline-md text-body-lg font-bold text-on-surface">${v.name}</span>
-              <span class="px-1.5 py-0.2 rounded-DEFAULT ${badgeClass} font-label-tactical text-[9px] uppercase font-bold">${v.status}</span>
+              <span class="font-headline-md text-body-lg font-bold text-on-surface">${safeName}</span>
+              <span class="px-1.5 py-0.2 rounded-DEFAULT ${badgeClass} font-label-tactical text-[9px] uppercase font-bold">${safeStatus}</span>
             </div>
             <div class="font-telemetry-code text-body-sm text-on-surface-variant">
-              Req: <span class="text-on-surface">${totalLiters} L/day</span> • Cistern <span class="${cisternColor}">${v.cistern_level}</span>
+              Req: <span class="text-on-surface">${totalLiters} L/day</span> • Cistern <span class="${cisternColor}">${safeCistern}</span>
             </div>
           </div>
           <div class="flex flex-col items-end gap-1">
@@ -639,9 +656,13 @@ document.addEventListener("DOMContentLoaded", () => {
       for (const endpoint of apiEndpoints) {
         if (routesDrawn) break;
         try {
+          const authHeaders = window.JalAuth ? window.JalAuth.getAuthHeaders() : {};
           const response = await fetch(endpoint, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...authHeaders
+            },
             body: JSON.stringify(payload)
           });
 

@@ -1,14 +1,12 @@
 /**
- * JalSanjeevani (RouteGuard) - Supabase Client & Realtime Layer
- * Strategy: Online-First with Offline Queue and Automatic Background Synchronization.
- *
- * 1. Online-First: Connects directly to Supabase PostgreSQL & Realtime Websockets.
- * 2. Offline Queue: If connectivity is lost, writes actions to local storage queue.
- * 3. Auto-Sync: Automatically flushes pending queue when internet connection returns.
+ * 🔒 Supabase Configuration
+ * The anon key is a public key designed for client-side use with RLS.
+ * It is loaded here but ALL sensitive operations (auth, user queries)
+ * go through the backend API — never direct Supabase queries for sensitive tables.
  */
-
 const SUPABASE_CONFIG = {
   url: "https://vzfddxiiptkeeyvrfkhl.supabase.co",
+  // Anon key is safe for client-side use when proper RLS policies are in place
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6ZmRkeGlpcHRrZWV5dnJma2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MDM1OTYsImV4cCI6MjEwNzE3OTU5Nn0.8NA30jSO58gV8vbyvWnsUwdgXsMGFeMtda25lQ8EEFQ"
 };
 
