@@ -222,8 +222,8 @@ def fetch_earth_engine_telemetry(lat: float, lng: float, district_name: str = "A
         import ee
         pt = ee.Geometry.Point([lng, lat])
 
-        # 1. NASA SMAP (Root Zone Soil Moisture)
-        smap_col = ee.ImageCollection('NASA/SMAP/SPL4SMGP/007').select('sm_rootzone')
+        # 1. NASA SMAP (Root Zone Soil Moisture - Latest v008)
+        smap_col = ee.ImageCollection('NASA/SMAP/SPL4SMGP/008').select('sm_rootzone')
         latest_smap = smap_col.sort('system:time_start', False).first()
         smap_dict = latest_smap.reduceRegion(
             reducer=ee.Reducer.mean(),
