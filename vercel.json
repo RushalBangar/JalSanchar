@@ -6,6 +6,7 @@
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/driver", "destination": "/driver.html" },
     { "source": "/panchayat", "destination": "/panchayat.html" },
-    { "source": "/login", "destination": "/login.html" }
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/presentation", "destination": "/presentation.html" }
   ]
 }
