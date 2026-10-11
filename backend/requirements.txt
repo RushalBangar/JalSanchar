@@ -6,4 +6,4 @@ supabase
 python-dotenv
 earthengine-api
 google-auth
-
+bcrypt

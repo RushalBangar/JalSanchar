@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+ortools
+pydantic
+supabase
+python-dotenv
+earthengine-api
+google-auth
+bcrypt
