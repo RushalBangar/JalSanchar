@@ -1,0 +1,14 @@
+{
+  "name": "jalsanjeevani",
+  "version": "2.4.0",
+  "description": "Sovereign Water Resource Governance & Anti-Diversion Logistics PWA",
+  "scripts": {
+    "build:css": "tailwindcss -i ./frontend/css/tailwind-input.css -o ./frontend/css/tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i ./frontend/css/tailwind-input.css -o ./frontend/css/tailwind.min.css --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  }
+}

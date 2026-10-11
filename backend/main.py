@@ -330,6 +330,25 @@ class ProfileUpdateRequest(BaseModel):
 
 
 # =============================================================================
+# Health Check & Keep-Alive Endpoints
+# =============================================================================
+
+@app.get("/")
+@app.get("/health")
+async def health_check():
+    """
+    Lightweight keep-alive health check endpoint.
+    Prevents free-tier instances on Render from idling and spinning down.
+    """
+    return {
+        "status": "online",
+        "service": "JalSanjeevani Telemetry Core",
+        "version": "2.1.0",
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }
+
+
+# =============================================================================
 # Authentication Endpoints (Secured with bcrypt + rate limiting)
 # =============================================================================
 

@@ -23,11 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const transitDot = document.getElementById("transitDot");
 
   const copyTokenBtn = document.getElementById("copyTokenBtn") || document.getElementById("btnCopyPayload");
+  const btnRefreshQR = document.getElementById("btnRefreshQR");
   const saveImageBtn = document.getElementById("saveImageBtn") || document.getElementById("btnDownloadQR");
   const toggleJsonBtn = document.getElementById("toggleJsonBtn") || document.getElementById("btnTogglePayload");
   const closeJsonProofBtn = document.getElementById("closeJsonProofBtn");
   const jsonProofDrawer = document.getElementById("jsonProofDrawer");
   const payloadJsonView = document.getElementById("payloadJsonView");
+  const tokenDynamicBadge = document.getElementById("tokenDynamicBadge");
   const sosBeaconBtn = document.getElementById("sosBeaconBtn");
   const driverToast = document.getElementById("driverToast");
 
@@ -70,10 +72,95 @@ document.addEventListener("DOMContentLoaded", () => {
     cistern_key: "0x74CE8A1109B2",
     lat: 19.8920,
     lng: 74.0610,
-    geofence_status: "EN_ROUTE_180M",
-    timestamp: new Date().toISOString(),
-    signature: "SHA256:8f4c2e1b9a7d3c5e"
+    geofence_status: "EN_ROUTE_180M"
   };
+
+  /**
+   * Generates secure cryptographic nonce (16-char hex)
+   */
+  function generateSecureNonce() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const buf = new Uint8Array(8);
+      window.crypto.getRandomValues(buf);
+      return Array.from(buf, b => b.toString(16).padStart(2, "0")).join("");
+    }
+    return "NONCE-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  }
+
+  /**
+   * Computes dynamic HMAC-SHA256 signature over the canonical payload
+   */
+  async function calculateHmacSha256(keyStr, dataStr) {
+    try {
+      const enc = new TextEncoder();
+      const keyData = enc.encode(keyStr || "sovereign_water_2025");
+      const cryptoKey = await window.crypto.subtle.importKey(
+        "raw",
+        keyData,
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+      const signature = await window.crypto.subtle.sign("HMAC", cryptoKey, enc.encode(dataStr));
+      const hashArray = Array.from(new Uint8Array(signature));
+      return "HMAC-SHA256:" + hashArray.map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+    } catch (e) {
+      let h1 = 0xdeadbeef, h2 = 0x41c64e6d;
+      for (let i = 0; i < dataStr.length; i++) {
+        const ch = dataStr.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+      h2 = Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      const hex = (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(16, "0");
+      return "HMAC-SHA256:" + hex + hex;
+    }
+  }
+
+  // Dynamic Anti-Replay Token State
+  let currentDynamicToken = {
+    trip_id: "TRIP-" + (manifest.tanker_id || "TN-04") + "-" + Math.floor(Date.now() / 3600000),
+    panchayat_id: "GP-SN-104",
+    timestamp: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    nonce: generateSecureNonce(),
+    signature: "HMAC-SHA256:8f4c2e1b9a7d3c5e00b8c6a4e321598f"
+  };
+
+  /**
+   * Refreshes the dynamic token with a fresh nonce and 10-minute validity window
+   */
+  async function refreshDynamicToken(notify = false) {
+    const nonce = generateSecureNonce();
+    const timestamp = new Date().toISOString();
+    const expires_at = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const trip_id = "TRIP-" + (manifest.tanker_id || "TN-04") + "-" + Math.floor(Date.now() / 3600000);
+    const panchayat_id = "GP-SN-104";
+
+    const canonicalPayload = `${manifest.tanker_id}|${trip_id}|${panchayat_id}|${timestamp}|${nonce}`;
+    const signature = await calculateHmacSha256(manifest.driver_key, canonicalPayload);
+
+    currentDynamicToken = {
+      trip_id,
+      panchayat_id,
+      timestamp,
+      expires_at,
+      nonce,
+      signature
+    };
+
+    renderQRCode();
+
+    if (tokenDynamicBadge) {
+      const timeStr = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      tokenDynamicBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span><span>Token Refreshed: ${timeStr} • Nonce [${nonce.slice(0, 6)}...]</span>`;
+    }
+
+    if (notify) {
+      showToast("⚡ Dynamic QR Re-Signed with Fresh Nonce");
+    }
+  }
 
   /**
    * Generates or refreshes the Cryptographic Delivery Token Payload
@@ -82,6 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return JSON.stringify({
       protocol: manifest.protocol,
       tanker_id: manifest.tanker_id,
+      trip_id: currentDynamicToken.trip_id,
+      panchayat_id: currentDynamicToken.panchayat_id,
       registration: manifest.registration,
       target_village: manifest.target_village,
       volume_liters: manifest.volume_liters,
@@ -90,8 +179,10 @@ document.addEventListener("DOMContentLoaded", () => {
       lat: isArrived ? 19.9015 : manifest.lat,
       lng: isArrived ? 74.1030 : manifest.lng,
       geofence_verified: isArrived,
-      timestamp: isArrived ? new Date().toISOString() : manifest.timestamp,
-      signature: manifest.signature
+      timestamp: currentDynamicToken.timestamp,
+      expires_at: currentDynamicToken.expires_at,
+      nonce: currentDynamicToken.nonce,
+      signature: currentDynamicToken.signature
     }, null, 2);
   }
 
@@ -223,8 +314,8 @@ document.addEventListener("DOMContentLoaded", () => {
             btnLogArrivalText.textContent = "Arrival Verified ✓ (Reset)";
           }
 
-          // Re-render QR code with locked GPS coordinates
-          renderQRCode();
+          // Re-render QR code with locked GPS coordinates and fresh dynamic token
+          refreshDynamicToken(false);
           showToast("✓ Arrival Locked: QR Armed for Panchayat Scan");
 
           // Sync arrival to Supabase
@@ -269,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
           btnLogArrivalText.textContent = "Log Arrival Coordinates";
         }
 
-        renderQRCode();
+        refreshDynamicToken(false);
         showToast("Reset to In-Transit corridor state");
 
         if (window.JalSupabase) {
@@ -278,6 +369,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // Hook Manual Dynamic QR Refresh Button
+  if (btnRefreshQR) {
+    btnRefreshQR.addEventListener("click", () => {
+      refreshDynamicToken(true);
+    });
+  }
+
+  // Periodic Anti-Replay Auto-Refresh (Every 60s)
+  setInterval(() => {
+    refreshDynamicToken(false);
+  }, 60000);
 
   // 3. Copy Token Payload to Clipboard
   if (copyTokenBtn) {

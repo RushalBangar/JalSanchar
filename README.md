@@ -145,12 +145,16 @@ Navigate to `http://localhost:3000` or `http://localhost:3000/login.html`.
 
 ---
 
-## 🔒 Security Architecture
+## 🔒 Security & Field Resilience Architecture
 
 - **Bcrypt Password Encryption**: Salt rounds = 12; no plaintext credentials stored in codebase or database.
 - **Supabase Row Level Security (RLS)**: The `gov_users` table is completely shielded from public or anonymous querying.
-- **Content-Security-Policy (CSP)**: Strict headers deployed across all HTML pages and FastAPI responses preventing XSS, unauthorized frame embedding, and untrusted scripts.
-- **Fail-Safe Offline PWA**: If network connectivity drops in rural hamlets, delivery proofs are queued into encrypted `localStorage` and auto-synchronized upon reconnection.
+- **Hardened Content-Security-Policy (CSP)**: Strict headers deployed across all HTML pages and FastAPI responses preventing XSS and data exfiltration. Localhost/socket origins removed in production bundles.
+- **Anti-Replay Dynamic Cryptographic Tokens**: Driver QR codes are time-bounded (strictly $\le 10$ minutes validity window) with dynamic nonces, dynamic timestamps, and HMAC-SHA256 signatures refreshed automatically every 60 seconds. Duplicate nonces are permanently rejected.
+- **Dual-Factor Geofencing Verification**: Gram Panchayat optical scan captures verifier device HTML5 GPS and calculates Haversine proximity ($\le 100\text{m}$ cistern perimeter) alongside tanker telemetry lock.
+- **Offline-First Sovereign IndexedDB Queue & Background Sync**: If 4G connectivity drops in rural hamlets (e.g., Sinnar / Ahilyanagar dry belts), receipts and redeemed nonces are queued into browser IndexedDB (`JalSanjeevaniDB`) and flushed via Service Worker Background Sync upon reconnection.
+- **Zero-Cold-Start Health Cron**: Render backend instances are kept warm via automated 10-minute GitHub Actions keep-alive workflows (`.github/workflows/keep_alive.yml`).
+- **Compiled Tailwind CSS Pipeline**: High-performance precompiled minified stylesheet (`frontend/css/tailwind.min.css`, ~46KB) eliminating runtime CDN compiling overhead and preventing Flash of Unstyled Content (FOUC).
 
 ---
 

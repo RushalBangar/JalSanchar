@@ -84,9 +84,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (window.JalAuth && window.JalAuth.isAuthenticated()) {
     const session = window.JalAuth.getSession();
     if (session && !isLogout) {
+      if (redirectTarget) {
+        window.location.href = redirectTarget;
+        return;
+      }
+      if (typeof window.routeAuthenticatedUser === "function") {
+        window.routeAuthenticatedUser(session.user || { role: session.role });
+        return;
+      }
       const theme = window.JalAuth.ROLE_THEMES[session.role];
       if (theme) {
-        window.location.href = redirectTarget || theme.portalUrl;
+        window.location.href = theme.portalUrl;
         return;
       }
     }
@@ -382,17 +390,22 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
           submitBtn.style.background = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
 
-          let finalUrl = result.redirect;
           if (redirectTarget) {
             const decoded = decodeURIComponent(redirectTarget);
             const userRole = (result.session && result.session.role) ? result.session.role.toLowerCase() : activeRoleKey;
             const isRoleTarget = (userRole === "collector") || decoded.toLowerCase().includes(userRole);
             if (isRoleTarget) {
-              finalUrl = decoded;
+              setTimeout(() => { window.location.href = decoded; }, 350);
+              return;
             }
           }
+
           setTimeout(() => {
-            window.location.href = finalUrl;
+            if (typeof window.routeAuthenticatedUser === "function") {
+              window.routeAuthenticatedUser(result.session ? result.session.user : { role: activeRoleKey });
+            } else {
+              window.location.href = result.redirect || "dashboard.html";
+            }
           }, 350);
         } else {
           showAlert(currentAuthMode === "register" ? "Registration Notice" : "Authentication Failed", result.message || "Operation failed.");

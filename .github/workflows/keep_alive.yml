@@ -1,0 +1,16 @@
+name: Keep-Alive Backend Ping
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render free-tier cold starts
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Render API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health Check Ping
+        run: |
+          curl -f -s -S --connect-timeout 15 --max-time 45 https://jalsanjeevani.onrender.com/health || echo "Render waking up..."

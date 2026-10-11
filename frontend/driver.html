@@ -8,7 +8,7 @@
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
 
   <!-- 🔒 Early Blocking Auth Guard: Prevents unauthorized DOM inspection and content flash -->
   <script>
@@ -64,6 +64,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+  <link rel="stylesheet" href="css/tailwind.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -353,6 +354,11 @@
           <p class="font-body-md text-body-md text-on-surface-variant max-w-xs px-2">
             Present this offline cryptographic QR token to the Panchayat official at the community cistern to unlock payment escrow.
           </p>
+          <!-- Anti-Replay Dynamic Token Freshness Badge -->
+          <div id="tokenDynamicBadge" class="flex items-center justify-center gap-1.5 text-[11px] font-label-tactical text-safe-emerald bg-safe-emerald/10 px-2.5 py-1 rounded-full border border-safe-emerald/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span>
+            <span>Anti-Replay Dynamic Token • Valid 10m</span>
+          </div>
         </div>
 
         <!-- High-Contrast Scannable White Pod -->
@@ -368,21 +374,26 @@
         </div>
 
         <!-- Action Toolbar Row -->
-        <div class="grid grid-cols-3 gap-2 w-full max-w-sm pt-1">
+        <div class="grid grid-cols-4 gap-1.5 w-full max-w-sm pt-1">
           <!-- Copy Token -->
           <button id="copyTokenBtn" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer">
-            <span class="material-symbols-outlined text-[16px] text-primary">content_copy</span>
-            <span class="font-label-tactical text-label-tactical font-semibold">Copy Token</span>
+            <span class="material-symbols-outlined text-[15px] text-primary">content_copy</span>
+            <span class="font-label-tactical text-[10px] font-semibold">Copy</span>
+          </button>
+          <!-- Refresh Dynamic Token -->
+          <button id="btnRefreshQR" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer" title="Generate fresh dynamic nonce">
+            <span class="material-symbols-outlined text-[15px] text-safe-emerald">sync</span>
+            <span class="font-label-tactical text-[10px] font-semibold">Refresh</span>
           </button>
           <!-- Save Image -->
           <button id="saveImageBtn" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer">
-            <span class="material-symbols-outlined text-[16px] text-secondary">download</span>
-            <span class="font-label-tactical text-label-tactical font-semibold">Save Image</span>
+            <span class="material-symbols-outlined text-[15px] text-secondary">download</span>
+            <span class="font-label-tactical text-[10px] font-semibold">Image</span>
           </button>
           <!-- View JSON Proof -->
           <button id="toggleJsonBtn" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer">
-            <span class="material-symbols-outlined text-[16px] text-tertiary">code</span>
-            <span class="font-label-tactical text-label-tactical font-semibold">View JSON</span>
+            <span class="material-symbols-outlined text-[15px] text-tertiary">code</span>
+            <span class="font-label-tactical text-[10px] font-semibold">JSON</span>
           </button>
         </div>
 
@@ -467,6 +478,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/auth-router.js"></script>
+  <script src="js/offline-queue.js"></script>
   <script src="js/lang.js"></script>
   <script src="js/qrcode.min.js"></script>
   <script src="js/driver.js"></script>

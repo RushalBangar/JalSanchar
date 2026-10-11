@@ -1,26 +1,31 @@
 /**
  * JalSanjeevani (RouteGuard) Service Worker
- * Architecture: Online-First (Network-First) with Offline PWA Cache Fallback.
+ * Architecture: Offline-First PWA with Background Sync & Cache-First Fallback.
  *
- * 1. Online-First: Always fetches fresh resources from the network when connected.
- * 2. Background Dynamic Cache: Successfully fetched resources update the local cache automatically.
- * 3. Offline PWA Fallback: If disconnected, serves resources seamlessly from the local cache.
+ * 1. Pre-caches core app shell for zero-connectivity field operations.
+ * 2. Caches all static assets & stylesheets.
+ * 3. Supports Background Sync API to flush offline delivery receipts when connectivity returns.
  */
 
-const CACHE_NAME = 'jalsanjeevani-online-first-v5';
+const CACHE_NAME = 'jalsanjeevani-offline-pwa-v6';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './login.html',
   './dashboard.html',
+  './collector.html',
   './driver.html',
   './panchayat.html',
+  './css/tailwind.min.css',
   './css/variables.css',
   './css/landing.css',
   './css/mobile.css',
   './css/dashboard.css',
   './css/login.css',
   './js/app.js',
+  './js/auth.js',
+  './js/auth-router.js',
+  './js/offline-queue.js',
   './js/driver.js',
   './js/panchayat.js',
   './js/dashboard.js',
@@ -54,14 +59,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: ONLINE-FIRST (Network-First) with Cache Fallback
+// Fetch: Network-First with Cache Fallback for dynamic updates
 self.addEventListener('fetch', (event) => {
-  // Only intercept GET requests
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Live APIs and WebSockets bypass SW cache completely to ensure real-time data
+  // Live APIs and external tile servers bypass SW cache
   if (
     url.hostname.includes('supabase.co') ||
     url.hostname.includes('onrender.com') ||
@@ -71,10 +75,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    // 1. ONLINE-FIRST: Attempt network fetch first
     fetch(event.request)
       .then((networkResponse) => {
-        // If network request succeeded, update cache with the fresh response
         if (networkResponse && (networkResponse.status === 200 || networkResponse.status === 0)) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -84,24 +86,35 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       })
       .catch(async () => {
-        // 2. OFFLINE FALLBACK: When network is offline or fails, serve from cache
-        console.log('📶 [SW] Network unavailable. Serving from offline cache:', event.request.url);
+        console.log('📶 [SW] Offline: serving from cache:', event.request.url);
         const cachedResponse = await caches.match(event.request);
         if (cachedResponse) {
           return cachedResponse;
         }
 
-        // If navigation request fails offline, fallback to index.html
         if (event.request.mode === 'navigate') {
-          const fallback = await caches.match('./index.html') || await caches.match('/');
+          const fallback = await caches.match('./panchayat.html') || await caches.match('./index.html') || await caches.match('./');
           if (fallback) return fallback;
         }
 
-        return new Response('Offline: Resource not in local cache', {
+        return new Response('Offline: Resource cached when online.', {
           status: 503,
           statusText: 'Service Unavailable (Offline)',
           headers: new Headers({ 'Content-Type': 'text/plain' })
         });
       })
   );
+});
+
+// Background Sync: Flush pending delivery verifications
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-verifications') {
+    event.waitUntil(
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'TRIGGER_OFFLINE_SYNC' });
+        });
+      })
+    );
+  }
 });
