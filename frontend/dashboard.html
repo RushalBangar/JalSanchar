@@ -239,15 +239,8 @@
           <span class="sm:hidden">1 Rogue</span>
         </div>
 
-        <!-- Exit Button -->
-        <button class="hidden sm:flex items-center gap-1 px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all" onclick="window.location.href='index.html'" title="Sign Out">
-          <span class="material-symbols-outlined text-[16px]">logout</span>
-          <span class="hidden md:inline">Exit</span>
-        </button>
-
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-          <span class="material-symbols-outlined text-on-primary text-[16px] sm:text-[18px]">person</span>
-        </div>
+        <!-- Tactical User Profile & Escrow Authority Mount -->
+        <div id="userProfileMount" class="flex-shrink-0"></div>
       </div>
     </div>
   </header>
@@ -722,6 +715,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/lang.js"></script>
   <script src="js/dashboard.js"></script>
   <script>

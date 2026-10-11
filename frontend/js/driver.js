@@ -5,6 +5,12 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Authentication & Access Protection
+  if (window.JalAuth) {
+    if (!window.JalAuth.protectPage(['driver', 'collector'])) return;
+    window.JalAuth.mountNavbarProfile('#userProfileMount');
+  }
+
   const qrContainer = document.getElementById("qrcode");
   const btnLogArrival = document.getElementById("btnLogArrival") || document.getElementById("btnArrived");
   const btnLogArrivalText = document.getElementById("btnLogArrivalText");
@@ -53,13 +59,14 @@ document.addEventListener("DOMContentLoaded", () => {
   syncNetworkStatus();
 
   // Active delivery manifest parameters
+  const loggedInUser = window.JalAuth ? window.JalAuth.getUser() : null;
   const manifest = {
     protocol: "JALSANJEEVANI_POD_V2",
-    tanker_id: "TN-SN-02",
-    registration: "MH-15-TK-5512",
-    target_village: "Khopadi (Sinnar)",
+    tanker_id: (loggedInUser && loggedInUser.tanker_id) ? loggedInUser.tanker_id : "TN-SN-02",
+    registration: (loggedInUser && loggedInUser.registration) ? loggedInUser.registration : "MH-15-TK-5512",
+    target_village: (loggedInUser && loggedInUser.village) ? loggedInUser.village : "Khopadi (Sinnar)",
     volume_liters: 10000,
-    driver_key: "0x9F3B4ED812C4",
+    driver_key: (loggedInUser && loggedInUser.driver_key) ? loggedInUser.driver_key : "0x9F3B4ED812C4",
     cistern_key: "0x74CE8A1109B2",
     lat: 19.8920,
     lng: 74.0610,

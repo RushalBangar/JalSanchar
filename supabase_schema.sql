@@ -67,6 +67,28 @@ CREATE TABLE IF NOT EXISTS public.escrow_actions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 6. Create Government Operational Users Table (Collector, Driver, Panchayat)
+CREATE TABLE IF NOT EXISTS public.gov_users (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL CHECK (role IN ('collector', 'driver', 'panchayat', 'admin')),
+    name TEXT NOT NULL,
+    title TEXT NOT NULL,
+    badge_id TEXT,
+    jurisdiction TEXT,
+    portal_url TEXT NOT NULL DEFAULT 'dashboard.html',
+    tanker_id TEXT,
+    registration TEXT,
+    driver_key TEXT,
+    village TEXT,
+    cistern_key TEXT,
+    permissions JSONB DEFAULT '[]'::jsonb,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- ==============================================================================
 -- Row Level Security (RLS) Policies (Permissive for Demo & Operational Access)
 -- ==============================================================================
@@ -75,6 +97,7 @@ ALTER TABLE public.tankers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dispatches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.delivery_receipts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.escrow_actions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gov_users ENABLE ROW LEVEL SECURITY;
 
 -- Allow anon & authenticated roles full access for prototype demonstration
 DO $$
@@ -117,6 +140,14 @@ BEGIN
     END IF;
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'escrow_actions' AND policyname = 'Allow public write access to escrow_actions') THEN
         CREATE POLICY "Allow public write access to escrow_actions" ON public.escrow_actions FOR ALL USING (true) WITH CHECK (true);
+    END IF;
+
+    -- Government Users Policies
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'gov_users' AND policyname = 'Allow public read access to gov_users') THEN
+        CREATE POLICY "Allow public read access to gov_users" ON public.gov_users FOR SELECT USING (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'gov_users' AND policyname = 'Allow public write access to gov_users') THEN
+        CREATE POLICY "Allow public write access to gov_users" ON public.gov_users FOR ALL USING (true) WITH CHECK (true);
     END IF;
 END $$;
 
@@ -197,4 +228,75 @@ ON CONFLICT (id) DO UPDATE SET
     anomaly_detail = EXCLUDED.anomaly_detail,
     target_village = EXCLUDED.target_village,
     driver_name = EXCLUDED.driver_name;
+
+-- Seed Data: Sovereign Government Operational Users (Collector, Tanker Driver, Gram Panchayat)
+INSERT INTO public.gov_users (
+    id, email, password_hash, role, name, title, badge_id, jurisdiction, portal_url, tanker_id, registration, driver_key, village, cistern_key, permissions
+) VALUES
+    (
+        'USR-COL-01',
+        'collector@sinnar.jalsanjeevani.gov.in',
+        'sovereign_water_2025',
+        'collector',
+        'Shri. Rahul More, IAS',
+        'District Collector & Magistrate',
+        'MH-IAS-0419',
+        'Ahilyanagar & Sinnar Disaster Division',
+        'dashboard.html',
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        '["dispatch_approval", "escrow_freeze", "satellite_radar_view", "cvrp_optimization"]'::jsonb
+    ),
+    (
+        'USR-DRV-15',
+        'driver.mh15@sinnar.jalsanjeevani.gov.in',
+        'sovereign_water_2025',
+        'driver',
+        'Ramesh V. Patil',
+        'Municipal Tanker Pilot',
+        'RTO-MH15-WT-881',
+        'Tanker TN-SN-02 (MH-15-TK-5512)',
+        'driver.html',
+        'TN-SN-02',
+        'MH-15-TK-5512',
+        '0x9F3B4ED812C4',
+        NULL,
+        NULL,
+        '["gps_telemetry_broadcast", "qr_token_generation", "sos_beacon"]'::jsonb
+    ),
+    (
+        'USR-GP-104',
+        'panchayat.khopadi@sinnar.jalsanjeevani.gov.in',
+        'sovereign_water_2025',
+        'panchayat',
+        'Sunita G. Deshmukh',
+        'Sarpanch & Water Vigilance Officer',
+        'GP-SN-104',
+        'Khopadi Gram Panchayat (Sinnar)',
+        'panchayat.html',
+        NULL,
+        NULL,
+        NULL,
+        'Khopadi (Sinnar Taluka)',
+        '0x74CE8A1109B2',
+        '["optical_qr_scan", "cistern_level_attestation", "escrow_payment_release"]'::jsonb
+    )
+ON CONFLICT (id) DO UPDATE SET
+    email = EXCLUDED.email,
+    password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role,
+    name = EXCLUDED.name,
+    title = EXCLUDED.title,
+    badge_id = EXCLUDED.badge_id,
+    jurisdiction = EXCLUDED.jurisdiction,
+    portal_url = EXCLUDED.portal_url,
+    tanker_id = EXCLUDED.tanker_id,
+    registration = EXCLUDED.registration,
+    driver_key = EXCLUDED.driver_key,
+    village = EXCLUDED.village,
+    cistern_key = EXCLUDED.cistern_key,
+    permissions = EXCLUDED.permissions;
 

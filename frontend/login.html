@@ -3,94 +3,246 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Access | JalSanjeevani</title>
+  <title>Sovereign Operational Portal | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/login.css">
 </head>
 <body class="login-page">
 
+  <!-- Background Animated Tactical Grid & Ambient Glows -->
+  <div class="login-bg-glow glow-top"></div>
+  <div class="login-bg-glow glow-bottom"></div>
+
   <!-- Top Navigation -->
   <nav class="login-top-nav">
     <a href="index.html" class="login-brand">
       <img src="assets/logo.jpg" alt="JalSanjeevani Logo">
-      <span class="brand-title" style="color: #fff; font-weight: 700;">JalSanjeevani</span>
+      <div class="brand-text">
+        <span class="brand-title">JalSanjeevani</span>
+        <span class="brand-subtitle">Government of Maharashtra • Relief Operations</span>
+      </div>
     </a>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <select id="langSwitcher" class="form-control" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" aria-label="Language Selector">
-        <option value="en">English</option>
-        <option value="mr">मराठी</option>
-        <option value="hi">हिंदी</option>
-      </select>
-      <a href="index.html" class="btn btn-outline btn-sm">← Back Home</a>
+    
+    <div class="top-nav-actions">
+      <!-- Multi-Language Selector -->
+      <div class="lang-select-wrapper">
+        <select id="langSwitcher" class="form-control lang-select" aria-label="Language Selector">
+          <option value="en">English (EN)</option>
+          <option value="mr">मराठी (MR)</option>
+          <option value="hi">हिंदी (HI)</option>
+        </select>
+        <span class="material-symbols-outlined lang-arrow">expand_more</span>
+      </div>
+
+      <a href="index.html" class="btn btn-outline btn-sm back-home-btn">
+        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        <span>Public Portal</span>
+      </a>
     </div>
   </nav>
 
   <!-- Login Container -->
-  <div class="login-container">
+  <main class="login-container">
     <div class="login-card glass-panel">
-      
-      <div class="login-header">
+
+      <!-- Portal Header -->
+      <header class="login-header">
         <div class="login-badge">
-          <span>●</span> State &amp; District Governance
+          <span class="badge-dot">●</span>
+          <span id="headerBadgeText">Disaster Governance &amp; Anti-Diversion Escrow</span>
         </div>
-        <h2>Operational Portal</h2>
-        <p>Select your authorized role or sign in with government credentials</p>
+        <h1 class="portal-heading" id="portalTitle">Authorized Portal Access</h1>
+        <p class="portal-subheading" id="portalDesc">
+          Select your authorized operational role or authenticate with state credentials.
+        </p>
+      </header>
+
+      <!-- Role Tabs (Collector, Driver, Panchayat) -->
+      <div class="role-tabs" role="tablist" aria-label="Operational Role Selection">
+        <!-- 1. Collector -->
+        <button type="button" class="role-tab active" id="tabCollector" data-role="collector" role="tab" aria-selected="true">
+          <span class="material-symbols-outlined role-tab-icon">shield_person</span>
+          <div class="role-tab-info">
+            <span class="role-tab-name">District Collector</span>
+            <span class="role-tab-tag">GIS &amp; OR-Tools Command</span>
+          </div>
+        </button>
+
+        <!-- 2. Tanker Driver -->
+        <button type="button" class="role-tab" id="tabDriver" data-role="driver" role="tab" aria-selected="false">
+          <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
+          <div class="role-tab-info">
+            <span class="role-tab-name">Tanker Driver</span>
+            <span class="role-tab-tag">GPS Cockpit &amp; Dynamic QR</span>
+          </div>
+        </button>
+
+        <!-- 3. Gram Panchayat -->
+        <button type="button" class="role-tab" id="tabPanchayat" data-role="panchayat" role="tab" aria-selected="false">
+          <span class="material-symbols-outlined role-tab-icon">account_balance</span>
+          <div class="role-tab-info">
+            <span class="role-tab-name">Gram Panchayat</span>
+            <span class="role-tab-tag">Cistern QR &amp; Escrow Verifier</span>
+          </div>
+        </button>
       </div>
 
-      <!-- Quick Role Selection Grid for Instant Testing -->
-      <div class="role-grid">
-        <div class="role-btn active" id="btnRoleCollector" data-role="collector">
-          <span class="role-icon">🛰️</span>
-          <span class="role-name">Collector</span>
-          <span class="role-desc">Disaster Feed</span>
+      <!-- Active Role Context Card -->
+      <div class="role-context-card" id="roleContextCard">
+        <div class="context-header">
+          <div class="context-role-pill" id="contextRolePill">
+            <span class="material-symbols-outlined text-[14px]" id="contextRoleIcon">shield_person</span>
+            <span id="contextRoleBadge">LEVEL-1 AUTHORITY</span>
+          </div>
+          <span class="context-id" id="contextId">Govt ID: MH-IAS-0419</span>
         </div>
-        <div class="role-btn" id="btnRoleDriver" data-role="driver">
-          <span class="role-icon">🚛</span>
-          <span class="role-name">Driver PWA</span>
-          <span class="role-desc">GPS &amp; Crypto QR</span>
-        </div>
-        <div class="role-btn" id="btnRolePanchayat" data-role="panchayat">
-          <span class="role-icon">📱</span>
-          <span class="role-name">Panchayat</span>
-          <span class="role-desc">QR Verify</span>
+        <div class="context-body">
+          <div class="context-title" id="contextName">Shri. Rahul More, IAS</div>
+          <div class="context-desc" id="contextJurisdiction">Ahilyanagar &amp; Sinnar Disaster Division</div>
         </div>
       </div>
 
-      <div class="divider">OR SIGN IN MANUALLY</div>
-
-      <!-- Official Sign In Form -->
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="email">Government Service Email</label>
-          <input type="email" id="email" class="form-control" placeholder="collector@sinnar.jalsanjeevani.gov.in" required value="collector@sinnar.jalsanjeevani.gov.in">
+      <!-- Alert / Error Notification Box -->
+      <div class="login-alert-box hidden" id="loginAlertBox" role="alert">
+        <span class="material-symbols-outlined alert-icon">error</span>
+        <div class="alert-content">
+          <span class="alert-title" id="alertTitle">Access Denied</span>
+          <span class="alert-desc" id="alertMessage">Invalid cryptographic access key.</span>
         </div>
-        
+      </div>
+
+      <!-- Official Sign-In Form -->
+      <form id="loginForm" novalidate>
+        <!-- Email Input -->
         <div class="form-group">
-          <label for="password">Cryptographic Access Key / Password</label>
-          <input type="password" id="password" class="form-control" placeholder="••••••••••••" required value="sovereign_water_2025">
+          <label for="email" id="labelEmail">
+            <span class="material-symbols-outlined label-icon">badge</span>
+            <span>Government Service Email / ID</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="email" 
+              id="email" 
+              class="form-control" 
+              placeholder="collector@sinnar.jalsanjeevani.gov.in" 
+              required 
+              autocomplete="email"
+              value="collector@sinnar.jalsanjeevani.gov.in"
+            >
+          </div>
         </div>
 
-        <button type="submit" id="btnSubmitLogin" class="btn btn-primary btn-block">
-          Authorize &amp; Enter Dashboard →
+        <!-- Password Input -->
+        <div class="form-group">
+          <div class="label-with-action">
+            <label for="password" id="labelPassword">
+              <span class="material-symbols-outlined label-icon">key</span>
+              <span>Cryptographic Access Key / Password</span>
+            </label>
+            <button type="button" class="btn-toggle-pwd" id="btnTogglePassword" title="Show/Hide Password" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined text-[16px]" id="pwdEyeIcon">visibility</span>
+              <span id="pwdEyeText">Show</span>
+            </button>
+          </div>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="password" 
+              class="form-control" 
+              placeholder="••••••••••••" 
+              required 
+              autocomplete="current-password"
+              value="sovereign_water_2025"
+            >
+          </div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="form-meta">
+          <label class="remember-checkbox">
+            <input type="checkbox" id="rememberMe" checked>
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">Keep secure session active for 24 hours</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="btnSubmitLogin" class="btn btn-primary btn-block btn-authorize">
+          <span class="material-symbols-outlined btn-icon" id="btnIcon">login</span>
+          <span id="btnText">Authorize &amp; Enter Portal →</span>
+        </button>
+
+        <!-- Quick 1-Tap Demo Sign In -->
+        <button type="button" id="btnInstantDemo" class="btn btn-outline btn-block btn-demo">
+          <span class="material-symbols-outlined text-[18px]">bolt</span>
+          <span id="btnDemoText">Instant 1-Tap Evaluation Sign-In</span>
         </button>
       </form>
 
-      <div style="text-align: center; margin-top: 0.75rem; font-size: 0.72rem; color: #10b981; display: flex; align-items: center; justify-content: center; gap: 5px;">
-        <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
-        <span>Secured via Supabase PostgreSQL Cloud</span>
+      <!-- Quick Credentials Cheat-sheet Pill for Judges/Evaluators -->
+      <div class="credentials-helper">
+        <button type="button" class="helper-toggle-btn" id="btnToggleHelper">
+          <span class="material-symbols-outlined text-[15px]">info</span>
+          <span>View Verified Test Credentials</span>
+          <span class="material-symbols-outlined helper-chevron" id="helperChevron">expand_more</span>
+        </button>
+        <div class="helper-drawer hidden" id="helperDrawer">
+          <div class="helper-card" data-fill-role="collector">
+            <div class="helper-header">
+              <span class="helper-role">🏛️ Collector</span>
+              <span class="helper-badge">Click to fill</span>
+            </div>
+            <code>collector@sinnar.jalsanjeevani.gov.in</code>
+          </div>
+          <div class="helper-card" data-fill-role="driver">
+            <div class="helper-header">
+              <span class="helper-role">🚛 Driver PWA</span>
+              <span class="helper-badge">Click to fill</span>
+            </div>
+            <code>driver.mh15@sinnar.jalsanjeevani.gov.in</code>
+          </div>
+          <div class="helper-card" data-fill-role="panchayat">
+            <div class="helper-header">
+              <span class="helper-role">🌾 Gram Panchayat</span>
+              <span class="helper-badge">Click to fill</span>
+            </div>
+            <code>panchayat.khopadi@sinnar.jalsanjeevani.gov.in</code>
+          </div>
+          <div class="helper-footer">
+            <span>Universal Test Key:</span> <code>sovereign_water_2025</code>
+          </div>
+        </div>
       </div>
 
-      <div style="text-align: center; margin-top: 1rem;">
-        <a href="index.html" class="back-link">
-          <span>←</span> Return to JalSanjeevani Overview
-        </a>
-      </div>
+      <!-- Escrow Policy Assurance Footnote -->
+      <footer class="login-footer">
+        <div class="security-indicator">
+          <span class="status-pulse-dot"></span>
+          <span>Protected by State Treasury Anti-Diversion Escrow Protocol</span>
+        </div>
+        <div class="return-home">
+          <a href="index.html" class="back-link">
+            <span>←</span>
+            <span>Return to JalSanjeevani Overview</span>
+          </a>
+        </div>
+      </footer>
+
     </div>
-  </div>
+  </main>
 
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/lang.js"></script>
   <script src="js/app.js"></script>
   <script>

@@ -3,6 +3,12 @@ const MAP_CENTER = [19.2500, 74.6500];
 const MAP_ZOOM = 9;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Authentication & Access Protection
+  if (window.JalAuth) {
+    if (!window.JalAuth.protectPage(['collector'])) return;
+    window.JalAuth.mountNavbarProfile('#userProfileMount');
+  }
+
   // 1. Live UTC Clock
   function updateLiveClock() {
     const clockEl = document.getElementById("liveClock");

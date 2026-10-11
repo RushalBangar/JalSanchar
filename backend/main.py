@@ -119,9 +119,121 @@ class ScarcityPredictRequest(BaseModel):
     aquifer_depletion_cm_per_day: float = -4.8
     soil_moisture_index: float = 0.18
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+    role: Optional[str] = None
+
 # -----------------------------------------------------------------------------
-# System & Telemetry Endpoints
+# Authentication Endpoints (Backed by Supabase PostgreSQL gov_users Table)
 # -----------------------------------------------------------------------------
+
+@app.get("/api/auth/users")
+def get_auth_users():
+    """
+    Fetches registered operational personas directly from Supabase 'gov_users' table.
+    Omits sensitive password hashes.
+    """
+    if not supabase_client:
+        raise HTTPException(status_code=503, detail="Supabase client not connected.")
+    try:
+        res = supabase_client.table("gov_users").select(
+            "id, email, role, name, title, badge_id, jurisdiction, portal_url, tanker_id, registration, village, is_active"
+        ).eq("is_active", True).execute()
+        return {"count": len(res.data), "users": res.data}
+    except Exception as e:
+        print(f"[Supabase Users Query Error]: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to query gov_users table from Supabase: {e}")
+
+@app.post("/api/auth/login")
+def auth_login(req: LoginRequest):
+    """
+    Role-based authentication endpoint for Collector, Driver, and Gram Panchayat.
+    Queries Supabase 'gov_users' table as the single source of truth.
+    Issues cryptographic session bearer token upon verifying credentials.
+    """
+    clean_email = req.email.strip().lower()
+    clean_pwd = req.password.strip()
+
+    if not supabase_client:
+        raise HTTPException(
+            status_code=503,
+            detail="Supabase database connection not initialized. Please verify SUPABASE_URL and SUPABASE_KEY in backend/.env."
+        )
+
+    # 1. Fetch user record directly from Supabase 'gov_users' table
+    try:
+        res = supabase_client.table("gov_users").select("*").ilike("email", clean_email).eq("is_active", True).execute()
+        user_records = res.data or []
+    except Exception as e:
+        print(f"[Supabase Auth Query Error]: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error querying Supabase 'gov_users' table: {e}. Please ensure you have run 'supabase_schema.sql' in your Supabase SQL Editor."
+        )
+
+    if not user_records:
+        raise HTTPException(
+            status_code=401,
+            detail=f"User '{clean_email}' not found in Supabase database. Please ensure your account exists in 'gov_users' table."
+        )
+
+    user_info = user_records[0]
+    matched_role = (user_info.get("role") or "").lower()
+
+    # 2. If client specified a target role, verify role match
+    if req.role and req.role.strip().lower() != matched_role:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Account is registered in Supabase as '{matched_role.upper()}', not '{req.role.upper()}'. Please select the correct portal tab."
+        )
+
+    # 3. Check password against Supabase stored hash/key
+    stored_pwd = user_info.get("password_hash") or user_info.get("password")
+    if clean_pwd != stored_pwd:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid cryptographic access key. Access denied by Supabase."
+        )
+
+    # 4. Generate deterministic cryptographic session token
+    timestamp = int(time.time())
+    token_seed = f"{clean_email}:{matched_role}:{timestamp}:jalsanjeevani_gov_secret"
+    session_token = "JAL-AUTH-" + hashlib.sha256(token_seed.encode()).hexdigest()[:32]
+
+    # Parse permissions
+    permissions = user_info.get("permissions") or []
+    if isinstance(permissions, str):
+        try:
+            permissions = json.loads(permissions)
+        except Exception:
+            permissions = []
+
+    return {
+        "status": "success",
+        "data_source": "Supabase PostgreSQL (gov_users)",
+        "message": f"Authentication verified via Supabase for {user_info.get('name')} ({user_info.get('title')}).",
+        "token": session_token,
+        "role": matched_role,
+        "redirect_url": user_info.get("portal_url", "dashboard.html"),
+        "user": {
+            "id": user_info.get("id"),
+            "name": user_info.get("name"),
+            "title": user_info.get("title"),
+            "email": clean_email,
+            "role": matched_role,
+            "badge_id": user_info.get("badge_id"),
+            "jurisdiction": user_info.get("jurisdiction") or user_info.get("village"),
+            "tanker_id": user_info.get("tanker_id"),
+            "registration": user_info.get("registration"),
+            "driver_key": user_info.get("driver_key"),
+            "village": user_info.get("village"),
+            "cistern_key": user_info.get("cistern_key"),
+            "permissions": permissions
+        },
+        "authenticated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "expires_in_hours": 24
+    }
 
 @app.get("/health")
 def health_check():

@@ -6,6 +6,12 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Authentication & Access Protection
+  if (window.JalAuth) {
+    if (!window.JalAuth.protectPage(['panchayat', 'collector'])) return;
+    window.JalAuth.mountNavbarProfile('#userProfileMount');
+  }
+
   // Scanner Elements
   const scannerSection = document.getElementById("scannerSection");
   const scannerWindow = document.getElementById("scannerWindow");
@@ -55,7 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // State
   let html5QrCode = null;
   let isCameraActive = false;
-  const CISTERN_GEOKEY = "0x74CE8A1109B2"; // Khopadi Statutory Cistern Key
+  const loggedInUser = window.JalAuth ? window.JalAuth.getUser() : null;
+  const CISTERN_GEOKEY = (loggedInUser && loggedInUser.cistern_key) ? loggedInUser.cistern_key : "0x74CE8A1109B2"; // Statutory Cistern Key
   const KHOPADI_COORDS = { lat: 19.9015, lng: 74.1030 };
 
   // Online-First Network Status Sync
