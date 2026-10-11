@@ -367,35 +367,143 @@
       font-size: 0.7rem;
     }
 
-    /* Print View */
+    /* Print & PDF Export Styling (Ctrl + P) - Ultra-Vibrant & Colorful */
     @media print {
-      body {
-        overflow: visible;
-        height: auto;
-        background: #fff !important;
-        color: #000 !important;
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
-      .deck-header, .deck-footer, .progress-bar-container, .ambient-glow {
+
+      @page {
+        size: landscape;
+        margin: 6mm;
+      }
+
+      html, body {
+        overflow: visible !important;
+        height: auto !important;
+        background-color: #070d18 !important;
+        color: #f1f5f9 !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+      }
+
+      .deck-header, 
+      .deck-footer, 
+      .progress-bar-container, 
+      .ambient-glow {
         display: none !important;
       }
+
       .deck-viewport {
-        margin: 0;
-        padding: 0;
-        height: auto;
-        display: block;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        display: block !important;
       }
+
       .slide-card {
-        position: relative;
+        position: relative !important;
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
-        page-break-after: always;
-        max-height: none;
-        box-shadow: none;
-        border: 1px solid #ccc;
-        background: #fff;
-        color: #000;
-        margin-bottom: 2rem;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        box-shadow: none !important;
+        border: 1.5px solid rgba(0, 229, 255, 0.35) !important;
+        background: #0b1426 !important;
+        color: #f1f5f9 !important;
+        margin: 0 0 10mm 0 !important;
+        padding: 2.5rem 3rem !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+      }
+
+      .slide-card:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+
+      .slide-title {
+        color: #ffffff !important;
+      }
+
+      .slide-subtitle {
+        color: #94a3b8 !important;
+      }
+
+      .slide-badge {
+        color: #00e5ff !important;
+      }
+
+      /* Vibrant Content Cards in Print */
+      .card-box {
+        background: #0f1c35 !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: #f1f5f9 !important;
+        box-shadow: none !important;
+      }
+
+      .card-box.highlight {
+        background: rgba(0, 229, 255, 0.08) !important;
+        border: 1.5px solid #00e5ff !important;
+      }
+
+      .card-box.crimson {
+        background: rgba(239, 68, 68, 0.08) !important;
+        border: 1.5px solid #ef4444 !important;
+      }
+
+      .card-box.emerald {
+        background: rgba(16, 185, 129, 0.08) !important;
+        border: 1.5px solid #10b981 !important;
+      }
+
+      .box-title {
+        color: #ffffff !important;
+      }
+
+      .box-desc {
+        color: #94a3b8 !important;
+      }
+
+      .metric-value {
+        color: #00e5ff !important;
+      }
+
+      .card-box.crimson .metric-value {
+        color: #ef4444 !important;
+      }
+
+      .card-box.emerald .metric-value {
+        color: #10b981 !important;
+      }
+
+      /* Colorful Comparison Table in Print */
+      .deck-table {
+        background: #0b1426 !important;
+      }
+
+      .deck-table th {
+        background: #0e243f !important;
+        color: #00e5ff !important;
+        border-bottom: 2px solid #00e5ff !important;
+      }
+
+      .deck-table td {
+        color: #e2e8f0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+
+      pre, code {
+        background: #050a14 !important;
+        color: #38bdf8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
       }
     }
   </style>
@@ -423,6 +531,10 @@
       <button type="button" class="btn-nav" id="btnNext" title="Next Slide (→)">
         <span>Next</span>
         <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+      </button>
+      <button type="button" class="btn-nav" id="btnPrintDeck" onclick="window.print()" title="Print / Export Colorful PDF (Ctrl+P)" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #10b981;">
+        <span class="material-symbols-outlined text-[16px]">print</span>
+        <span>Export PDF (Ctrl+P)</span>
       </button>
       <a href="dashboard.html" class="btn-nav" style="background: rgba(0, 229, 255, 0.2); border-color: var(--primary-cyan); color: #00e5ff;">
         <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
