@@ -249,7 +249,15 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
           submitBtn.style.background = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
 
-          const finalUrl = redirectTarget ? decodeURIComponent(redirectTarget) : result.redirect;
+          let finalUrl = result.redirect;
+          if (redirectTarget) {
+            const decoded = decodeURIComponent(redirectTarget);
+            const userRole = (result.session && result.session.role) ? result.session.role.toLowerCase() : activeRoleKey;
+            const isRoleTarget = (userRole === "collector") || decoded.toLowerCase().includes(userRole);
+            if (isRoleTarget) {
+              finalUrl = decoded;
+            }
+          }
           setTimeout(() => {
             window.location.href = finalUrl;
           }, 350);
@@ -289,7 +297,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (result.success) {
         btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span> Authorized! Loading console...`;
-        const finalUrl = redirectTarget ? decodeURIComponent(redirectTarget) : result.redirect;
+        let finalUrl = result.redirect;
+        if (redirectTarget) {
+          const decoded = decodeURIComponent(redirectTarget);
+          const userRole = (result.session && result.session.role) ? result.session.role.toLowerCase() : activeRoleKey;
+          const isRoleTarget = (userRole === "collector") || decoded.toLowerCase().includes(userRole);
+          if (isRoleTarget) {
+            finalUrl = decoded;
+          }
+        }
         setTimeout(() => {
           window.location.href = finalUrl;
         }, 300);
