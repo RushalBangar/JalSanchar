@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Scanner Elements
-  const scannerSection = document.getElementById("scannerSection");
+  const scannerSection = document.getElementById("reader-card") || document.getElementById("scannerSection");
   const scannerWindow = document.getElementById("scannerWindow");
   const qrReader = document.getElementById("qrReader");
   const scannerPlaceholder = document.getElementById("scannerPlaceholder");
@@ -608,4 +608,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     triggerToast("Buffer Cleared. Ready for Next Tanker.");
   }
+
+  // Functional smooth scrolling & Ledger auto-reveal for bottom navigation
+  document.querySelectorAll('a[href="#ledger-card"]').forEach(link => {
+    link.addEventListener('click', () => {
+      if (statusBox && statusBox.classList.contains("hidden")) {
+        statusBox.classList.remove("hidden");
+      }
+    });
+  });
 });

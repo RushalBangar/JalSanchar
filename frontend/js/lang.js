@@ -1,15 +1,18 @@
 const translations = {
   en: {
-    hero_badge: "AI-Powered Scarcity Prediction",
-    nav_login: "Portal Login",
-    nav_features: "Features",
-    nav_tech: "Technology",
+    nav_brand: "JalSanjeevani",
     nav_pillars: "Pillars",
+    nav_features: "Features",
+    nav_panchayat: "Panchayat Portal",
+    nav_faq: "FAQ",
+    nav_login: "Portal Login",
+    hero_title: "Verifiable Water Security Infrastructure",
+    hero_desc: "JalSanjeevani (जलसंजीवनी) provides cryptographic discharge verification, geofenced tracking, and automated escrow release for rural water supply tankers.",
+    hero_badge: "AI-Powered Scarcity Prediction",
+    nav_tech: "Technology",
     nav_telemetry: "Telemetry Live",
     nav_impact: "Impact",
     nav_dashboard: "Access Dashboard",
-    hero_title: "Smart Operations for Sustainable Drought Relief",
-    hero_desc: "JalSanjeevani (जलसंजीवनी) is an end-to-end intelligent platform that predicts regional water scarcity, stops tanker diversion via cryptographic validation, and optimizes delivery routes to ensure equitable access for both humans and livestock.",
     hero_btn_discover: "Discover the Pillars",
     hero_btn_access: "Access Command Dashboard",
     pillars_title: "The 3-Pillar Solution Architecture",
@@ -28,16 +31,19 @@ const translations = {
     audit_title: "Cryptographic Sovereign Ledger"
   },
   mr: {
-    hero_badge: "एआय (AI) द्वारे पाणीटंचाईचा अंदाज",
-    nav_login: "पोर्टल लॉगिन",
+    nav_brand: "जलसंजीवनी",
+    nav_pillars: "स्तंभ",
     nav_features: "वैशिष्ट्ये",
+    nav_panchayat: "ग्रामपंचायत पोर्टल",
+    nav_faq: "वारंवार विचारले जाणारे प्रश्न",
+    nav_login: "पोर्टल लॉगिन",
+    hero_title: "सत्यापित पाणी सुरक्षा पायाभूत सुविधा",
+    hero_desc: "जलसंजीवनी ग्रामीण पाणीपुरवठा टँकरसाठी क्रिप्टोग्राफिक डिस्चार्ज पडताळणी, जिओफेन्स्ड ट्रॅकिंग आणि स्वयंचलित एस्क्रो पेमेंट वितरण करते.",
+    hero_badge: "एआय (AI) द्वारे पाणीटंचाईचा अंदाज",
     nav_tech: "तंत्रज्ञान",
-    nav_pillars: "प्रकल्पाचे स्तंभ",
     nav_telemetry: "थेट टेलिमेट्री",
     nav_impact: "सामाजिक प्रभाव",
     nav_dashboard: "कमांड डॅशबोर्ड",
-    hero_title: "शाश्वत दुष्काळ निवारणासाठी स्मार्ट ऑपरेशन्स",
-    hero_desc: "जलसंजीवनी हे एक बुद्धिमान तंत्रज्ञान आहे जे दुष्काळाची १४ दिवस आधी पूर्वसूचना देते, क्यूआर (QR) पडताळणीद्वारे टँकर माफियांची चोरी थांबवते आणि माणसे व जनावरे दोघांनाही समान पाणीवाटप सुनिश्चित करते.",
     hero_btn_discover: "प्रकल्पाची माहिती घ्या",
     hero_btn_access: "कमांड डॅशबोर्ड उघडा",
     pillars_title: "प्रकल्पाचे ३ मुख्य स्तंभ",
@@ -56,16 +62,19 @@ const translations = {
     audit_title: "अधिकृत क्रिप्टोग्राफिक खतावणी (लेजर)"
   },
   hi: {
-    hero_badge: "एआई (AI) द्वारा जल संकट की भविष्यवाणी",
-    nav_login: "पोर्टल लॉगिन",
+    nav_brand: "जलसंजीवनी",
+    nav_pillars: "स्तंभ",
     nav_features: "विशेषताएं",
+    nav_panchayat: "पंचायत पोर्टल",
+    nav_faq: "सामान्य प्रश्न",
+    nav_login: "पोर्टल लॉगिन",
+    hero_title: "सत्यापित जल सुरक्षा बुनियादी ढांचा",
+    hero_desc: "जलसंजीवनी ग्रामीण जल आपूर्ति टैंकरों के लिए क्रिप्टोग्राफिक डिस्चार्ज सत्यापन, जियोफेन्स्ड ट्रैकिंग और स्वचालित एस्क्रो जारी करने की सुविधा प्रदान करता है।",
+    hero_badge: "एआई (AI) द्वारा जल संकट की भविष्यवाणी",
     nav_tech: "तकनीक",
-    nav_pillars: "मुख्य स्तंभ",
     nav_telemetry: "लाइव टेलीमेट्री",
     nav_impact: "सामाजिक प्रभाव",
     nav_dashboard: "कमांड डैशबोर्ड",
-    hero_title: "स्थायी सूखा राहत के लिए स्मार्ट ऑपरेशन्स",
-    hero_desc: "जलसंजीवनी (JalSanjeevani) एक इंटेलिजेंट प्लेटफॉर्म है जो 14 दिन पहले पानी के संकट की भविष्यवाणी करता है, क्रिप्टोग्राफ़िक सत्यापन के माध्यम से टैंकर माफिया को रोकता है, और मनुष्यों और पशुओं दोनों के लिए उचित जल वितरण सुनिश्चित करता है।",
     hero_btn_discover: "प्रोजेक्ट के बारे में जानें",
     hero_btn_access: "कमांड डैशबोर्ड खोलें",
     pillars_title: "प्रोजेक्ट के 3 मुख्य स्तंभ",
@@ -85,34 +94,34 @@ const translations = {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  const switchers = document.querySelectorAll("#langSwitcher, .lang-switcher, select[aria-label='Language Selector']");
-  const savedLang = localStorage.getItem("jalsanjeevani_lang") || "en";
-
-  switchers.forEach((switcher) => {
-    switcher.value = savedLang;
-    switcher.addEventListener("change", (e) => {
-      const selectedLang = e.target.value;
-      localStorage.setItem("jalsanjeevani_lang", selectedLang);
-      
-      // Sync all dropdowns on the page
-      switchers.forEach(s => s.value = selectedLang);
-      
-      applyTranslation(selectedLang);
-    });
-  });
-
-  applyTranslation(savedLang);
-});
-
 function applyTranslation(lang) {
   document.documentElement.lang = lang;
-  
-  const elements = document.querySelectorAll("[data-i18n]");
-  elements.forEach((el) => {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
     if (translations[lang] && translations[lang][key]) {
       el.textContent = translations[lang][key];
     }
   });
+}
+
+function initLanguage() {
+  const currentLang = localStorage.getItem("jalsanjeevani_lang") || "en";
+  const switchers = document.querySelectorAll("#langSwitcher, .lang-switcher, select[aria-label='Language Selector']");
+  switchers.forEach((select) => {
+    select.value = currentLang;
+    select.addEventListener("change", (e) => {
+      const selected = e.target.value;
+      localStorage.setItem("jalsanjeevani_lang", selected);
+      switchers.forEach((s) => (s.value = selected));
+      applyTranslation(selected);
+    });
+  });
+  applyTranslation(currentLang);
+}
+
+document.addEventListener("DOMContentLoaded", initLanguage);
+
+if (typeof window !== "undefined") {
+  window.applyTranslation = applyTranslation;
+  window.translations = translations;
 }
