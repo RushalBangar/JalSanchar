@@ -1,0 +1,274 @@
+/* Mobile PWA Specific Styles */
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg-deep);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+  position: relative;
+  border-left: 1px solid rgba(56, 189, 248, 0.1);
+  border-right: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.mobile-header {
+  padding: 1rem 1.25rem;
+  background: rgba(11, 19, 35, 0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-brand img {
+  height: 28px;
+  border-radius: 4px;
+}
+
+.mobile-header h2 {
+  font-size: 1rem;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.user-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--primary-color);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 3px 9px;
+  border-radius: 9999px;
+}
+
+.user-badge.panchayat {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.mobile-content {
+  padding: 1.25rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Manifest Cards */
+.manifest-card {
+  padding: 1.25rem;
+  border-radius: 14px;
+}
+
+.manifest-card h3 {
+  margin-bottom: 0.75rem;
+  color: var(--primary-color);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.85rem;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span:first-child {
+  color: var(--text-muted);
+}
+
+.detail-row span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* Geofence Status Indicator */
+.geofence-box {
+  background: rgba(21, 28, 40, 0.7);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.geofence-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+/* QR Code Container */
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.qr-container img, .qr-container canvas {
+  max-width: 180px;
+  height: auto;
+}
+
+.crypto-hash {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #070e1a;
+  margin-top: 0.75rem;
+  background: #e2e8f0;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.qr-instructions {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Scanner Window & Live Camera */
+.scanner-window {
+  width: 100%;
+  min-height: 260px;
+  border: 2px dashed var(--accent-amber);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: rgba(11, 19, 35, 0.85);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.3s ease;
+}
+
+.scanner-window.scanning {
+  border-color: var(--telemetry-emerald);
+  border-style: solid;
+}
+
+.scanner-window.error {
+  border-color: var(--alert-red);
+}
+
+#qrReader {
+  width: 100% !important;
+  border: none !important;
+}
+
+#qrReader video {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 320px;
+  object-fit: cover !important;
+  border-radius: 12px;
+}
+
+#qrReader__scan_region {
+  border: none !important;
+}
+
+#qrReader__dashboard_section,
+#qrReader__header_message {
+  display: none !important;
+}
+
+.scanner-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--telemetry-emerald);
+  box-shadow: 0 0 12px var(--telemetry-emerald);
+  animation: scan 2s infinite linear;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.payload-preview {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-top: 10px;
+  text-align: left;
+}
+
+@keyframes scan {
+  0% { top: 5%; }
+  50% { top: 95%; }
+  100% { top: 5%; }
+}
+
+.status-box {
+  padding: 1.25rem;
+  border-radius: 12px;
+  text-align: center;
+  display: none;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--telemetry-emerald);
+  color: var(--telemetry-emerald);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.status-box.success {
+  display: block;
+}
+
+.status-box strong {
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mobile-bottom-nav {
+  padding: 1rem;
+  background: rgba(11, 19, 35, 0.95);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}

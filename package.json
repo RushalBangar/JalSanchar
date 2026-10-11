@@ -4,7 +4,7 @@
   "private": true,
   "description": "Sovereign Water Resource Governance & Anti-Diversion Logistics PWA",
   "scripts": {
-    "build": "echo 'Production static assets verified'",
+    "build": "node build.js",
     "build:css": "npx -y tailwindcss@3 -i ./frontend/css/tailwind-input.css -o ./frontend/css/tailwind.min.css --minify",
     "watch:css": "npx -y tailwindcss@3 -i ./frontend/css/tailwind-input.css -o ./frontend/css/tailwind.min.css --watch"
   }

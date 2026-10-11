@@ -1,0 +1,11 @@
+{
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/collector", "destination": "/collector.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/driver", "destination": "/driver.html" },
+    { "source": "/panchayat", "destination": "/panchayat.html" },
+    { "source": "/login", "destination": "/login.html" }
+  ]
+}

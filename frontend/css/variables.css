@@ -154,3 +154,8 @@ h1, h2, h3, h4, .font-heading {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
 }
+
+/* Visibility Utilities */
+.hidden {
+  display: none !important;
+}

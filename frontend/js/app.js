@@ -40,23 +40,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const pwdEyeIcon = document.getElementById("pwdEyeIcon");
   const pwdEyeText = document.getElementById("pwdEyeText");
 
-  // Credentials Helper Drawer
-  const btnToggleHelper = document.getElementById("btnToggleHelper");
-  const helperDrawer = document.getElementById("helperDrawer");
-  const helperChevron = document.getElementById("helperChevron");
-
   // Auth Mode State & Elements
   let currentAuthMode = "signin"; // "signin" | "register"
   const modeSignInBtn = document.getElementById("modeSignInBtn");
   const modeRegisterBtn = document.getElementById("modeRegisterBtn");
+  const registrationFields = document.getElementById("registrationFields");
   const groupFullName = document.getElementById("groupFullName");
   const regFullNameInput = document.getElementById("regFullName");
   const groupPhone = document.getElementById("groupPhone");
   const regPhoneInput = document.getElementById("regPhone");
   const roleSpecificContainer = document.getElementById("roleSpecificContainer");
   const roleSelectionWrapper = document.getElementById("roleSelectionWrapper");
-  const roleContextCard = document.getElementById("roleContextCard");
-  const credentialsHelperContainer = document.getElementById("credentialsHelperContainer");
   const formMetaRemember = document.getElementById("formMetaRemember");
   const portalTitle = document.getElementById("portalTitle");
   const portalDesc = document.getElementById("portalDesc");
@@ -101,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Role display info (for sign-in context)
+  // Role display info
   const ROLE_DISPLAY = {
     collector: {
       email: "collector@sinnar.jalsanjeevani.gov.in",
@@ -125,6 +119,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /**
    * Switches between Sign-In Mode and Register Mode
+   * In Sign-In mode: strictly presents ONLY Email, Password, Remember Me, and Authorize button.
    */
   function setAuthMode(mode) {
     currentAuthMode = mode;
@@ -140,21 +135,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       modeRegisterBtn.setAttribute("aria-selected", isRegister ? "true" : "false");
     }
 
-    // Role selection tabs: ONLY visible in registration mode
-    if (roleSelectionWrapper) {
-      roleSelectionWrapper.classList.toggle("hidden", !isRegister);
-    }
-    if (roleContextCard) {
-      roleContextCard.classList.add("hidden");
+    // Toggle registration fields container: STRICTLY HIDDEN in sign-in mode!
+    if (registrationFields) {
+      registrationFields.classList.toggle("hidden", !isRegister);
+      registrationFields.style.display = isRegister ? "block" : "none";
     }
 
-    // Toggle field visibilities
-    if (groupFullName) groupFullName.classList.toggle("hidden", !isRegister);
-    if (groupPhone) groupPhone.classList.toggle("hidden", !isRegister);
-    if (roleSpecificContainer) roleSpecificContainer.classList.toggle("hidden", !isRegister);
-    if (btnInstantDemo) btnInstantDemo.classList.toggle("hidden", isRegister);
-    if (credentialsHelperContainer) credentialsHelperContainer.classList.toggle("hidden", isRegister);
-    if (formMetaRemember) formMetaRemember.classList.toggle("hidden", isRegister);
+    // Toggle Remember Me checkbox (shown in sign-in, hidden in register)
+    if (formMetaRemember) {
+      formMetaRemember.classList.toggle("hidden", isRegister);
+      formMetaRemember.style.display = isRegister ? "none" : "";
+    }
 
     // Update Headings
     if (portalTitle) {
@@ -171,14 +162,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       updateRoleFieldsBlock(activeRoleKey);
     }
 
-    // Update Submit Button
+    // Update Submit Button Label
     if (btnText) {
       btnText.textContent = isRegister
         ? `Register & Launch ${theme ? theme.roleLabel : 'Portal'} Console →`
         : "Authorize & Enter Console →";
     }
 
-    // If switching to register, clear pre-filled email so user inputs real data
+    // If switching to register, clear pre-filled email so user inputs real credentials
     if (isRegister) {
       if (emailInput && emailInput.value.includes("@sinnar.jalsanjeevani.gov.in")) {
         emailInput.value = "";
@@ -189,9 +180,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function updateRoleFieldsBlock(roleKey) {
-    if (fieldsCollector) fieldsCollector.classList.toggle("hidden", roleKey !== "collector");
-    if (fieldsDriver) fieldsDriver.classList.toggle("hidden", roleKey !== "driver");
-    if (fieldsPanchayat) fieldsPanchayat.classList.toggle("hidden", roleKey !== "panchayat");
+    if (fieldsCollector) {
+      const show = roleKey === "collector";
+      fieldsCollector.classList.toggle("hidden", !show);
+      fieldsCollector.style.display = show ? "block" : "none";
+    }
+    if (fieldsDriver) {
+      const show = roleKey === "driver";
+      fieldsDriver.classList.toggle("hidden", !show);
+      fieldsDriver.style.display = show ? "block" : "none";
+    }
+    if (fieldsPanchayat) {
+      const show = roleKey === "panchayat";
+      fieldsPanchayat.classList.toggle("hidden", !show);
+      fieldsPanchayat.style.display = show ? "block" : "none";
+    }
   }
 
   modeSignInBtn?.addEventListener("click", () => setAuthMode("signin"));
@@ -242,29 +245,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     passwordInput.setAttribute("type", isPassword ? "text" : "password");
     if (pwdEyeIcon) pwdEyeIcon.textContent = isPassword ? "visibility_off" : "visibility";
     if (pwdEyeText) pwdEyeText.textContent = isPassword ? "Hide" : "Show";
-  });
-
-  // Credentials Helper Drawer Toggle
-  btnToggleHelper?.addEventListener("click", () => {
-    if (!helperDrawer) return;
-    const isHidden = helperDrawer.classList.contains("hidden");
-    helperDrawer.classList.toggle("hidden", !isHidden);
-    if (helperChevron) {
-      helperChevron.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
-    }
-  });
-
-  // Quick Fill from Helper Drawer Cards
-  document.querySelectorAll(".helper-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const fillRole = card.getAttribute("data-fill-role");
-      if (fillRole) {
-        setAuthMode("signin");
-        setActiveRole(fillRole, true);
-        if (passwordInput) passwordInput.value = "sovereign_water_2025";
-        showAlert("Credentials Populated", `Test credentials filled for ${fillRole.toUpperCase()}. Click Authorize to sign in.`, "info");
-      }
-    });
   });
 
   /**
@@ -407,49 +387,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  /**
-   * Instant 1-Tap Demo Evaluation Button
-   * Automatically sets test credentials and signs into the selected role immediately.
-   */
-  if (btnInstantDemo) {
-    btnInstantDemo.addEventListener("click", async () => {
-      const displayInfo = ROLE_DISPLAY[activeRoleKey] || ROLE_DISPLAY.collector;
-
-      if (emailInput) emailInput.value = displayInfo.email;
-      if (passwordInput && !passwordInput.value.trim()) {
-        passwordInput.value = "sovereign_water_2025";
-      }
-
-      btnInstantDemo.disabled = true;
-      btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Authorizing securely...`;
-
-      const result = await window.JalAuth.login({
-        email: displayInfo.email,
-        password: passwordInput ? passwordInput.value.trim() : "sovereign_water_2025",
-        role: activeRoleKey
-      });
-
-      if (result.success) {
-        btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span> Authorized! Loading console...`;
-        let finalUrl = result.redirect;
-        if (redirectTarget) {
-          const decoded = decodeURIComponent(redirectTarget);
-          const userRole = (result.session && result.session.role) ? result.session.role.toLowerCase() : activeRoleKey;
-          const isRoleTarget = (userRole === "collector") || decoded.toLowerCase().includes(userRole);
-          if (isRoleTarget) {
-            finalUrl = decoded;
-          }
-        }
-        setTimeout(() => {
-          window.location.href = finalUrl;
-        }, 300);
-      } else {
-        showAlert("Authentication Notice", result.message);
-        btnInstantDemo.disabled = false;
-        btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">bolt</span> Instant 1-Tap Evaluation Sign-In`;
-      }
-    });
-  }
 
   function resetSubmitBtn() {
     if (submitBtn) {

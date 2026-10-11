@@ -4,6 +4,6 @@
   "private": true,
   "description": "JalSanjeevani Frontend PWA",
   "scripts": {
-    "build": "echo 'Production static assets verified'"
+    "build": "node build.js"
   }
 }

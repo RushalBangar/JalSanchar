@@ -1,0 +1,21 @@
+{
+  "name": "JalSanjeevani Field PWA",
+  "short_name": "JalSanjeevani",
+  "description": "Offline-first sovereign drought water logistics and verification system.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070e1a",
+  "theme_color": "#00e5ff",
+  "icons": [
+    {
+      "src": "./assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "./assets/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

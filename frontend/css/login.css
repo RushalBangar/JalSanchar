@@ -12,6 +12,11 @@
   --role-panchayat: #f59e0b;
 }
 
+/* Visibility Utilities */
+.hidden {
+  display: none !important;
+}
+
 .login-page {
   min-height: 100vh;
   display: flex;
