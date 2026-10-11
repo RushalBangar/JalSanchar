@@ -155,12 +155,31 @@ def init_earth_engine() -> bool:
 
         creds = None
         if sa_json_str:
-            sa_info = json.loads(sa_json_str)
-            creds = service_account.Credentials.from_service_account_info(
-                sa_info,
-                scopes=["https://www.googleapis.com/auth/earthengine", "https://www.googleapis.com/auth/cloud-platform"]
-            )
-        else:
+            sa_info = None
+            try:
+                sa_info = json.loads(sa_json_str)
+            except Exception:
+                try:
+                    cleaned = sa_json_str.strip().strip("'").strip('"')
+                    sa_info = json.loads(cleaned)
+                except Exception:
+                    try:
+                        import ast
+                        sa_info = ast.literal_eval(sa_json_str)
+                    except Exception as parse_err:
+                        print(f"[JalSanjeevani] GCP_SERVICE_ACCOUNT_JSON parse note: {parse_err}")
+
+            if sa_info and isinstance(sa_info, dict):
+                try:
+                    creds = service_account.Credentials.from_service_account_info(
+                        sa_info,
+                        scopes=["https://www.googleapis.com/auth/earthengine", "https://www.googleapis.com/auth/cloud-platform"]
+                    )
+                except Exception as c_err:
+                    print(f"[JalSanjeevani] Service account info credentials note: {c_err}")
+
+        # Fallback to credentials file if environment variable was missing or malformed
+        if not creds:
             search_paths = [
                 sa_file,
                 os.path.join(os.path.dirname(__file__), sa_file),
@@ -169,11 +188,14 @@ def init_earth_engine() -> bool:
             ]
             for p in search_paths:
                 if os.path.exists(p):
-                    creds = service_account.Credentials.from_service_account_file(
-                        p,
-                        scopes=["https://www.googleapis.com/auth/earthengine", "https://www.googleapis.com/auth/cloud-platform"]
-                    )
-                    break
+                    try:
+                        creds = service_account.Credentials.from_service_account_file(
+                            p,
+                            scopes=["https://www.googleapis.com/auth/earthengine", "https://www.googleapis.com/auth/cloud-platform"]
+                        )
+                        break
+                    except Exception as f_err:
+                        print(f"[JalSanjeevani] Credentials file note at {p}: {f_err}")
 
         if not creds:
             _EE_INIT_ERROR = "No service account credentials found. Set GCP_SERVICE_ACCOUNT_JSON on Render or place service_account.json in backend."

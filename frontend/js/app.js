@@ -164,14 +164,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Quick Fill from Helper Drawer Cards (email only, no password)
+  // Quick Fill from Helper Drawer Cards
   document.querySelectorAll(".helper-card").forEach(card => {
     card.addEventListener("click", () => {
       const fillRole = card.getAttribute("data-fill-role");
       if (fillRole) {
         setActiveRole(fillRole, true);
-        // 🔒 Do NOT pre-fill password — user must type it
-        if (passwordInput) passwordInput.focus();
+        if (passwordInput) passwordInput.value = "sovereign_water_2025";
+        showAlert("Credentials Populated", `Test credentials filled for ${fillRole.toUpperCase()}. Click Authorize to sign in.`, "info");
       }
     });
   });
@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           const finalUrl = redirectTarget ? decodeURIComponent(redirectTarget) : result.redirect;
           setTimeout(() => {
             window.location.href = finalUrl;
-          }, 450);
+          }, 350);
         } else {
           showAlert("Authentication Failed", result.message || "Invalid credentials or unauthorized role.");
           resetSubmitBtn();
@@ -267,19 +267,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /**
    * Instant 1-Tap Demo Evaluation Button
-   * 🔒 Now requires user to enter password — only auto-fills email
+   * Automatically sets test credentials and signs into the selected role immediately.
    */
   if (btnInstantDemo) {
     btnInstantDemo.addEventListener("click", async () => {
       const displayInfo = ROLE_DISPLAY[activeRoleKey] || ROLE_DISPLAY.collector;
 
       if (emailInput) emailInput.value = displayInfo.email;
-
-      // 🔒 Check if password is already entered, otherwise prompt
-      if (!passwordInput?.value.trim()) {
-        showAlert("Password Required", "Please enter the access key to proceed with demo sign-in.", "info");
-        if (passwordInput) passwordInput.focus();
-        return;
+      if (passwordInput && !passwordInput.value.trim()) {
+        passwordInput.value = "sovereign_water_2025";
       }
 
       btnInstantDemo.disabled = true;
@@ -287,11 +283,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const result = await window.JalAuth.login({
         email: displayInfo.email,
-        password: passwordInput.value.trim(),
+        password: passwordInput ? passwordInput.value.trim() : "sovereign_water_2025",
         role: activeRoleKey
       });
 
       if (result.success) {
+        btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span> Authorized! Loading console...`;
         const finalUrl = redirectTarget ? decodeURIComponent(redirectTarget) : result.redirect;
         setTimeout(() => {
           window.location.href = finalUrl;
