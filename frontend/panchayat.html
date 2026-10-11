@@ -232,7 +232,7 @@
         </div>
         <div class="flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant max-w-[200px] truncate border border-white/5">
           <span class="material-symbols-outlined text-[13px] text-primary">verified_user</span>
-          <span class="truncate uppercase text-[9px] tracking-wide">Khopadi GP - Enclosure #02</span>
+          <span id="panchayatSubstripTitle" class="truncate uppercase text-[9px] tracking-wide">Khopadi GP - Enclosure #02</span>
         </div>
       </div>
     </div>
@@ -258,8 +258,8 @@
 
         <div class="flex items-baseline justify-between gap-3">
           <div>
-            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Khopadi Community Cistern</h1>
-            <p class="font-label-tactical text-label-tactical text-on-surface-variant uppercase mt-0.5">Sinnar Taluka • Node #GP-402</p>
+            <h1 id="panchayatCisternTitle" class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Khopadi Community Cistern</h1>
+            <p id="panchayatCisternSub" class="font-label-tactical text-label-tactical text-on-surface-variant uppercase mt-0.5">Sinnar Taluka • Node #GP-402</p>
           </div>
           <span id="cisternStatusBadge" class="px-2.5 py-1 rounded bg-alert-crimson/20 text-alert-crimson font-label-tactical text-label-tactical uppercase font-bold shadow-[0_0_12px_rgba(239,68,68,0.4)] animate-pulse shrink-0">
             8% CRITICAL
@@ -524,24 +524,20 @@
         </button>
       </div>
 
-      <!-- SECTION 4: ROLE PERSPECTIVE SWITCHER -->
+      <!-- SECTION 4: GRAM PANCHAYAT OPERATIONAL CONTROLS -->
       <div class="w-full bg-surface-card/70 rounded-xl p-3 flex flex-col gap-2 mb-2 border border-white/5">
         <span class="font-label-tactical text-[10px] text-on-surface-variant uppercase tracking-wider px-1">
-          Operational Perspective Switcher
+          Panchayat Official Controls
         </span>
-        <div class="grid grid-cols-3 gap-2">
-          <a class="bg-surface-container hover:bg-surface-container-high text-on-surface font-label-tactical text-label-tactical py-2.5 px-1 rounded-lg flex flex-col items-center justify-center gap-1 text-center transition-colors border border-white/5" href="driver.html">
-            <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span>
-            <span class="truncate w-full">Driver View</span>
-          </a>
-          <a class="bg-surface-container hover:bg-surface-container-high text-on-surface font-label-tactical text-label-tactical py-2.5 px-1 rounded-lg flex flex-col items-center justify-center gap-1 text-center transition-colors border border-white/5" href="dashboard.html">
-            <span class="material-symbols-outlined text-[18px] text-secondary">satellite_alt</span>
-            <span class="truncate w-full">Collector View</span>
-          </a>
-          <a class="bg-surface-container hover:bg-alert-crimson/20 text-on-surface hover:text-alert-crimson font-label-tactical text-label-tactical py-2.5 px-1 rounded-lg flex flex-col items-center justify-center gap-1 text-center transition-colors border border-white/5" href="index.html">
-            <span class="material-symbols-outlined text-[18px] text-alert-crimson">logout</span>
-            <span class="truncate w-full">Sign Out</span>
-          </a>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="window.JalAuth && window.JalAuth.openProfileModal()" class="bg-surface-container hover:bg-surface-container-high text-primary font-label-tactical text-label-tactical py-2.5 px-2 rounded-lg flex items-center justify-center gap-1.5 text-center transition-colors border border-primary/20 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+            <span class="truncate">Edit Profile</span>
+          </button>
+          <button type="button" onclick="window.JalAuth && window.JalAuth.logout(true)" class="bg-surface-container hover:bg-alert-crimson/20 text-alert-crimson font-label-tactical text-label-tactical py-2.5 px-2 rounded-lg flex items-center justify-center gap-1.5 text-center transition-colors border border-alert-crimson/20 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+            <span class="truncate">Sign Out</span>
+          </button>
         </div>
       </div>
 
@@ -554,25 +550,29 @@
     </div>
   </main>
 
-  <!-- Sticky Bottom Tactical Navigation -->
+  <!-- Sticky Bottom Tactical Navigation (Panchayat Console Only - No Cross Portal Switching) -->
   <nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface-panel/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.55)] border-t border-white/5">
     <div class="flex justify-around items-center h-16 px-2">
       <a aria-current="page" class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 transition-colors text-primary font-bold bg-primary/10 rounded-xl" href="panchayat.html">
         <span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
         <span class="font-label-tactical text-[10px] tracking-tight">Verify/Scan</span>
       </a>
-      <a class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-on-surface transition-colors" href="dashboard.html">
-        <span class="material-symbols-outlined text-[20px]">water_voc</span>
-        <span class="font-label-tactical text-[10px] tracking-tight">Cistern Log</span>
+      <a class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-on-surface transition-colors" href="#reader">
+        <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+        <span class="font-label-tactical text-[10px] tracking-tight">Scanner</span>
       </a>
-      <a class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-on-surface transition-colors" href="dashboard.html">
-        <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-        <span class="font-label-tactical text-[10px] tracking-tight">Escrow Ledger</span>
+      <a class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-on-surface transition-colors" href="#cardReceipt">
+        <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+        <span class="font-label-tactical text-[10px] tracking-tight">Receipt</span>
       </a>
-      <a class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-on-surface transition-colors" href="driver.html">
-        <span class="material-symbols-outlined text-[20px]">sync_alt</span>
-        <span class="font-label-tactical text-[10px] tracking-tight">Switch View</span>
-      </a>
+      <button type="button" onclick="window.JalAuth && window.JalAuth.openProfileModal()" class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">person</span>
+        <span class="font-label-tactical text-[10px] tracking-tight">Profile</span>
+      </button>
+      <button type="button" onclick="window.JalAuth && window.JalAuth.logout(true)" class="flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-12 text-on-surface-variant hover:text-alert-crimson transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">logout</span>
+        <span class="font-label-tactical text-[10px] tracking-tight">Exit</span>
+      </button>
     </div>
   </nav>
 

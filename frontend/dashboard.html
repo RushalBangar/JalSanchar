@@ -261,12 +261,12 @@
         </div>
       </div>
 
-      <!-- Desktop Middle Quick Portal Switcher (Hidden on mobile, lives in drawer and bottom nav) -->
+      <!-- Desktop Middle Section Links (No Cross-Portal Role Switching) -->
       <nav class="hidden lg:flex items-center gap-space-xs">
-        <a aria-current="page" class="px-space-md py-1.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm text-body-sm" href="dashboard.html">Collector Telemetry</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="driver.html">Driver PWA</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="panchayat.html">Panchayat Verify</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="index.html">Public Portal</a>
+        <a aria-current="page" class="px-space-md py-1.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm text-body-sm" href="#fleetGrid">Collector Telemetry</a>
+        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#dispatchPlanSection">CVRP Dispatch</a>
+        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#cistern-section">Cistern Matrix</a>
+        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="index.html">Public Transparency</a>
       </nav>
 
       <!-- Right Action Controls (Compact Mobile Aware) -->
@@ -334,17 +334,10 @@
         </a>
       </nav>
 
-      <!-- Mobile Portal Switcher Section (Inside Drawer for mobile) -->
+      <!-- Public Transparency Link in Drawer -->
       <div class="px-space-md pt-2 border-t border-border-subtle flex flex-col gap-1 lg:hidden">
-        <span class="font-label-tactical text-[9px] text-outline uppercase px-2 py-1 tracking-wider">Switch System Portal</span>
-        <a href="driver.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container text-body-sm">
-          <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span> Driver PWA
-        </a>
-        <a href="panchayat.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container text-body-sm">
-          <span class="material-symbols-outlined text-[18px] text-tertiary">verified_user</span> Panchayat Verifier
-        </a>
         <a href="index.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container text-body-sm">
-          <span class="material-symbols-outlined text-[18px] text-secondary">public</span> Public Transparency
+          <span class="material-symbols-outlined text-[18px] text-secondary">public</span> Public Transparency Portal
         </a>
       </div>
     </div>

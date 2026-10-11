@@ -337,6 +337,317 @@
     },
 
     /**
+     * 🔒 Registers a new operational officer/driver/panchayat member dynamically
+     * via backend API, saves session, and redirects to their designated console.
+     */
+    async register(userData) {
+      const candidateBases = [];
+      const origin = window.location.origin;
+      if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
+        candidateBases.push("http://127.0.0.1:8000");
+      }
+      candidateBases.push("https://jalsanjeevani.onrender.com");
+
+      let lastError = null;
+
+      for (const apiBase of candidateBases) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+          const response = await fetch(`${apiBase}/api/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(userData),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            const session = {
+              token: data.token,
+              role: data.role,
+              user: data.user,
+              loginAt: Date.now(),
+              expiresAt: Date.now() + SESSION_TTL_MS
+            };
+
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+            localStorage.removeItem(STORAGE_KEY);
+
+            console.log(`🔐 [JalAuth] Registered & authenticated via ${apiBase}:`, data.user.name);
+            return { success: true, redirect: data.redirect_url, session, message: data.message };
+          } else {
+            const errData = await response.json().catch(() => ({}));
+            return {
+              success: false,
+              message: errData.detail || "Registration failed. Please check provided details."
+            };
+          }
+        } catch (apiErr) {
+          lastError = apiErr;
+          console.warn(`[JalAuth] Register host ${apiBase} unreachable, trying next candidate...`);
+        }
+      }
+
+      return {
+        success: false,
+        message: "Unable to reach registration server. Please check your connection."
+      };
+    },
+
+    /**
+     * 🔒 Updates the current user's profile dynamically in backend & database.
+     */
+    async updateProfile(updateData) {
+      const session = this.getSession();
+      if (!session || !session.token) {
+        return { success: false, message: "No active session found. Please sign in." };
+      }
+
+      const candidateBases = [];
+      const origin = window.location.origin;
+      if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
+        candidateBases.push("http://127.0.0.1:8000");
+      }
+      candidateBases.push("https://jalsanjeevani.onrender.com");
+
+      for (const apiBase of candidateBases) {
+        try {
+          const response = await fetch(`${apiBase}/api/auth/profile`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${session.token}`
+            },
+            body: JSON.stringify(updateData)
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            session.user = data.user;
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+
+            // Re-render navbar profile with updated information
+            this.mountNavbarProfile();
+
+            // Dispatch global event for live view updates
+            window.dispatchEvent(new CustomEvent("jal-profile-updated", { detail: data.user }));
+
+            console.log("🔐 [JalAuth] Profile updated dynamically:", data.user.name);
+            return { success: true, user: data.user, message: data.message };
+          } else {
+            const errData = await response.json().catch(() => ({}));
+            return { success: false, message: errData.detail || "Profile update failed." };
+          }
+        } catch (err) {
+          console.warn(`[JalAuth] Update profile via ${apiBase} note:`, err.message);
+        }
+      }
+
+      // Local offline session fallback if network fails
+      Object.assign(session.user, updateData);
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      this.mountNavbarProfile();
+      window.dispatchEvent(new CustomEvent("jal-profile-updated", { detail: session.user }));
+      return { success: true, user: session.user, message: "Profile updated locally." };
+    },
+
+    /**
+     * Interactive Profile Modal for Viewing & Editing Real Dynamic User Info
+     */
+    openProfileModal() {
+      const session = this.getSession();
+      if (!session) return;
+      const u = session.user;
+      const role = session.role;
+      const theme = ROLE_THEMES[role] || ROLE_THEMES.collector;
+
+      let existingModal = document.getElementById("jalProfileModal");
+      if (existingModal) existingModal.remove();
+
+      const modalHtml = `
+        <div id="jalProfileModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn" role="dialog" aria-modal="true">
+          <div class="relative w-full max-w-lg rounded-2xl bg-surface-panel/95 border border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.8)] p-5 text-left text-on-surface flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-white/10">
+              <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-black shadow-md shrink-0" style="background: ${theme.badgeColor};">
+                  <span class="material-symbols-outlined text-[20px]">${theme.icon}</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-base text-on-surface">Operational Profile</h3>
+                  <p class="text-xs text-on-surface-variant font-mono uppercase tracking-wider">${theme.roleLabel} • Dynamic State</p>
+                </div>
+              </div>
+              <button id="jalCloseProfileModalBtn" type="button" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-bright text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            <!-- Profile Alert Box -->
+            <div id="jalProfileAlert" class="hidden p-2.5 rounded-lg text-xs flex items-center gap-2"></div>
+
+            <!-- Form -->
+            <form id="jalProfileForm" class="flex flex-col gap-3">
+              <!-- Name -->
+              <div>
+                <label class="block text-xs font-mono uppercase text-on-surface-variant mb-1">Official Name</label>
+                <input type="text" id="profName" class="w-full px-3 py-2 rounded-xl bg-surface-container border border-white/10 focus:border-primary text-sm text-on-surface outline-none" value="${u.name || ''}" required>
+              </div>
+
+              <!-- Email (Read-only ID) -->
+              <div>
+                <label class="block text-xs font-mono uppercase text-on-surface-variant mb-1">Government Service Email (Fixed)</label>
+                <input type="email" id="profEmail" class="w-full px-3 py-2 rounded-xl bg-surface-container-low border border-white/5 text-sm text-on-surface-variant outline-none font-mono cursor-not-allowed" value="${u.email || ''}" disabled>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Phone -->
+                <div>
+                  <label class="block text-xs font-mono uppercase text-on-surface-variant mb-1">Official Phone</label>
+                  <input type="tel" id="profPhone" class="w-full px-3 py-2 rounded-xl bg-surface-container border border-white/10 focus:border-primary text-sm text-on-surface outline-none font-mono" value="${u.phone || ''}" placeholder="+91 98220 00000">
+                </div>
+
+                <!-- Title / Designation -->
+                <div>
+                  <label class="block text-xs font-mono uppercase text-on-surface-variant mb-1">Designation / Title</label>
+                  <input type="text" id="profTitle" class="w-full px-3 py-2 rounded-xl bg-surface-container border border-white/10 focus:border-primary text-sm text-on-surface outline-none" value="${u.title || ''}">
+                </div>
+              </div>
+
+              <!-- Role-Specific Fields -->
+              ${role === 'driver' ? `
+                <div class="p-3 rounded-xl bg-primary/5 border border-primary/20 flex flex-col gap-2.5">
+                  <span class="text-[11px] font-mono uppercase text-primary font-bold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">local_shipping</span> Tanker Logistics Assignment
+                  </span>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Tanker ID</label>
+                      <input type="text" id="profTankerId" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs font-mono text-on-surface uppercase outline-none focus:border-primary" value="${u.tanker_id || ''}">
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Vehicle Registration</label>
+                      <input type="text" id="profRegistration" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs font-mono text-on-surface uppercase outline-none focus:border-primary" value="${u.registration || ''}">
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Target Village / Sector</label>
+                    <input type="text" id="profVillage" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs text-on-surface outline-none focus:border-primary" value="${u.village || ''}">
+                  </div>
+                </div>
+              ` : ''}
+
+              ${role === 'panchayat' ? `
+                <div class="p-3 rounded-xl bg-secondary/5 border border-secondary/20 flex flex-col gap-2.5">
+                  <span class="text-[11px] font-mono uppercase text-secondary font-bold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">account_balance</span> Gram Panchayat Details
+                  </span>
+                  <div>
+                    <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Gram Panchayat Village</label>
+                    <input type="text" id="profVillage" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs text-on-surface outline-none focus:border-primary" value="${u.village || ''}">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Cistern Hardware Geokey</label>
+                    <input type="text" id="profCisternKey" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs font-mono text-on-surface outline-none focus:border-primary" value="${u.cistern_key || ''}">
+                  </div>
+                </div>
+              ` : ''}
+
+              ${role === 'collector' ? `
+                <div class="p-3 rounded-xl bg-primary/5 border border-primary/20 flex flex-col gap-2.5">
+                  <span class="text-[11px] font-mono uppercase text-primary font-bold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">shield_person</span> Administrative Command
+                  </span>
+                  <div>
+                    <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Administrative Jurisdiction</label>
+                    <input type="text" id="profJurisdiction" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs text-on-surface outline-none focus:border-primary" value="${u.jurisdiction || ''}">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-mono text-on-surface-variant mb-1">Government Badge / Officer ID</label>
+                    <input type="text" id="profBadgeId" class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/10 text-xs font-mono text-on-surface outline-none focus:border-primary" value="${u.badge_id || ''}">
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Action Buttons -->
+              <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
+                <button type="button" id="jalCancelProfileBtn" class="px-3.5 py-2 rounded-xl bg-surface-container hover:bg-surface-bright text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+                  Cancel
+                </button>
+                <button type="submit" id="jalSaveProfileBtn" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary-container text-xs font-bold transition-all shadow-md cursor-pointer">
+                  <span class="material-symbols-outlined text-[16px]">save</span>
+                  <span id="jalSaveProfileText">Save Profile Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+      const modal = document.getElementById("jalProfileModal");
+      const closeBtn = document.getElementById("jalCloseProfileModalBtn");
+      const cancelBtn = document.getElementById("jalCancelProfileBtn");
+      const form = document.getElementById("jalProfileForm");
+      const saveBtn = document.getElementById("jalSaveProfileBtn");
+      const saveText = document.getElementById("jalSaveProfileText");
+      const alertBox = document.getElementById("jalProfileAlert");
+
+      function closeModal() {
+        if (modal) modal.remove();
+      }
+
+      if (closeBtn) closeBtn.addEventListener("click", closeModal);
+      if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      if (form) {
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          saveBtn.disabled = true;
+          saveText.textContent = "Saving...";
+
+          const updatedData = {
+            name: document.getElementById("profName")?.value.trim(),
+            phone: document.getElementById("profPhone")?.value.trim(),
+            title: document.getElementById("profTitle")?.value.trim(),
+            tanker_id: document.getElementById("profTankerId")?.value.trim(),
+            registration: document.getElementById("profRegistration")?.value.trim(),
+            village: document.getElementById("profVillage")?.value.trim(),
+            cistern_key: document.getElementById("profCisternKey")?.value.trim(),
+            jurisdiction: document.getElementById("profJurisdiction")?.value.trim(),
+            badge_id: document.getElementById("profBadgeId")?.value.trim()
+          };
+
+          const res = await JalAuth.updateProfile(updatedData);
+          saveBtn.disabled = false;
+          saveText.textContent = "Save Profile Changes";
+
+          if (res.success) {
+            alertBox.className = "p-2.5 rounded-lg text-xs flex items-center gap-2 bg-safe-emerald/15 text-safe-emerald border border-safe-emerald/30";
+            alertBox.innerHTML = `<span class="material-symbols-outlined text-[16px]">check_circle</span> Profile updated and synced to database!`;
+            alertBox.classList.remove("hidden");
+            setTimeout(() => {
+              closeModal();
+            }, 1000);
+          } else {
+            alertBox.className = "p-2.5 rounded-lg text-xs flex items-center gap-2 bg-alert-crimson/15 text-alert-crimson border border-alert-crimson/30";
+            alertBox.innerHTML = `<span class="material-symbols-outlined text-[16px]">error</span> ${res.message || "Failed to update profile."}`;
+            alertBox.classList.remove("hidden");
+          }
+        });
+      }
+    },
+
+    /**
      * 🔒 Signs out the user — invalidates session both locally and server-side.
      */
     async logout(redirect = true) {
@@ -461,13 +772,13 @@
               ${initials}
             </div>
             <div class="hidden sm:flex flex-col text-left leading-none">
-              <span class="font-bold text-xs text-on-surface truncate max-w-[110px] md:max-w-[140px]">${u.name.split(",")[0]}</span>
+              <span class="font-bold text-xs text-on-surface truncate max-w-[110px] md:max-w-[140px]">${(u.name || 'Officer').split(",")[0]}</span>
               <span class="font-mono text-[9px] uppercase tracking-wider text-primary font-semibold">${theme.roleLabel}</span>
             </div>
             <span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-primary transition-colors">expand_more</span>
           </button>
 
-          <!-- Dropdown Card -->
+          <!-- Dropdown Card (NO SWITCH PORTALS) -->
           <div id="jalAuthDropdown" class="hidden absolute right-0 mt-2 w-72 rounded-2xl bg-surface-panel/95 backdrop-blur-2xl border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.65)] py-3 px-3 z-50 text-left transition-all transform origin-top-right">
             <!-- User Info Header -->
             <div class="pb-3 border-b border-white/10">
@@ -476,32 +787,40 @@
                   ${initials}
                 </div>
                 <div class="flex flex-col min-w-0">
-                  <span class="font-semibold text-sm text-on-surface truncate leading-snug">${u.name}</span>
-                  <span class="text-[11px] text-on-surface-variant truncate">${u.title}</span>
+                  <span class="font-semibold text-sm text-on-surface truncate leading-snug">${u.name || 'Officer'}</span>
+                  <span class="text-[11px] text-on-surface-variant truncate">${u.title || theme.roleLabel}</span>
                   <span class="font-mono text-[9px] text-primary uppercase font-bold tracking-wider mt-0.5">${u.badge_id || theme.roleBadge}</span>
                 </div>
               </div>
               <div class="mt-2.5 px-2.5 py-1 rounded-md bg-surface-container text-[11px] font-mono text-on-surface-variant flex items-center gap-1.5 border border-white/5">
                 <span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
-                <span class="truncate">Verified via Secure Backend API</span>
+                <span class="truncate">Verified Live Operational Session</span>
               </div>
             </div>
 
-            <!-- Portal Navigation Links -->
-            <div class="py-2 flex flex-col gap-1 text-xs">
-              <span class="text-[10px] font-mono uppercase text-on-surface-variant tracking-wider px-2 pt-1 font-semibold">Switch Portals</span>
-              <a href="dashboard.html" class="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-surface-container text-on-surface transition-colors ${session.role === 'collector' ? 'bg-primary/10 text-primary font-semibold' : ''}">
-                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">monitoring</span> Collector Command</span>
-                ${session.role === 'collector' ? '<span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-primary text-black font-bold">Active</span>' : ''}
-              </a>
-              <a href="driver.html" class="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-surface-container text-on-surface transition-colors ${session.role === 'driver' ? 'bg-primary/10 text-primary font-semibold' : ''}">
-                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">local_shipping</span> Driver Cockpit</span>
-                ${session.role === 'driver' ? '<span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-primary text-black font-bold">Active</span>' : ''}
-              </a>
-              <a href="panchayat.html" class="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-surface-container text-on-surface transition-colors ${session.role === 'panchayat' ? 'bg-primary/10 text-primary font-semibold' : ''}">
-                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">qr_code_scanner</span> Panchayat Verify</span>
-                ${session.role === 'panchayat' ? '<span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-primary text-black font-bold">Active</span>' : ''}
-              </a>
+            <!-- Dynamic Persona Details Card -->
+            <div class="py-2.5 flex flex-col gap-2 text-xs">
+              <div class="px-2.5 py-2 rounded-xl bg-surface-container/60 border border-white/5 flex flex-col gap-1">
+                <div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono">
+                  <span>ROLE DESIGNATION</span>
+                  <span class="text-primary font-semibold">${theme.roleLabel}</span>
+                </div>
+                <div class="text-[11px] text-on-surface font-medium truncate">
+                  ${u.jurisdiction || u.village || (u.tanker_id ? ('Tanker ' + u.tanker_id) : 'Sinnar Regional Division')}
+                </div>
+                ${u.tanker_id ? `<div class="font-mono text-[10px] text-primary flex items-center justify-between"><span>Tanker ID:</span> <b>${u.tanker_id}</b></div>` : ''}
+                ${u.registration ? `<div class="font-mono text-[10px] text-on-surface-variant flex items-center justify-between"><span>Reg:</span> <b>${u.registration}</b></div>` : ''}
+                ${u.phone ? `<div class="font-mono text-[10px] text-on-surface-variant flex items-center justify-between"><span>Phone:</span> <span>${u.phone}</span></div>` : ''}
+              </div>
+
+              <!-- View / Edit Profile Button -->
+              <button id="jalAuthEditProfileBtn" type="button" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-xs border border-primary/25 transition-all cursor-pointer group">
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] group-hover:rotate-12 transition-transform">manage_accounts</span>
+                  <span>View / Edit Profile</span>
+                </span>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+              </button>
             </div>
 
             <!-- Sign Out Button -->
@@ -515,9 +834,10 @@
         </div>
       `;
 
-      // Event Listeners for dropdown
+      // Event Listeners for dropdown & modal
       const btn = document.getElementById("jalAuthProfileBtn");
       const dropdown = document.getElementById("jalAuthDropdown");
+      const editProfileBtn = document.getElementById("jalAuthEditProfileBtn");
       const logoutBtn = document.getElementById("jalAuthLogoutBtn");
 
       if (btn && dropdown) {
@@ -530,6 +850,14 @@
           if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
             dropdown.classList.add("hidden");
           }
+        });
+      }
+
+      if (editProfileBtn) {
+        editProfileBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (dropdown) dropdown.classList.add("hidden");
+          JalAuth.openProfileModal();
         });
       }
 

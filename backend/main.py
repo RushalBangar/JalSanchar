@@ -301,6 +301,33 @@ class LoginRequest(BaseModel):
     password: str
     role: Optional[str] = None
 
+class RegisterRequest(BaseModel):
+    role: str = Field(..., description="Role: collector, driver, or panchayat")
+    name: str = Field(..., min_length=2, description="Full official name")
+    email: str = Field(..., min_length=5, description="Official email address")
+    password: str = Field(..., min_length=8, description="Cryptographic access key / password")
+    phone: Optional[str] = None
+    badge_id: Optional[str] = None
+    title: Optional[str] = None
+    jurisdiction: Optional[str] = None
+    tanker_id: Optional[str] = None
+    registration: Optional[str] = None
+    driver_key: Optional[str] = None
+    village: Optional[str] = None
+    cistern_key: Optional[str] = None
+
+class ProfileUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    title: Optional[str] = None
+    badge_id: Optional[str] = None
+    jurisdiction: Optional[str] = None
+    tanker_id: Optional[str] = None
+    registration: Optional[str] = None
+    village: Optional[str] = None
+    driver_key: Optional[str] = None
+    cistern_key: Optional[str] = None
+
 
 # =============================================================================
 # Authentication Endpoints (Secured with bcrypt + rate limiting)
@@ -471,6 +498,245 @@ async def auth_verify(session: dict = Depends(require_auth)):
         "expires_at": datetime.datetime.fromtimestamp(
             session["expires_at"], tz=datetime.timezone.utc
         ).isoformat()
+    }
+
+@app.post("/api/auth/register")
+async def auth_register(req: RegisterRequest, request: Request):
+    """
+    Registers a new operational officer, tanker driver, or gram panchayat representative.
+    🔒 Features: Validates all role information, hashes passwords with bcrypt,
+    and inserts dynamically into Supabase gov_users database.
+    """
+    clean_role = req.role.strip().lower()
+    if clean_role not in ["collector", "driver", "panchayat"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid operational role. Must be 'collector', 'driver', or 'panchayat'."
+        )
+
+    clean_email = req.email.strip().lower()
+    clean_name = req.name.strip()
+    clean_pwd = req.password.strip()
+
+    if len(clean_pwd) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long.")
+
+    # Check if email is already taken in Supabase
+    if supabase_client:
+        try:
+            existing = supabase_client.table("gov_users").select("id").ilike("email", clean_email).execute()
+            if existing.data and len(existing.data) > 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"An account with email '{clean_email}' already exists. Please sign in."
+                )
+        except HTTPException:
+            raise
+        except Exception as check_err:
+            print(f"[Supabase Check Warning]: {check_err}")
+
+    # Generate role-specific identifiers and metadata
+    short_uid = uuid.uuid4().hex[:6].upper()
+    hashed_pwd = hash_password(clean_pwd)
+
+    if clean_role == "collector":
+        user_id = f"USR-COL-{short_uid}"
+        portal_url = "dashboard.html"
+        title = req.title.strip() if req.title and req.title.strip() else "District Relief Officer"
+        badge_id = req.badge_id.strip() if req.badge_id and req.badge_id.strip() else f"MH-IAS-{secrets.randbelow(8999)+1000}"
+        jurisdiction = req.jurisdiction.strip() if req.jurisdiction and req.jurisdiction.strip() else "Ahilyanagar & Sinnar Disaster Division"
+        tanker_id = None
+        registration = None
+        driver_key = None
+        village = None
+        cistern_key = None
+        permissions = ["dispatch_approval", "escrow_freeze", "satellite_radar_view", "cvrp_optimization"]
+
+    elif clean_role == "driver":
+        user_id = f"USR-DRV-{short_uid}"
+        portal_url = "driver.html"
+        tanker_id = req.tanker_id.strip().upper() if req.tanker_id and req.tanker_id.strip() else f"TN-SN-{secrets.randbelow(89)+10}"
+        registration = req.registration.strip().upper() if req.registration and req.registration.strip() else f"MH-15-TK-{secrets.randbelow(8999)+1000}"
+        driver_key = req.driver_key.strip() if req.driver_key and req.driver_key.strip() else f"0x{secrets.token_hex(6).upper()}"
+        title = req.title.strip() if req.title and req.title.strip() else "Municipal Tanker Pilot"
+        badge_id = req.badge_id.strip() if req.badge_id and req.badge_id.strip() else f"RTO-{registration.split('-')[-1]}"
+        village = req.village.strip() if req.village and req.village.strip() else "Khopadi (Sinnar Taluka)"
+        jurisdiction = f"Tanker {tanker_id} ({registration}) • {village}"
+        cistern_key = None
+        permissions = ["gps_telemetry_broadcast", "qr_token_generation", "sos_beacon"]
+
+    else:  # panchayat
+        user_id = f"USR-GP-{short_uid}"
+        portal_url = "panchayat.html"
+        village = req.village.strip() if req.village and req.village.strip() else "Khopadi (Sinnar Taluka)"
+        cistern_key = req.cistern_key.strip() if req.cistern_key and req.cistern_key.strip() else f"0x{secrets.token_hex(6).upper()}"
+        badge_id = req.badge_id.strip() if req.badge_id and req.badge_id.strip() else f"GP-SN-{secrets.randbelow(899)+100}"
+        title = req.title.strip() if req.title and req.title.strip() else "Sarpanch & Water Vigilance Officer"
+        jurisdiction = f"{village} Gram Panchayat Enclosure"
+        tanker_id = None
+        registration = None
+        driver_key = None
+        permissions = ["optical_qr_scan", "cistern_level_attestation", "escrow_payment_release"]
+
+    new_user_record = {
+        "id": user_id,
+        "email": clean_email,
+        "password_hash": hashed_pwd,
+        "role": clean_role,
+        "name": clean_name,
+        "title": title,
+        "badge_id": badge_id,
+        "jurisdiction": jurisdiction,
+        "portal_url": portal_url,
+        "tanker_id": tanker_id,
+        "registration": registration,
+        "driver_key": driver_key,
+        "village": village,
+        "cistern_key": cistern_key,
+        "permissions": permissions,
+        "is_active": True
+    }
+
+    # Persist in Supabase gov_users database
+    if supabase_client:
+        try:
+            supabase_client.table("gov_users").insert(new_user_record).execute()
+            print(f"[JalSanjeevani API] [OK] Registered new user dynamically in Supabase: {clean_email} ({user_id})")
+
+            # If driver, register or update the tanker telemetry record as well
+            if clean_role == "driver" and tanker_id:
+                supabase_client.table("tankers").upsert({
+                    "id": tanker_id,
+                    "registration": registration,
+                    "capacity_liters": 10000,
+                    "lat": 19.8920,
+                    "lng": 74.0610,
+                    "status": "active",
+                    "driver_name": clean_name,
+                    "target_village": village
+                }).execute()
+        except Exception as insert_err:
+            print(f"[Supabase Insert Notice]: {insert_err}")
+
+    # Build safe user session data (no password_hash)
+    phone_clean = req.phone.strip() if req.phone and req.phone.strip() else ""
+    user_data = {
+        "id": user_id,
+        "name": clean_name,
+        "title": title,
+        "email": clean_email,
+        "phone": phone_clean,
+        "role": clean_role,
+        "badge_id": badge_id,
+        "jurisdiction": jurisdiction,
+        "tanker_id": tanker_id,
+        "registration": registration,
+        "driver_key": driver_key,
+        "village": village,
+        "cistern_key": cistern_key,
+        "permissions": permissions
+    }
+
+    # Create active session token
+    session_token = generate_session_token(clean_email, clean_role)
+    store_session(session_token, user_data, clean_role)
+
+    return {
+        "status": "success",
+        "message": f"Successfully registered official profile for {clean_name}.",
+        "token": session_token,
+        "role": clean_role,
+        "redirect_url": portal_url,
+        "user": user_data,
+        "authenticated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "expires_in_hours": 24
+    }
+
+@app.put("/api/auth/profile")
+async def auth_update_profile(req: ProfileUpdateRequest, session: dict = Depends(require_auth)):
+    """
+    Updates the authenticated user's profile dynamically in Supabase gov_users.
+    🔒 PROTECTED: Requires valid session token. Updates live session store and database.
+    """
+    curr_user = session.get("user", {})
+    user_id = curr_user.get("id")
+    if not user_id:
+        raise HTTPException(status_code=400, detail="User ID missing from active session.")
+
+    update_fields = {}
+    if req.name is not None and req.name.strip():
+        update_fields["name"] = req.name.strip()
+        curr_user["name"] = req.name.strip()
+
+    if req.title is not None and req.title.strip():
+        update_fields["title"] = req.title.strip()
+        curr_user["title"] = req.title.strip()
+
+    if req.badge_id is not None and req.badge_id.strip():
+        update_fields["badge_id"] = req.badge_id.strip()
+        curr_user["badge_id"] = req.badge_id.strip()
+
+    if req.jurisdiction is not None and req.jurisdiction.strip():
+        update_fields["jurisdiction"] = req.jurisdiction.strip()
+        curr_user["jurisdiction"] = req.jurisdiction.strip()
+
+    if req.tanker_id is not None and req.tanker_id.strip():
+        update_fields["tanker_id"] = req.tanker_id.strip().upper()
+        curr_user["tanker_id"] = req.tanker_id.strip().upper()
+
+    if req.registration is not None and req.registration.strip():
+        update_fields["registration"] = req.registration.strip().upper()
+        curr_user["registration"] = req.registration.strip().upper()
+
+    if req.village is not None and req.village.strip():
+        update_fields["village"] = req.village.strip()
+        curr_user["village"] = req.village.strip()
+
+    if req.driver_key is not None and req.driver_key.strip():
+        update_fields["driver_key"] = req.driver_key.strip()
+        curr_user["driver_key"] = req.driver_key.strip()
+
+    if req.cistern_key is not None and req.cistern_key.strip():
+        update_fields["cistern_key"] = req.cistern_key.strip()
+        curr_user["cistern_key"] = req.cistern_key.strip()
+
+    if req.phone is not None and req.phone.strip():
+        curr_user["phone"] = req.phone.strip()
+
+    if update_fields and supabase_client:
+        try:
+            update_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            supabase_client.table("gov_users").update(update_fields).eq("id", user_id).execute()
+            print(f"[JalSanjeevani API] [OK] Profile updated in Supabase for user {user_id}")
+
+            # If driver updated their tanker details, also synchronize tankers table
+            if curr_user.get("role") == "driver" and curr_user.get("tanker_id"):
+                tanker_upsert = {
+                    "id": curr_user["tanker_id"],
+                    "driver_name": curr_user["name"],
+                    "capacity_liters": 10000,
+                    "lat": 19.8920,
+                    "lng": 74.0610,
+                    "status": "active"
+                }
+                if curr_user.get("registration"):
+                    tanker_upsert["registration"] = curr_user["registration"]
+                if curr_user.get("village"):
+                    tanker_upsert["target_village"] = curr_user["village"]
+                supabase_client.table("tankers").upsert(tanker_upsert).execute()
+        except Exception as up_err:
+            print(f"[Supabase Update Warning]: {up_err}")
+
+    # Synchronize active memory session store
+    session["user"] = curr_user
+    for s_token, s_data in _active_sessions.items():
+        if s_data.get("user", {}).get("id") == user_id:
+            s_data["user"] = curr_user
+
+    return {
+        "status": "success",
+        "message": "Operational profile successfully updated.",
+        "user": curr_user
     }
 
 

@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   syncNetworkStatus();
 
   // Active delivery manifest parameters
-  const loggedInUser = window.JalAuth ? window.JalAuth.getUser() : null;
+  let loggedInUser = window.JalAuth ? window.JalAuth.getUser() : null;
   const manifest = {
     protocol: "JALSANJEEVANI_POD_V2",
     tanker_id: (loggedInUser && loggedInUser.tanker_id) ? loggedInUser.tanker_id : "TN-SN-02",
@@ -124,6 +124,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /**
+   * Synchronizes Driver Cockpit DOM with live user profile data
+   */
+  function syncDynamicDriverUI() {
+    loggedInUser = window.JalAuth ? window.JalAuth.getUser() : null;
+    if (loggedInUser) {
+      if (loggedInUser.tanker_id) manifest.tanker_id = loggedInUser.tanker_id;
+      if (loggedInUser.registration) manifest.registration = loggedInUser.registration;
+      if (loggedInUser.village) manifest.target_village = loggedInUser.village;
+      if (loggedInUser.driver_key) manifest.driver_key = loggedInUser.driver_key;
+    }
+
+    const headerTankerBadge = document.getElementById("headerTankerBadge");
+    if (headerTankerBadge) headerTankerBadge.textContent = manifest.tanker_id;
+
+    const missionBanner = document.getElementById("missionActiveBannerText");
+    if (missionBanner) missionBanner.textContent = `Mission ${manifest.tanker_id} Active`;
+
+    const targetVillageTitle = document.getElementById("targetVillageTitle");
+    if (targetVillageTitle) targetVillageTitle.textContent = `Target: ${manifest.target_village}`;
+
+    if (driverCryptoKey) {
+      const shortKey = manifest.driver_key.length > 8 ? manifest.driver_key.slice(0, 8) : manifest.driver_key;
+      driverCryptoKey.textContent = isArrived 
+        ? `TOKEN READY: ${shortKey} • GEOFENCE VERIFIED`
+        : `KEY: ${shortKey} • GEOFENCE ENCRYPTED`;
+    }
+
+    renderQRCode();
+  }
+
+  // Listen for live dynamic profile updates without requiring page reload
+  window.addEventListener("jal-profile-updated", () => {
+    syncDynamicDriverUI();
+    showToast("✓ Cockpit Synced to Updated Profile");
+  });
+
+  /**
    * Displays floating tactical toast message
    */
   function showToast(message) {
@@ -136,8 +173,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   }
 
-  // 1. Initial Render
-  renderQRCode();
+  // 1. Initial Dynamic Render
+  syncDynamicDriverUI();
 
   // 2. Geofence & GPS Arrival Handshake Handler
   if (btnLogArrival) {
@@ -192,9 +229,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Sync arrival to Supabase
           if (window.JalSupabase) {
-            window.JalSupabase.updateTankerLocation("TN-SN-02", 19.9015, 74.1030, false, "arrived");
-            window.JalSupabase.updateTankerLocation("TN-04", 19.9015, 74.1030, false, "arrived");
-            console.log("🌊 Driver arrival coordinates synced to Supabase for Tanker TN-SN-02.");
+            window.JalSupabase.updateTankerLocation(manifest.tanker_id, 19.9015, 74.1030, false, "arrived");
+            console.log(`🌊 Driver arrival coordinates synced to Supabase for Tanker ${manifest.tanker_id}.`);
           }
         }, 700);
 
@@ -237,8 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Reset to In-Transit corridor state");
 
         if (window.JalSupabase) {
-          window.JalSupabase.updateTankerLocation("TN-SN-02", 19.8920, 74.0610, false, "en_route");
-          window.JalSupabase.updateTankerLocation("TN-04", 19.8920, 74.0610, false, "en_route");
+          window.JalSupabase.updateTankerLocation(manifest.tanker_id, 19.8920, 74.0610, false, "en_route");
         }
       }
     });

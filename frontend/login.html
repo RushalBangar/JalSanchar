@@ -70,6 +70,18 @@
         </p>
       </header>
 
+      <!-- Authentication Mode Switcher (Sign-In vs Register) -->
+      <div class="auth-mode-container" role="tablist" aria-label="Authentication Mode">
+        <button type="button" class="auth-mode-btn active" id="modeSignInBtn" data-mode="signin" role="tab" aria-selected="true">
+          <span class="material-symbols-outlined text-[16px]">lock_open</span>
+          <span>Authorized Sign-In</span>
+        </button>
+        <button type="button" class="auth-mode-btn" id="modeRegisterBtn" data-mode="register" role="tab" aria-selected="false">
+          <span class="material-symbols-outlined text-[16px]">person_add</span>
+          <span>Register New Profile</span>
+        </button>
+      </div>
+
       <!-- Role Tabs (Collector, Driver, Panchayat) -->
       <div class="role-tabs" role="tablist" aria-label="Operational Role Selection">
         <!-- 1. Collector -->
@@ -100,7 +112,7 @@
         </button>
       </div>
 
-      <!-- Active Role Context Card -->
+      <!-- Active Role Context Card (Shown in Sign-In Mode) -->
       <div class="role-context-card" id="roleContextCard">
         <div class="context-header">
           <div class="context-role-pill" id="contextRolePill">
@@ -124,10 +136,27 @@
         </div>
       </div>
 
-      <!-- Official Sign-In Form -->
+      <!-- Official Auth Form (Sign-In or Registration) -->
       <form id="loginForm" novalidate>
+        <!-- Full Official Name (Registration Mode Only) -->
+        <div class="form-group hidden" id="groupFullName">
+          <label for="regFullName">
+            <span class="material-symbols-outlined label-icon">person</span>
+            <span>Full Official Name</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="regFullName" 
+              class="form-control" 
+              placeholder="e.g. Shri. Rajesh K. Patil"
+              autocomplete="name"
+            >
+          </div>
+        </div>
+
         <!-- Email Input -->
-        <div class="form-group">
+        <div class="form-group" id="groupEmail">
           <label for="email" id="labelEmail">
             <span class="material-symbols-outlined label-icon">badge</span>
             <span>Government Service Email / ID</span>
@@ -141,6 +170,101 @@
               required 
               autocomplete="email"
             >
+          </div>
+        </div>
+
+        <!-- Phone Number Input (Registration Mode Only) -->
+        <div class="form-group hidden" id="groupPhone">
+          <label for="regPhone">
+            <span class="material-symbols-outlined label-icon">call</span>
+            <span>Official Phone / WhatsApp Number</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="tel" 
+              id="regPhone" 
+              class="form-control" 
+              placeholder="+91 98220 12345"
+              autocomplete="tel"
+            >
+          </div>
+        </div>
+
+        <!-- Role-Specific Fields (Registration Mode Only) -->
+        <div class="role-specific-box hidden" id="roleSpecificContainer">
+          <!-- Collector Registration Fields -->
+          <div class="role-fields-block" id="fieldsCollector">
+            <div class="role-specific-title">
+              <span class="material-symbols-outlined text-[15px]">shield_person</span> Collector Administrative Details
+            </div>
+            <div class="reg-grid" style="margin-top: 8px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regCollectorBadge" style="font-size: 0.75rem;">Officer Badge / IAS ID</label>
+                <input type="text" id="regCollectorBadge" class="form-control" placeholder="MH-IAS-0822">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regCollectorTitle" style="font-size: 0.75rem;">Official Designation</label>
+                <input type="text" id="regCollectorTitle" class="form-control" placeholder="District Relief Officer">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 8px; margin-bottom: 0;">
+              <label for="regCollectorJurisdiction" style="font-size: 0.75rem;">Administrative Jurisdiction Division</label>
+              <input type="text" id="regCollectorJurisdiction" class="form-control" placeholder="Ahilyanagar & Sinnar Disaster Division">
+            </div>
+          </div>
+
+          <!-- Driver Registration Fields -->
+          <div class="role-fields-block hidden" id="fieldsDriver">
+            <div class="role-specific-title" style="color: #10b981;">
+              <span class="material-symbols-outlined text-[15px]">local_shipping</span> Tanker Logistics & Fleet Registration
+            </div>
+            <div class="reg-grid" style="margin-top: 8px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regDriverTankerId" style="font-size: 0.75rem;">Tanker ID (e.g. TN-SN-04)</label>
+                <input type="text" id="regDriverTankerId" class="form-control" placeholder="TN-SN-04">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regDriverRegNumber" style="font-size: 0.75rem;">RTO Vehicle Registration</label>
+                <input type="text" id="regDriverRegNumber" class="form-control" placeholder="MH-15-TK-5512">
+              </div>
+            </div>
+            <div class="reg-grid" style="margin-top: 8px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regDriverKey" style="font-size: 0.75rem;">Driver License / Hardware Key</label>
+                <input type="text" id="regDriverKey" class="form-control" placeholder="0x9F3B4ED812C4">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regDriverRoute" style="font-size: 0.75rem;">Assigned Target Village / Route</label>
+                <input type="text" id="regDriverRoute" class="form-control" placeholder="Khopadi (Sinnar Taluka)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Panchayat Registration Fields -->
+          <div class="role-fields-block hidden" id="fieldsPanchayat">
+            <div class="role-specific-title" style="color: #f59e0b;">
+              <span class="material-symbols-outlined text-[15px]">account_balance</span> Gram Panchayat & Cistern Enclosure
+            </div>
+            <div class="reg-grid" style="margin-top: 8px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regPanchayatVillage" style="font-size: 0.75rem;">Gram Panchayat Village Name</label>
+                <input type="text" id="regPanchayatVillage" class="form-control" placeholder="Khopadi (Sinnar Taluka)">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regPanchayatBadge" style="font-size: 0.75rem;">Panchayat Registration ID</label>
+                <input type="text" id="regPanchayatBadge" class="form-control" placeholder="GP-SN-104">
+              </div>
+            </div>
+            <div class="reg-grid" style="margin-top: 8px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regPanchayatCisternKey" style="font-size: 0.75rem;">Cistern Hardware Geokey</label>
+                <input type="text" id="regPanchayatCisternKey" class="form-control" placeholder="0x74CE8A1109B2">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="regPanchayatTitle" style="font-size: 0.75rem;">Officer Designation</label>
+                <input type="text" id="regPanchayatTitle" class="form-control" placeholder="Sarpanch & Water Vigilance Head">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -161,7 +285,7 @@
               type="password" 
               id="password" 
               class="form-control" 
-              placeholder="Enter your access key" 
+              placeholder="Enter your access key (min 8 chars)" 
               required 
               autocomplete="current-password"
               minlength="8"
@@ -170,7 +294,7 @@
         </div>
 
         <!-- Remember Me Checkbox -->
-        <div class="form-meta">
+        <div class="form-meta" id="formMetaRemember">
           <label class="remember-checkbox">
             <input type="checkbox" id="rememberMe" checked>
             <span class="checkbox-custom"></span>
@@ -184,15 +308,15 @@
           <span id="btnText">Authorize &amp; Enter Portal →</span>
         </button>
 
-        <!-- Quick 1-Tap Demo Sign In -->
+        <!-- Quick 1-Tap Demo Sign In (Sign In Mode Only) -->
         <button type="button" id="btnInstantDemo" class="btn btn-outline btn-block btn-demo">
           <span class="material-symbols-outlined text-[18px]">bolt</span>
           <span id="btnDemoText">Instant 1-Tap Evaluation Sign-In</span>
         </button>
       </form>
 
-      <!-- Quick Credentials Cheat-sheet Pill for Judges/Evaluators -->
-      <div class="credentials-helper">
+      <!-- Quick Credentials Cheat-sheet Pill for Judges/Evaluators (Sign In Mode Only) -->
+      <div class="credentials-helper" id="credentialsHelperContainer">
         <button type="button" class="helper-toggle-btn" id="btnToggleHelper">
           <span class="material-symbols-outlined text-[15px]">info</span>
           <span>View Verified Test Credentials</span>

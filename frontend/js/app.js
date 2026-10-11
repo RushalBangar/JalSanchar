@@ -45,6 +45,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   const helperDrawer = document.getElementById("helperDrawer");
   const helperChevron = document.getElementById("helperChevron");
 
+  // Auth Mode State & Elements
+  let currentAuthMode = "signin"; // "signin" | "register"
+  const modeSignInBtn = document.getElementById("modeSignInBtn");
+  const modeRegisterBtn = document.getElementById("modeRegisterBtn");
+  const groupFullName = document.getElementById("groupFullName");
+  const regFullNameInput = document.getElementById("regFullName");
+  const groupPhone = document.getElementById("groupPhone");
+  const regPhoneInput = document.getElementById("regPhone");
+  const roleSpecificContainer = document.getElementById("roleSpecificContainer");
+  const roleContextCard = document.getElementById("roleContextCard");
+  const credentialsHelperContainer = document.getElementById("credentialsHelperContainer");
+  const formMetaRemember = document.getElementById("formMetaRemember");
+  const portalTitle = document.getElementById("portalTitle");
+  const portalDesc = document.getElementById("portalDesc");
+
+  const fieldsCollector = document.getElementById("fieldsCollector");
+  const fieldsDriver = document.getElementById("fieldsDriver");
+  const fieldsPanchayat = document.getElementById("fieldsPanchayat");
+
   // State
   let activeRoleKey = "collector";
 
@@ -73,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Role display info (no passwords — purely visual context)
+  // Role display info (for sign-in context)
   const ROLE_DISPLAY = {
     collector: {
       email: "collector@sinnar.jalsanjeevani.gov.in",
@@ -94,6 +113,76 @@ document.addEventListener("DOMContentLoaded", async () => {
       jurisdiction: "Khopadi Gram Panchayat (Sinnar)"
     }
   };
+
+  /**
+   * Switches between Sign-In Mode and Register Mode
+   */
+  function setAuthMode(mode) {
+    currentAuthMode = mode;
+    const isRegister = mode === "register";
+    const theme = window.JalAuth ? window.JalAuth.ROLE_THEMES[activeRoleKey] : null;
+
+    if (modeSignInBtn) {
+      modeSignInBtn.classList.toggle("active", !isRegister);
+      modeSignInBtn.setAttribute("aria-selected", !isRegister ? "true" : "false");
+    }
+    if (modeRegisterBtn) {
+      modeRegisterBtn.classList.toggle("active", isRegister);
+      modeRegisterBtn.setAttribute("aria-selected", isRegister ? "true" : "false");
+    }
+
+    // Toggle field visibilities
+    if (groupFullName) groupFullName.classList.toggle("hidden", !isRegister);
+    if (groupPhone) groupPhone.classList.toggle("hidden", !isRegister);
+    if (roleSpecificContainer) roleSpecificContainer.classList.toggle("hidden", !isRegister);
+    if (roleContextCard) roleContextCard.classList.toggle("hidden", isRegister);
+    if (btnInstantDemo) btnInstantDemo.classList.toggle("hidden", isRegister);
+    if (credentialsHelperContainer) credentialsHelperContainer.classList.toggle("hidden", isRegister);
+    if (formMetaRemember) formMetaRemember.classList.toggle("hidden", isRegister);
+
+    // Update Headings
+    if (portalTitle) {
+      portalTitle.textContent = isRegister ? "Register Operational Profile" : "Authorized Portal Access";
+    }
+    if (portalDesc) {
+      portalDesc.textContent = isRegister 
+        ? "Register whole officer/driver details into the sovereign state database."
+        : "Select your authorized operational role or authenticate with state credentials.";
+    }
+
+    // Update Role-Specific Field Blocks in Register Mode
+    updateRoleFieldsBlock(activeRoleKey);
+
+    // Update Submit Button
+    if (btnText) {
+      btnText.textContent = isRegister
+        ? `Register & Launch ${theme ? theme.roleLabel : 'Portal'} Console →`
+        : `Authorize & Enter ${theme ? theme.roleLabel : 'Portal'} →`;
+    }
+
+    // If switching to register, clear pre-filled email so user inputs real data
+    if (isRegister) {
+      if (emailInput && emailInput.value.includes("@sinnar.jalsanjeevani.gov.in")) {
+        emailInput.value = "";
+      }
+    } else {
+      const displayInfo = ROLE_DISPLAY[activeRoleKey];
+      if (displayInfo && emailInput && !emailInput.value) {
+        emailInput.value = displayInfo.email;
+      }
+    }
+
+    hideAlert();
+  }
+
+  function updateRoleFieldsBlock(roleKey) {
+    if (fieldsCollector) fieldsCollector.classList.toggle("hidden", roleKey !== "collector");
+    if (fieldsDriver) fieldsDriver.classList.toggle("hidden", roleKey !== "driver");
+    if (fieldsPanchayat) fieldsPanchayat.classList.toggle("hidden", roleKey !== "panchayat");
+  }
+
+  modeSignInBtn?.addEventListener("click", () => setAuthMode("signin"));
+  modeRegisterBtn?.addEventListener("click", () => setAuthMode("register"));
 
   /**
    * Sets the active role tab and synchronizes UI
@@ -123,15 +212,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (contextName) contextName.textContent = displayInfo.name;
     if (contextJurisdiction) contextJurisdiction.textContent = displayInfo.jurisdiction;
 
-    // 🔒 Only auto-fill email, NEVER auto-fill password
-    if (shouldUpdateInputs) {
+    // Update role fields block in register mode
+    updateRoleFieldsBlock(roleKey);
+
+    // Auto-fill email only in sign-in mode
+    if (shouldUpdateInputs && currentAuthMode === "signin") {
       if (emailInput) emailInput.value = displayInfo.email;
-      // Password field is intentionally left empty for security
     }
 
     // Update Submit Button Label
     if (btnText) {
-      btnText.textContent = `Authorize & Enter ${theme.roleLabel} →`;
+      btnText.textContent = currentAuthMode === "register"
+        ? `Register & Launch ${theme.roleLabel} Console →`
+        : `Authorize & Enter ${theme.roleLabel} →`;
     }
 
     hideAlert();
@@ -169,6 +262,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     card.addEventListener("click", () => {
       const fillRole = card.getAttribute("data-fill-role");
       if (fillRole) {
+        setAuthMode("signin");
         setActiveRole(fillRole, true);
         if (passwordInput) passwordInput.value = "sovereign_water_2025";
         showAlert("Credentials Populated", `Test credentials filled for ${fillRole.toUpperCase()}. Click Authorize to sign in.`, "info");
@@ -206,7 +300,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Form Submission Handler — authenticates via secure backend API
+   * Form Submission Handler — handles both Sign-In and Full Registration
    */
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
@@ -229,20 +323,59 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Enter Loading State
       if (submitBtn) {
         submitBtn.disabled = true;
-        if (btnText) btnText.textContent = "Verifying credentials securely...";
+        if (btnText) btnText.textContent = currentAuthMode === "register" ? "Registering whole profile..." : "Verifying credentials securely...";
         if (btnIcon) btnIcon.textContent = "sync";
         btnIcon?.classList.add("animate-spin");
       }
 
       try {
-        const result = await window.JalAuth.login({
-          email: email,
-          password: password,
-          role: activeRoleKey
-        });
+        let result;
+
+        if (currentAuthMode === "register") {
+          const fullName = regFullNameInput?.value.trim() || "";
+          if (!fullName || fullName.length < 2) {
+            showAlert("Incomplete Registration", "Please enter your full official name.");
+            resetSubmitBtn();
+            return;
+          }
+
+          const registerPayload = {
+            role: activeRoleKey,
+            name: fullName,
+            email: email,
+            phone: regPhoneInput?.value.trim() || "",
+            password: password
+          };
+
+          // Role specific registration attributes
+          if (activeRoleKey === "collector") {
+            registerPayload.badge_id = document.getElementById("regCollectorBadge")?.value.trim();
+            registerPayload.title = document.getElementById("regCollectorTitle")?.value.trim();
+            registerPayload.jurisdiction = document.getElementById("regCollectorJurisdiction")?.value.trim();
+          } else if (activeRoleKey === "driver") {
+            registerPayload.tanker_id = document.getElementById("regDriverTankerId")?.value.trim();
+            registerPayload.registration = document.getElementById("regDriverRegNumber")?.value.trim();
+            registerPayload.driver_key = document.getElementById("regDriverKey")?.value.trim();
+            registerPayload.village = document.getElementById("regDriverRoute")?.value.trim();
+          } else if (activeRoleKey === "panchayat") {
+            registerPayload.village = document.getElementById("regPanchayatVillage")?.value.trim();
+            registerPayload.badge_id = document.getElementById("regPanchayatBadge")?.value.trim();
+            registerPayload.cistern_key = document.getElementById("regPanchayatCisternKey")?.value.trim();
+            registerPayload.title = document.getElementById("regPanchayatTitle")?.value.trim();
+          }
+
+          result = await window.JalAuth.register(registerPayload);
+        } else {
+          // Sign In Mode
+          result = await window.JalAuth.login({
+            email: email,
+            password: password,
+            role: activeRoleKey
+          });
+        }
 
         if (result.success) {
-          if (btnText) btnText.textContent = "Verified! Redirecting...";
+          if (btnText) btnText.textContent = currentAuthMode === "register" ? "Registered! Launching console..." : "Verified! Redirecting...";
           if (btnIcon) {
             btnIcon.classList.remove("animate-spin");
             btnIcon.textContent = "check_circle";
@@ -262,12 +395,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.location.href = finalUrl;
           }, 350);
         } else {
-          showAlert("Authentication Failed", result.message || "Invalid credentials or unauthorized role.");
+          showAlert(currentAuthMode === "register" ? "Registration Notice" : "Authentication Failed", result.message || "Operation failed.");
           resetSubmitBtn();
         }
       } catch (err) {
-        console.error("Login submission error:", err);
-        showAlert("Connection Notice", "Verification failed. Please check your connection.");
+        console.error("Auth form submission error:", err);
+        showAlert("Connection Notice", "Operation failed. Please check your connection.");
         resetSubmitBtn();
       }
     });

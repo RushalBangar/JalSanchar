@@ -88,6 +88,33 @@ document.addEventListener("DOMContentLoaded", () => {
   syncNetworkStatus();
 
   /**
+   * Synchronizes Panchayat Console with live user profile
+   */
+  function syncDynamicPanchayatUI() {
+    const user = window.JalAuth ? window.JalAuth.getUser() : null;
+    if (!user) return;
+
+    const villageName = user.village || "Khopadi (Sinnar)";
+    const badgeId = user.badge_id || "GP-SN-104";
+
+    const substrip = document.getElementById("panchayatSubstripTitle");
+    if (substrip) substrip.textContent = `${villageName} • ${badgeId}`;
+
+    const titleEl = document.getElementById("panchayatCisternTitle");
+    if (titleEl) titleEl.textContent = `${villageName} Community Cistern`;
+
+    const subEl = document.getElementById("panchayatCisternSub");
+    if (subEl) subEl.textContent = `Sinnar Taluka • Node #${badgeId}`;
+  }
+
+  syncDynamicPanchayatUI();
+
+  window.addEventListener("jal-profile-updated", () => {
+    syncDynamicPanchayatUI();
+    triggerToast("✓ Panchayat Console Synced to Updated Profile");
+  });
+
+  /**
    * Floating Toast Trigger
    */
   function triggerToast(message) {

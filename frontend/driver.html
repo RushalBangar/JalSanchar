@@ -200,7 +200,7 @@
 
           <!-- Tanker Identifier Badge -->
           <div class="bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-            <span class="font-label-tactical text-label-tactical text-primary font-bold">TK-04</span>
+            <span id="headerTankerBadge" class="font-label-tactical text-label-tactical text-primary font-bold">TK-04</span>
           </div>
 
           <!-- Language Selector -->
@@ -242,7 +242,7 @@
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe-emerald opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-safe-emerald"></span>
           </span>
-          <span class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Mission TK-04 Active</span>
+          <span id="missionActiveBannerText" class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Mission Active</span>
         </div>
         <div class="flex items-center space-x-1.5 text-on-surface-variant font-label-tactical text-label-tactical">
           <span class="material-symbols-outlined text-[14px] text-primary">satellite_alt</span>
@@ -261,7 +261,7 @@
         <div class="flex items-start justify-between gap-2">
           <div class="flex flex-col">
             <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Active Dispatch Order</span>
-            <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight mt-0.5">
+            <h1 id="targetVillageTitle" class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight mt-0.5">
               Target: Khopadi Cistern
             </h1>
           </div>
@@ -418,20 +418,16 @@
         </button>
       </div>
 
-      <!-- Role Quick Jumps -->
-      <div class="grid grid-cols-3 gap-2 pt-1">
-        <a class="flex items-center justify-center space-x-1 py-2.5 px-1 bg-surface-container-high/60 hover:bg-surface-container-high rounded-xl text-on-surface text-center shadow-sm border border-white/5 transition-all" href="panchayat.html">
-          <span class="material-symbols-outlined text-[16px] text-primary">smartphone</span>
-          <span class="font-label-tactical text-label-tactical font-semibold uppercase">Panchayat View</span>
-        </a>
-        <a class="flex items-center justify-center space-x-1 py-2.5 px-1 bg-surface-container-high/60 hover:bg-surface-container-high rounded-xl text-on-surface text-center shadow-sm border border-white/5 transition-all" href="dashboard.html">
-          <span class="material-symbols-outlined text-[16px] text-secondary">satellite_alt</span>
-          <span class="font-label-tactical text-label-tactical font-semibold uppercase">Collector View</span>
-        </a>
-        <a class="flex items-center justify-center space-x-1 py-2.5 px-1 bg-surface-container-high/60 hover:bg-alert-crimson/20 rounded-xl text-alert-crimson text-center shadow-sm border border-white/5 transition-all" href="index.html">
+      <!-- Driver Operational Actions -->
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="window.JalAuth && window.JalAuth.openProfileModal()" class="flex items-center justify-center space-x-1 py-2.5 px-2 bg-surface-container-high/60 hover:bg-surface-container-high rounded-xl text-primary text-center shadow-sm border border-primary/20 transition-all cursor-pointer">
+          <span class="material-symbols-outlined text-[16px]">manage_accounts</span>
+          <span class="font-label-tactical text-label-tactical font-semibold uppercase">Edit Profile</span>
+        </button>
+        <button type="button" onclick="window.JalAuth && window.JalAuth.logout(true)" class="flex items-center justify-center space-x-1 py-2.5 px-2 bg-surface-container-high/60 hover:bg-alert-crimson/20 rounded-xl text-alert-crimson text-center shadow-sm border border-white/5 transition-all cursor-pointer">
           <span class="material-symbols-outlined text-[16px]">logout</span>
           <span class="font-label-tactical text-label-tactical font-semibold uppercase">Sign Out</span>
-        </a>
+        </button>
       </div>
 
     </div>
@@ -440,25 +436,29 @@
     <div id="driverToast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-safe-emerald text-surface-base px-4 py-2 rounded-xl text-body-sm font-semibold shadow-2xl z-50"></div>
   </main>
 
-  <!-- Sticky Bottom Tactical Navigation -->
+  <!-- Sticky Bottom Tactical Navigation (Driver Console Only - No Cross Portal Switching) -->
   <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-panel/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)] border-t border-white/5">
     <div class="flex justify-around items-center h-16 px-2">
       <a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl transition-all gap-0.5 text-primary font-bold bg-primary/10" href="driver.html">
         <span class="material-symbols-outlined text-[20px]">navigation</span>
         <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Cockpit</span>
       </a>
-      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-0.5" href="panchayat.html">
-        <span class="material-symbols-outlined text-[20px]">verified</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Handshake</span>
+      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-0.5" href="#btnLogArrival">
+        <span class="material-symbols-outlined text-[20px]">where_to_vote</span>
+        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Arrival</span>
       </a>
-      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-0.5" href="dashboard.html">
-        <span class="material-symbols-outlined text-[20px]">monitoring</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Telemetry</span>
+      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-0.5" href="#qrcode">
+        <span class="material-symbols-outlined text-[20px]">qr_code_2</span>
+        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">QR Token</span>
       </a>
-      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-alert-crimson transition-all gap-0.5" href="index.html">
+      <button type="button" onclick="window.JalAuth && window.JalAuth.openProfileModal()" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-primary transition-all gap-0.5 cursor-pointer">
+        <span class="material-symbols-outlined text-[20px]">person</span>
+        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Profile</span>
+      </button>
+      <button type="button" onclick="window.JalAuth && window.JalAuth.logout(true)" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-alert-crimson transition-all gap-0.5 cursor-pointer">
         <span class="material-symbols-outlined text-[20px]">logout</span>
         <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Exit</span>
-      </a>
+      </button>
     </div>
   </nav>
 
