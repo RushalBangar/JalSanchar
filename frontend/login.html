@@ -82,48 +82,39 @@
         </button>
       </div>
 
-      <!-- Role Tabs (Collector, Driver, Panchayat) -->
-      <div class="role-tabs" role="tablist" aria-label="Operational Role Selection">
-        <!-- 1. Collector -->
-        <button type="button" class="role-tab active" id="tabCollector" data-role="collector" role="tab" aria-selected="true">
-          <span class="material-symbols-outlined role-tab-icon">shield_person</span>
-          <div class="role-tab-info">
-            <span class="role-tab-name">District Collector</span>
-            <span class="role-tab-tag">GIS &amp; OR-Tools Command</span>
-          </div>
-        </button>
-
-        <!-- 2. Tanker Driver -->
-        <button type="button" class="role-tab" id="tabDriver" data-role="driver" role="tab" aria-selected="false">
-          <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
-          <div class="role-tab-info">
-            <span class="role-tab-name">Tanker Driver</span>
-            <span class="role-tab-tag">GPS Cockpit &amp; Dynamic QR</span>
-          </div>
-        </button>
-
-        <!-- 3. Gram Panchayat -->
-        <button type="button" class="role-tab" id="tabPanchayat" data-role="panchayat" role="tab" aria-selected="false">
-          <span class="material-symbols-outlined role-tab-icon">account_balance</span>
-          <div class="role-tab-info">
-            <span class="role-tab-name">Gram Panchayat</span>
-            <span class="role-tab-tag">Cistern QR &amp; Escrow Verifier</span>
-          </div>
-        </button>
-      </div>
-
-      <!-- Active Role Context Card (Shown in Sign-In Mode) -->
-      <div class="role-context-card" id="roleContextCard">
-        <div class="context-header">
-          <div class="context-role-pill" id="contextRolePill">
-            <span class="material-symbols-outlined text-[14px]" id="contextRoleIcon">shield_person</span>
-            <span id="contextRoleBadge">LEVEL-1 AUTHORITY</span>
-          </div>
-          <span class="context-id" id="contextId">Govt ID: MH-IAS-0419</span>
+      <!-- Role Selection Tabs (Visible in Registration Mode Only) -->
+      <div id="roleSelectionWrapper" class="hidden">
+        <div class="role-selection-heading">
+          <span class="material-symbols-outlined text-[16px] text-primary">badge</span>
+          <span>Select Operational Role to Register:</span>
         </div>
-        <div class="context-body">
-          <div class="context-title" id="contextName">Shri. Rahul More, IAS</div>
-          <div class="context-desc" id="contextJurisdiction">Ahilyanagar &amp; Sinnar Disaster Division</div>
+        <div class="role-tabs" id="roleTabsContainer" role="tablist" aria-label="Operational Role Selection">
+          <!-- 1. Collector -->
+          <button type="button" class="role-tab active" id="tabCollector" data-role="collector" role="tab" aria-selected="true">
+            <span class="material-symbols-outlined role-tab-icon">shield_person</span>
+            <div class="role-tab-info">
+              <span class="role-tab-name">District Collector</span>
+              <span class="role-tab-tag">GIS &amp; OR-Tools Command</span>
+            </div>
+          </button>
+
+          <!-- 2. Tanker Driver -->
+          <button type="button" class="role-tab" id="tabDriver" data-role="driver" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
+            <div class="role-tab-info">
+              <span class="role-tab-name">Tanker Driver</span>
+              <span class="role-tab-tag">GPS Cockpit &amp; Dynamic QR</span>
+            </div>
+          </button>
+
+          <!-- 3. Gram Panchayat -->
+          <button type="button" class="role-tab" id="tabPanchayat" data-role="panchayat" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined role-tab-icon">account_balance</span>
+            <div class="role-tab-info">
+              <span class="role-tab-name">Gram Panchayat</span>
+              <span class="role-tab-tag">Cistern QR &amp; Escrow Verifier</span>
+            </div>
+          </button>
         </div>
       </div>
 

@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const groupPhone = document.getElementById("groupPhone");
   const regPhoneInput = document.getElementById("regPhone");
   const roleSpecificContainer = document.getElementById("roleSpecificContainer");
+  const roleSelectionWrapper = document.getElementById("roleSelectionWrapper");
   const roleContextCard = document.getElementById("roleContextCard");
   const credentialsHelperContainer = document.getElementById("credentialsHelperContainer");
   const formMetaRemember = document.getElementById("formMetaRemember");
@@ -139,11 +140,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       modeRegisterBtn.setAttribute("aria-selected", isRegister ? "true" : "false");
     }
 
+    // Role selection tabs: ONLY visible in registration mode
+    if (roleSelectionWrapper) {
+      roleSelectionWrapper.classList.toggle("hidden", !isRegister);
+    }
+    if (roleContextCard) {
+      roleContextCard.classList.add("hidden");
+    }
+
     // Toggle field visibilities
     if (groupFullName) groupFullName.classList.toggle("hidden", !isRegister);
     if (groupPhone) groupPhone.classList.toggle("hidden", !isRegister);
     if (roleSpecificContainer) roleSpecificContainer.classList.toggle("hidden", !isRegister);
-    if (roleContextCard) roleContextCard.classList.toggle("hidden", isRegister);
     if (btnInstantDemo) btnInstantDemo.classList.toggle("hidden", isRegister);
     if (credentialsHelperContainer) credentialsHelperContainer.classList.toggle("hidden", isRegister);
     if (formMetaRemember) formMetaRemember.classList.toggle("hidden", isRegister);
@@ -154,29 +162,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (portalDesc) {
       portalDesc.textContent = isRegister 
-        ? "Register whole officer/driver details into the sovereign state database."
-        : "Select your authorized operational role or authenticate with state credentials.";
+        ? "Select your operational role and register your profile into the sovereign state database."
+        : "Enter your government service email and cryptographic access key to sign in.";
     }
 
     // Update Role-Specific Field Blocks in Register Mode
-    updateRoleFieldsBlock(activeRoleKey);
+    if (isRegister) {
+      updateRoleFieldsBlock(activeRoleKey);
+    }
 
     // Update Submit Button
     if (btnText) {
       btnText.textContent = isRegister
         ? `Register & Launch ${theme ? theme.roleLabel : 'Portal'} Console →`
-        : `Authorize & Enter ${theme ? theme.roleLabel : 'Portal'} →`;
+        : "Authorize & Enter Console →";
     }
 
     // If switching to register, clear pre-filled email so user inputs real data
     if (isRegister) {
       if (emailInput && emailInput.value.includes("@sinnar.jalsanjeevani.gov.in")) {
         emailInput.value = "";
-      }
-    } else {
-      const displayInfo = ROLE_DISPLAY[activeRoleKey];
-      if (displayInfo && emailInput && !emailInput.value) {
-        emailInput.value = displayInfo.email;
       }
     }
 
@@ -193,9 +198,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   modeRegisterBtn?.addEventListener("click", () => setAuthMode("register"));
 
   /**
-   * Sets the active role tab and synchronizes UI
+   * Sets the active role tab in registration mode
    */
-  function setActiveRole(roleKey, shouldUpdateInputs = true) {
+  function setActiveRole(roleKey, shouldUpdateInputs = false) {
     if (!window.JalAuth) return;
     activeRoleKey = roleKey;
     const theme = window.JalAuth.ROLE_THEMES[roleKey] || window.JalAuth.ROLE_THEMES.collector;
@@ -209,30 +214,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       tab.setAttribute("aria-selected", isMatch ? "true" : "false");
     });
 
-    // Update Context Card
-    if (contextRoleIcon) contextRoleIcon.textContent = theme.icon || "verified_user";
-    if (contextRoleBadge) contextRoleBadge.textContent = theme.roleBadge;
-    if (contextRolePill) {
-      contextRolePill.style.color = theme.badgeColor;
-      contextRolePill.style.backgroundColor = `${theme.badgeColor}26`;
-    }
-    if (contextId) contextId.textContent = displayInfo.badgeId;
-    if (contextName) contextName.textContent = displayInfo.name;
-    if (contextJurisdiction) contextJurisdiction.textContent = displayInfo.jurisdiction;
-
     // Update role fields block in register mode
     updateRoleFieldsBlock(roleKey);
-
-    // Auto-fill email only in sign-in mode
-    if (shouldUpdateInputs && currentAuthMode === "signin") {
-      if (emailInput) emailInput.value = displayInfo.email;
-    }
 
     // Update Submit Button Label
     if (btnText) {
       btnText.textContent = currentAuthMode === "register"
         ? `Register & Launch ${theme.roleLabel} Console →`
-        : `Authorize & Enter ${theme.roleLabel} →`;
+        : "Authorize & Enter Console →";
     }
 
     hideAlert();
@@ -374,11 +363,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           result = await window.JalAuth.register(registerPayload);
         } else {
-          // Sign In Mode
+          // Sign In Mode: Universal login by email and access key
           result = await window.JalAuth.login({
             email: email,
-            password: password,
-            role: activeRoleKey
+            password: password
           });
         }
 
@@ -466,8 +454,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   function resetSubmitBtn() {
     if (submitBtn) {
       submitBtn.disabled = false;
-      const theme = window.JalAuth.ROLE_THEMES[activeRoleKey];
-      if (btnText) btnText.textContent = `Authorize & Enter ${theme ? theme.roleLabel : 'Portal'} →`;
+      const theme = window.JalAuth ? window.JalAuth.ROLE_THEMES[activeRoleKey] : null;
+      if (btnText) {
+        btnText.textContent = currentAuthMode === "register"
+          ? `Register & Launch ${theme ? theme.roleLabel : 'Portal'} Console →`
+          : "Authorize & Enter Console →";
+      }
       if (btnIcon) {
         btnIcon.classList.remove("animate-spin");
         btnIcon.textContent = "login";
@@ -476,11 +468,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Initialize with Collector or URL-specified role
+  // Initialize role and mode
   const urlRole = urlParams.get("role");
-  if (urlRole && window.JalAuth.ROLE_THEMES[urlRole]) {
-    setActiveRole(urlRole, true);
+  if (urlRole && window.JalAuth && window.JalAuth.ROLE_THEMES[urlRole]) {
+    setActiveRole(urlRole, false);
   } else {
-    setActiveRole("collector", true);
+    setActiveRole("collector", false);
+  }
+
+  const urlMode = urlParams.get("mode");
+  if (urlMode === "register") {
+    setAuthMode("register");
+  } else {
+    setAuthMode("signin");
   }
 });

@@ -217,7 +217,20 @@
   margin: 0;
 }
 
-/* Role Selector Tabs */
+/* Role Selector (Registration Mode) */
+.role-selection-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0.65rem;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #38bdf8;
+  letter-spacing: 0.04em;
+}
+
 .role-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
