@@ -1,0 +1,115 @@
+name: JalSanjeevani CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Backend Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+        pip install pytest httpx
+
+    - name: Run Backend Syntax and Module Checks
+      run: |
+        python -m py_compile backend/main.py
+        python -m py_compile backend/security.py
+        python -m py_compile backend/geospatial.py
+        python -m py_compile backend/solver.py
+        python -m py_compile backend/seed_users.py
+
+    - name: Validate Backend API Endpoints & Cryptographic Security
+      env:
+        JWT_SECRET: "ci_testing_secret_key_jalsanjeevani_2026"
+        ENVIRONMENT: "test"
+      run: |
+        python -c "
+        from fastapi.testclient import TestClient
+        from backend.main import app
+        client = TestClient(app)
+
+        # 1. Health check
+        res = client.get('/health')
+        assert res.status_code == 200, f'Health check failed: {res.text}'
+        print('[CI PASS] Health endpoint online')
+
+        # 2. Authentication check
+        res_login = client.post('/api/auth/login', json={
+            'email': 'collector@sinnar.jalsanjeevani.gov.in',
+            'password': 'sovereign_water_2025',
+            'role': 'collector'
+        })
+        assert res_login.status_code == 200, f'Login failed: {res_login.text}'
+        token = res_login.json()['token']
+        print('[CI PASS] Bcrypt auth & session generation verified')
+
+        # 3. Cryptographic delivery handshake
+        headers = {'Authorization': f'Bearer {token}'}
+        res_deliv = client.post('/api/verify-delivery', json={
+            'tanker_id': 'TN-SN-02',
+            'target_village': 'Khopadi (Sinnar)',
+            'driver_lat': 19.9015,
+            'driver_lng': 74.1030,
+            'driver_key': '0x9F3B4E',
+            'cistern_key': '0x74CE8A1109B2',
+            'volume_liters': 10000
+        }, headers=headers)
+        assert res_deliv.status_code == 200, f'Handshake failed: {res_deliv.text}'
+        assert res_deliv.json()['status'] == 'VERIFIED_DELIVERED'
+        print('[CI PASS] Dual-key cryptographic handshake verified')
+
+        # 4. Google OR-Tools CVRP solver
+        res_alloc = client.post('/api/allocate', json={
+            'villages': [
+                {'id': 'AH-01', 'name': 'Tisgaon', 'lat': 19.1415, 'lng': 75.0512, 'human_pop': 4850, 'cattle_pop': 1620, 'status': 'critical'},
+                {'id': 'SN-01', 'name': 'Pangari', 'lat': 19.8512, 'lng': 73.9540, 'human_pop': 2450, 'cattle_pop': 820, 'status': 'critical'}
+            ],
+            'num_tankers': 2,
+            'tanker_capacity': 250000
+        }, headers=headers)
+        assert res_alloc.status_code == 200, f'Allocation failed: {res_alloc.text}'
+        assert len(res_alloc.json()['routes']) > 0
+        print('[CI PASS] Google OR-Tools CVRP algorithm verified')
+        "
+
+    - name: Validate Frontend Assets, CSP & Translations
+      run: |
+        python -c "
+        import os, re
+
+        frontend_dir = 'frontend'
+        pages = [f for f in os.listdir(frontend_dir) if f.endswith('.html')]
+        assert len(pages) >= 5, f'Missing frontend pages. Found: {pages}'
+
+        # Check CSP for Tailwind Play CDN
+        for page in ['dashboard.html', 'panchayat.html', 'driver.html', 'index.html']:
+            with open(os.path.join(frontend_dir, page), 'r', encoding='utf-8') as f:
+                content = f.read()
+            assert 'https://cdn.tailwindcss.com' in content, f'{page} missing Tailwind CDN in CSP/script'
+
+        # Check dashboard element IDs
+        with open('frontend/dashboard.html', 'r', encoding='utf-8') as f:
+            html = f.read()
+        with open('frontend/js/dashboard.js', 'r', encoding='utf-8') as f:
+            js = f.read()
+        ids = re.findall(r'getElementById\([\'\"]([^\'\"]+)[\'\"]\)', js)
+        for i in ids:
+            assert i in html, f'Missing ID in dashboard.html: {i}'
+
+        print(f'[CI PASS] Frontend {len(pages)} pages and all DOM bindings validated!')
+        "
