@@ -7,7 +7,7 @@
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://jalsanjeevani.onrender.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
   <title>Sovereign Operational Portal | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   
@@ -91,47 +91,47 @@
         </div>
       </div>
 
+      <!-- Role Selection Tabs (Visible in Both Modes for Instant 1-Click Role Access) -->
+      <div id="roleSelectionWrapper" style="margin-bottom: 1.25rem;">
+        <div class="role-selection-heading" id="roleSelectionHeading" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8; margin-bottom: 8px;">
+          <span class="material-symbols-outlined text-[16px]" style="color: #00e5ff;">badge</span>
+          <span id="roleSelectionTitle">Select Operational Role:</span>
+        </div>
+        <div class="role-tabs" id="roleTabsContainer" role="tablist" aria-label="Operational Role Selection">
+          <!-- 1. Collector -->
+          <button type="button" class="role-tab active" id="tabCollector" data-role="collector" role="tab" aria-selected="true">
+            <span class="material-symbols-outlined role-tab-icon">shield_person</span>
+            <div class="role-tab-info">
+              <span class="role-tab-name">District Collector</span>
+              <span class="role-tab-tag">GIS &amp; OR-Tools Command</span>
+            </div>
+          </button>
+
+          <!-- 2. Tanker Driver -->
+          <button type="button" class="role-tab" id="tabDriver" data-role="driver" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
+            <div class="role-tab-info">
+              <span class="role-tab-name">Tanker Driver</span>
+              <span class="role-tab-tag">GPS Cockpit &amp; Dynamic QR</span>
+            </div>
+          </button>
+
+          <!-- 3. Gram Panchayat -->
+          <button type="button" class="role-tab" id="tabPanchayat" data-role="panchayat" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined role-tab-icon">account_balance</span>
+            <div class="role-tab-info">
+              <span class="role-tab-name">Gram Panchayat</span>
+              <span class="role-tab-tag">Cistern QR &amp; Escrow Verifier</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <!-- Official Auth Form (Sign-In or Registration) -->
       <form id="loginForm" novalidate>
 
         <!-- REGISTRATION FIELDS CONTAINER (Strictly visible in Registration Mode only) -->
         <div id="registrationFields" class="hidden" style="display: none;">
-
-          <!-- Role Selection Tabs -->
-          <div id="roleSelectionWrapper">
-            <div class="role-selection-heading">
-              <span class="material-symbols-outlined text-[16px] text-primary">badge</span>
-              <span>Select Operational Role to Register:</span>
-            </div>
-            <div class="role-tabs" id="roleTabsContainer" role="tablist" aria-label="Operational Role Selection">
-              <!-- 1. Collector -->
-              <button type="button" class="role-tab active" id="tabCollector" data-role="collector" role="tab" aria-selected="true">
-                <span class="material-symbols-outlined role-tab-icon">shield_person</span>
-                <div class="role-tab-info">
-                  <span class="role-tab-name">District Collector</span>
-                  <span class="role-tab-tag">GIS &amp; OR-Tools Command</span>
-                </div>
-              </button>
-
-              <!-- 2. Tanker Driver -->
-              <button type="button" class="role-tab" id="tabDriver" data-role="driver" role="tab" aria-selected="false">
-                <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
-                <div class="role-tab-info">
-                  <span class="role-tab-name">Tanker Driver</span>
-                  <span class="role-tab-tag">GPS Cockpit &amp; Dynamic QR</span>
-                </div>
-              </button>
-
-              <!-- 3. Gram Panchayat -->
-              <button type="button" class="role-tab" id="tabPanchayat" data-role="panchayat" role="tab" aria-selected="false">
-                <span class="material-symbols-outlined role-tab-icon">account_balance</span>
-                <div class="role-tab-info">
-                  <span class="role-tab-name">Gram Panchayat</span>
-                  <span class="role-tab-tag">Cistern QR &amp; Escrow Verifier</span>
-                </div>
-              </button>
-            </div>
-          </div>
 
           <!-- Full Official Name -->
           <div class="form-group" id="groupFullName">
@@ -304,7 +304,48 @@
           <span class="material-symbols-outlined btn-icon" id="btnIcon">login</span>
           <span id="btnText">Authorize &amp; Enter Console →</span>
         </button>
+
+        <!-- Instant 1-Tap Evaluation Sign-In Button -->
+        <button type="button" id="btnInstantDemo" class="btn btn-outline btn-block btn-demo">
+          <span class="material-symbols-outlined text-[18px]">bolt</span>
+          <span id="btnDemoText">Instant 1-Tap Evaluation Sign-In</span>
+        </button>
       </form>
+
+      <!-- Quick Verified Credentials Cheat-sheet -->
+      <div class="credentials-helper" id="credentialsHelperContainer">
+        <button type="button" class="helper-toggle-btn" id="btnToggleHelper">
+          <span class="material-symbols-outlined text-[15px]">info</span>
+          <span>View Verified Test Credentials</span>
+          <span class="material-symbols-outlined helper-chevron" id="helperChevron">expand_more</span>
+        </button>
+        <div class="helper-drawer hidden" id="helperDrawer">
+          <div class="helper-card" data-role="collector">
+            <div class="helper-header">
+              <span class="helper-role">🏛️ District Collector</span>
+              <span class="helper-badge">LEVEL-1</span>
+            </div>
+            <code>collector@sinnar.jalsanjeevani.gov.in</code>
+          </div>
+          <div class="helper-card" data-role="driver">
+            <div class="helper-header">
+              <span class="helper-role">🚛 Tanker Pilot</span>
+              <span class="helper-badge" style="color: #10b981;">MH-15</span>
+            </div>
+            <code>driver.mh15@sinnar.jalsanjeevani.gov.in</code>
+          </div>
+          <div class="helper-card" data-role="panchayat">
+            <div class="helper-header">
+              <span class="helper-role">🌾 Gram Panchayat</span>
+              <span class="helper-badge" style="color: #f59e0b;">KHOPADI</span>
+            </div>
+            <code>panchayat.khopadi@sinnar.jalsanjeevani.gov.in</code>
+          </div>
+          <div class="helper-footer">
+            Universal Password: <code>sovereign_water_2025</code>
+          </div>
+        </div>
+      </div>
 
       <!-- Escrow Policy Assurance Footnote -->
       <footer class="login-footer">

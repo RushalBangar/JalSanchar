@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   modeRegisterBtn?.addEventListener("click", () => setAuthMode("register"));
 
   /**
-   * Sets the active role tab in registration mode
+   * Sets the active role tab
    */
   function setActiveRole(roleKey, shouldUpdateInputs = false) {
     if (!window.JalAuth) return;
@@ -217,6 +217,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       tab.setAttribute("aria-selected", isMatch ? "true" : "false");
     });
 
+    // In Sign-In mode, automatically auto-fill the verified test credentials
+    if (currentAuthMode === "signin" && shouldUpdateInputs) {
+      if (emailInput) emailInput.value = displayInfo.email;
+      if (passwordInput) passwordInput.value = "sovereign_water_2025";
+    }
+
     // Update role fields block in register mode
     updateRoleFieldsBlock(roleKey);
 
@@ -224,7 +230,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnText) {
       btnText.textContent = currentAuthMode === "register"
         ? `Register & Launch ${theme.roleLabel} Console →`
-        : "Authorize & Enter Console →";
+        : `Authorize & Enter ${theme.roleLabel} Console →`;
     }
 
     hideAlert();
@@ -235,6 +241,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     tab?.addEventListener("click", () => {
       const targetRole = tab.getAttribute("data-role");
       setActiveRole(targetRole, true);
+    });
+  });
+
+  // ─── Instant 1-Tap Evaluation Sign-In Button ───
+  if (btnInstantDemo) {
+    btnInstantDemo.addEventListener("click", async () => {
+      const displayInfo = ROLE_DISPLAY[activeRoleKey] || ROLE_DISPLAY.collector;
+      if (emailInput) emailInput.value = displayInfo.email;
+      if (passwordInput) passwordInput.value = "sovereign_water_2025";
+
+      btnInstantDemo.disabled = true;
+      const roleName = window.JalAuth?.ROLE_THEMES[activeRoleKey]?.roleLabel || "Console";
+      btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Authorizing ${roleName}...`;
+
+      const result = await window.JalAuth.login({
+        email: displayInfo.email,
+        password: "sovereign_water_2025",
+        role: activeRoleKey
+      });
+
+      if (result.success) {
+        btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">check_circle</span> Authorized! Launching...`;
+        btnInstantDemo.style.background = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+        btnInstantDemo.style.color = "#ffffff";
+        setTimeout(() => {
+          if (typeof window.routeAuthenticatedUser === "function") {
+            window.routeAuthenticatedUser(result.session ? result.session.user : { role: activeRoleKey });
+          } else {
+            window.location.href = result.redirect || "dashboard.html";
+          }
+        }, 300);
+      } else {
+        showAlert("Authentication Notice", result.message);
+        btnInstantDemo.disabled = false;
+        btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px]">bolt</span> Instant 1-Tap Evaluation Sign-In`;
+      }
+    });
+  }
+
+  // ─── Credentials Helper Drawer & Quick Fill ───
+  const btnToggleHelper = document.getElementById("btnToggleHelper");
+  const helperDrawer = document.getElementById("helperDrawer");
+  const helperChevron = document.getElementById("helperChevron");
+
+  btnToggleHelper?.addEventListener("click", () => {
+    if (!helperDrawer) return;
+    const isHidden = helperDrawer.classList.toggle("hidden");
+    if (helperChevron) helperChevron.textContent = isHidden ? "expand_more" : "expand_less";
+  });
+
+  document.querySelectorAll(".helper-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const targetRole = card.getAttribute("data-role");
+      if (targetRole) {
+        setActiveRole(targetRole, true);
+        showAlert("Account Selected", `Pre-filled test credentials for ${ROLE_DISPLAY[targetRole]?.name || targetRole}. Click 'Authorize' or '1-Tap' to enter.`, "info");
+      }
     });
   });
 
@@ -407,16 +470,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Initialize role and mode
   const urlRole = urlParams.get("role");
-  if (urlRole && window.JalAuth && window.JalAuth.ROLE_THEMES[urlRole]) {
-    setActiveRole(urlRole, false);
-  } else {
-    setActiveRole("collector", false);
-  }
-
   const urlMode = urlParams.get("mode");
+
   if (urlMode === "register") {
     setAuthMode("register");
+    if (urlRole && window.JalAuth && window.JalAuth.ROLE_THEMES[urlRole]) {
+      setActiveRole(urlRole, false);
+    } else {
+      setActiveRole("collector", false);
+    }
   } else {
     setAuthMode("signin");
+    const initialRole = (urlRole && window.JalAuth && window.JalAuth.ROLE_THEMES[urlRole]) ? urlRole : "collector";
+    setActiveRole(initialRole, true);
+
+    // Auto-trigger instant demo if ?demo=true is in URL
+    if (urlParams.get("demo") === "true" && btnInstantDemo) {
+      setTimeout(() => btnInstantDemo.click(), 400);
+    }
   }
 });
