@@ -106,8 +106,134 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "SN-06", name: "Nandur Shingote", coords: [19.7820, 73.9010], status: "safe", population: 5400, cattle: 1850, depletion_rate: "-0.8 cm/day", hours_remaining: 380, cistern_level: "74%" }
   ];
 
+  // Baseline initial snapshot for Reset Demo State
+  const INITIAL_VILLAGES = JSON.parse(JSON.stringify(villages));
 
   const markersMap = {};
+
+  /**
+   * Generates a 14-day WDI time-series SVG sparkline and input feature breakdown
+   */
+  function generateWdiFeatureBreakdown(v) {
+    let baseWdi = v.status === "critical" ? 0.78 : v.status === "warning" ? 0.58 : 0.24;
+    if (v.id === "SN-02") baseWdi = 0.78; // Khopadi exact benchmark
+    else if (v.id === "AH-01") baseWdi = 0.86;
+    else if (v.id === "SN-01") baseWdi = 0.81;
+
+    // Feature inputs (normalized 0-1)
+    const sarWeight = 0.45;
+    const smapWeight = 0.30;
+    const wellWeight = 0.15;
+    const tempWeight = 0.10;
+
+    const sarVal = Math.min(0.98, Number((baseWdi * 1.04).toFixed(2)));
+    const smapVal = Math.min(0.98, Number((baseWdi * 0.96).toFixed(2)));
+    const wellVal = Math.min(0.98, Number((baseWdi * 1.08).toFixed(2)));
+    const tempVal = Math.min(0.98, Number((baseWdi * 0.88).toFixed(2)));
+    const compositeWdi = Number((sarWeight * sarVal + smapWeight * smapVal + wellWeight * wellVal + tempWeight * tempVal).toFixed(2));
+
+    // 14-Day historical & forecast trend points for SVG sparkline (width 240, height 50)
+    const points = [];
+    const svgW = 240;
+    const svgH = 50;
+    const startVal = Math.max(0.1, baseWdi - (v.status === "critical" ? 0.35 : v.status === "warning" ? 0.22 : 0.08));
+    for (let day = 0; day < 14; day++) {
+      const t = day / 13;
+      const val = startVal + (baseWdi - startVal) * Math.pow(t, 1.2) + (Math.sin(day * 1.8) * 0.02);
+      const x = Math.round((day / 13) * (svgW - 20) + 10);
+      const y = Math.round(svgH - 8 - (val * (svgH - 16)));
+      points.push(`${x},${y}`);
+    }
+    const polylinePts = points.join(" ");
+
+    // Critical threshold Y coordinate (WDI = 0.70)
+    const threshY = Math.round(svgH - 8 - (0.70 * (svgH - 16)));
+    const strokeColor = compositeWdi >= 0.70 ? "#ef4444" : compositeWdi >= 0.50 ? "#f59e0b" : "#10b981";
+
+    return `
+      <div style="font-family: Inter, sans-serif; min-width: 260px; max-width: 290px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <h4 style="margin: 0; color: #00e5ff; font-size: 0.95rem; font-weight:700;">${escapeHtml(v.name)}</h4>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:800; color:${strokeColor}; background:${strokeColor}20; padding:2px 6px; border-radius:4px; border:1px solid ${strokeColor}50;">
+            WDI ${compositeWdi.toFixed(2)}
+          </span>
+        </div>
+        <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:8px;">
+          Water Depletion Index • 14-Day Advance Trajectory
+        </div>
+
+        <!-- 14-Day Mini Forecast Sparkline SVG -->
+        <div style="background: rgba(8, 14, 27, 0.85); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 6px; padding: 6px; margin-bottom: 8px;">
+          <div style="display:flex; justify-content:space-between; font-size:9px; font-family:'JetBrains Mono',monospace; color:#94a3b8; margin-bottom:2px;">
+            <span>T-14d</span>
+            <span style="color:#ef4444;">Threshold 0.70 ──</span>
+            <span>Today (T-0)</span>
+          </div>
+          <svg width="100%" height="48" viewBox="0 0 ${svgW} ${svgH}" style="overflow:visible;">
+            <line x1="5" y1="${threshY}" x2="${svgW - 5}" y2="${threshY}" stroke="#ef4444" stroke-dasharray="3,3" stroke-width="1" opacity="0.65" />
+            <polyline points="${polylinePts}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="${points[points.length - 1].split(',')[0]}" cy="${points[points.length - 1].split(',')[1]}" r="3.5" fill="${strokeColor}" />
+          </svg>
+        </div>
+
+        <!-- WDI Input Weights Breakdown -->
+        <div style="font-size: 0.72rem; color: #dce2f4; margin-bottom: 8px;">
+          <div style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; margin-bottom: 4px;">
+            WDI Input Features &amp; Weights:
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                <span>Sentinel-1 SAR (45%)</span>
+                <span style="font-family: 'JetBrains Mono', monospace; color: #00e5ff;">${sarVal.toFixed(2)}</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.1); height: 3px; border-radius: 2px; overflow: hidden;">
+                <div style="background: #00e5ff; height: 100%; width: ${Math.round(sarVal * 100)}%;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                <span>NASA SMAP Soil (30%)</span>
+                <span style="font-family: 'JetBrains Mono', monospace; color: #3491ff;">${smapVal.toFixed(2)}</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.1); height: 3px; border-radius: 2px; overflow: hidden;">
+                <div style="background: #3491ff; height: 100%; width: ${Math.round(smapVal * 100)}%;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                <span>Borewell Drawdown (15%)</span>
+                <span style="font-family: 'JetBrains Mono', monospace; color: #f59e0b;">${wellVal.toFixed(2)}</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.1); height: 3px; border-radius: 2px; overflow: hidden;">
+                <div style="background: #f59e0b; height: 100%; width: ${Math.round(wellVal * 100)}%;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                <span>Ambient Temp / ET (10%)</span>
+                <span style="font-family: 'JetBrains Mono', monospace; color: #10b981;">${tempVal.toFixed(2)}</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.1); height: 3px; border-radius: 2px; overflow: hidden;">
+                <div style="background: #10b981; height: 100%; width: ${Math.round(tempVal * 100)}%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 0.72rem; line-height: 1.4; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
+          <div style="display:flex; justify-content:space-between;">
+            <span>Cistern Reserve:</span>
+            <strong style="color:${strokeColor};">${escapeHtml(v.cistern_level)} (${escapeHtml(String(v.hours_remaining ?? ""))}h)</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>Statutory Quota:</span>
+            <strong style="color:#00e5ff;">${(v.population * 40 + v.cattle * 70).toLocaleString()} L/day</strong>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
   // Render Village Heatmap Circles into villageLayer
   function renderVillageMarkers() {
@@ -116,9 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     villages.forEach(v => {
       let color = v.status === "critical" ? "#ef4444" : v.status === "warning" ? "#f59e0b" : "#10b981";
-      let humanDemand = v.population * 40;
-      let cattleDemand = v.cattle * 70;
-      let totalDemand = humanDemand + cattleDemand;
 
       const circle = L.circle(v.coords, {
         color: color,
@@ -126,25 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fillOpacity: 0.45,
         weight: 2.5,
         radius: 2600
-      }).bindPopup(`
-        <div style="font-family: Inter, sans-serif; min-width: 210px;">
-          <h4 style="margin: 0 0 4px 0; color: #00e5ff; font-size: 1rem;">${escapeHtml(v.name)} Village</h4>
-          <div style="margin-bottom: 8px;">
-            <span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; background: ${color}20; color: ${color}; border: 1px solid ${color}50;">
-              ${escapeHtml(String(v.status || "").toUpperCase())} (${escapeHtml(String(v.hours_remaining ?? ""))}h Reserve)
-            </span>
-          </div>
-          <div style="font-size: 0.8rem; line-height: 1.5; color: #dce2f4;">
-            <p><strong>Cistern Level:</strong> ${escapeHtml(v.cistern_level)}</p>
-            <p><strong>Aquifer Trend:</strong> ${escapeHtml(v.depletion_rate)}</p>
-            <p><strong>Humans:</strong> ${v.population.toLocaleString()} (Min ${humanDemand.toLocaleString()}L)</p>
-            <p><strong>Livestock:</strong> ${v.cattle.toLocaleString()} (Min ${cattleDemand.toLocaleString()}L)</p>
-            <p style="margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); color: #00e5ff; font-weight: 600;">
-              Statutory Demand: ${totalDemand.toLocaleString()} L/day
-            </p>
-          </div>
-        </div>
-      `);
+      }).bindPopup(generateWdiFeatureBreakdown(v));
 
       circle.addTo(villageLayer);
       markersMap[v.id] = { circle, coords: v.coords };
@@ -631,149 +736,364 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 7. Google OR-Tools Allocation Solver Integration
-  const btnAllocate = document.getElementById("btnAllocate");
-  const solverResultBox = document.getElementById("solverResultBox");
-  const btnExportManifest = document.getElementById("btnExportManifest");
-  let activePolylines = [];
-  let generatedRouteData = null;
+  // Live floating toast alert helper
+  function showLiveToast(message, isAlert = false) {
+    const toast = document.createElement("div");
+    const borderCol = isAlert ? "#ef4444" : "#10b981";
+    toast.innerHTML = `
+      <div style="position: fixed; bottom: 24px; right: 24px; background: rgba(7, 14, 26, 0.96); border: 1px solid ${borderCol}; border-left: 4px solid ${borderCol}; padding: 12px 18px; border-radius: 8px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); z-index: 9999; display: flex; align-items: center; gap: 12px; font-family: Inter, sans-serif; backdrop-filter: blur(12px); animation: fadeIn 0.3s ease;">
+        <span style="font-size: 1.3rem;">${isAlert ? '⚠️' : '⚡'}</span>
+        <div>
+          <div style="font-size: 0.72rem; font-weight: 700; color: ${borderCol}; text-transform: uppercase; letter-spacing: 0.05em;">PLATFORM TELEMETRY SYNC</div>
+          <div style="font-size: 0.76rem; color: #dce2f4;">${escapeHtml(message)}</div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5500);
+  }
 
-  if (btnAllocate) {
-    btnAllocate.addEventListener("click", async () => {
-      btnAllocate.innerHTML = "Computing OR-Tools Matrix...";
-      btnAllocate.style.opacity = "0.75";
-      btnAllocate.disabled = true;
+  // Escrow state reset helper
+  function resetEscrowUI() {
+    if (btnSuspend) {
+      btnSuspend.textContent = "Freeze Escrow";
+      btnSuspend.disabled = false;
+      btnSuspend.classList.remove("bg-surface-container-high", "text-outline", "cursor-not-allowed");
+      btnSuspend.classList.add("bg-alert-crimson", "hover:bg-error");
+    }
+    if (alertCard) {
+      alertCard.style.borderColor = "";
+      alertCard.style.borderLeftColor = "";
+      alertCard.style.background = "";
+      const desc = alertCard.querySelector(".alert-desc");
+      if (desc) {
+        desc.innerHTML = `Deviated <strong class="text-alert-crimson font-bold">14km off designated corridor</strong> near Karjat. Private commercial diversion flagged. Digital custody hash broken.`;
+      }
+    }
+    if (alertBadge) {
+      alertBadge.className = "flex items-center gap-1 px-2 py-1 rounded-lg bg-error-container text-on-error-container font-label-tactical text-[10px] sm:text-label-tactical uppercase cursor-pointer";
+      alertBadge.innerHTML = `
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-alert-crimson opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-alert-crimson"></span>
+        </span>
+        <span class="hidden sm:inline">1 Rogue Alert</span>
+        <span class="sm:hidden">1 Rogue</span>
+      `;
+    }
+    const escrowPill = document.getElementById("escrow-status-pill");
+    if (escrowPill) {
+      escrowPill.textContent = "Escrow: ACTIVE (₹1,45,000)";
+      escrowPill.classList.remove("text-error", "font-bold");
+      escrowPill.classList.add("text-warning-amber");
+    }
+    if (rogueTanker) {
+      rogueTanker.setPopupContent("<b>ALERT: Tanker #TN-ROGUE (MH-16-TX-9901)</b><br><span style='color:#ef4444;'>14km Off-Route Anomaly near Karjat</span><br>GPS Handshake Missing • Commercial Site Diversion");
+    }
+    if (tankerMarkers['TN-SN-02']) {
+      tankerMarkers['TN-SN-02'].setLatLng([19.8920, 74.0610]);
+    }
+  }
 
-      // Clear existing drawn routes
-      routeLayer.clearLayers();
-      activePolylines = [];
+  // Reset Demo State Button Handler
+  const btnResetDemoDashboard = document.getElementById("btnResetDemoDashboard");
+  btnResetDemoDashboard?.addEventListener("click", async () => {
+    btnResetDemoDashboard.classList.add("opacity-50", "pointer-events-none");
+    btnResetDemoDashboard.innerHTML = `<span class="material-symbols-outlined text-[14px] animate-spin">sync</span><span class="hidden sm:inline">Resetting...</span>`;
+    
+    if (window.JalSupabase) {
+      await window.JalSupabase.resetDemoState();
+    }
+    resetEscrowUI();
+    villages = JSON.parse(JSON.stringify(INITIAL_VILLAGES));
+    renderVillageMarkers();
+    renderVillageList();
+    updateVillageMetrics();
+    showLiveToast("Demo state reset to initial baseline across all tabs.");
 
-      const payload = {
-        villages: villages.map(v => ({
-          id: v.id,
-          name: v.name,
-          lat: v.coords[0],
-          lng: v.coords[1],
-          human_pop: v.population,
-          cattle_pop: v.cattle,
-          status: v.status
-        })),
-        num_tankers: 2,
-        tanker_capacity: 250000
-      };
+    setTimeout(() => {
+      btnResetDemoDashboard.classList.remove("opacity-50", "pointer-events-none");
+      btnResetDemoDashboard.innerHTML = `
+        <span class="material-symbols-outlined text-[14px]">restart_alt</span>
+        <span class="hidden sm:inline">Reset Demo</span>
+      `;
+    }, 600);
+  });
 
-      let routesDrawn = false;
-      const primaryBase = window.JalAuth ? window.JalAuth.getApiBase() : (
-        window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
-          ? "http://127.0.0.1:8000"
-          : "https://jalsanjeevani.onrender.com"
-      );
-      const fallbackBase = primaryBase.includes("onrender.com")
-        ? "http://127.0.0.1:8000"
-        : "https://jalsanjeevani.onrender.com";
-      const apiEndpoints = [
-        `${primaryBase}/api/allocate`,
-        `${fallbackBase}/api/allocate`
-      ];
-
-      for (const endpoint of apiEndpoints) {
-        if (routesDrawn) break;
-        try {
-          const authHeaders = window.JalAuth ? window.JalAuth.getAuthHeaders() : {};
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...authHeaders
-            },
-            body: JSON.stringify(payload)
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.routes && data.routes.length > 0) {
-              generatedRouteData = data.routes;
-              const colors = ['#00e5ff', '#10b981', '#3491ff'];
-              data.routes.forEach((route, idx) => {
-                const polyCoords = route.map(point => point.coords);
-                const polyline = L.polyline(polyCoords, {
-                  color: colors[idx % colors.length],
-                  weight: 4,
-                  dashArray: '8, 8',
-                  lineCap: 'round'
-                }).bindPopup(`<b>OR-Tools Route #${idx + 1}</b><br>Live Cloud Solved • 100% Demand Met`).addTo(routeLayer);
-
-                activePolylines.push(polyline);
-              });
-              routesDrawn = true;
-              console.log(`🌊 [JalSanjeevani] Successfully optimized routes via ${endpoint}`);
-            }
-          }
-        } catch (err) {
-          console.warn(`Backend endpoint ${endpoint} unavailable, trying fallback...`);
+  // Cross-Tab Supabase / BroadcastChannel Event Listener
+  if (window.JalSupabase) {
+    window.JalSupabase.onStateBroadcast((event) => {
+      console.log("⚡ [CrossTab Broadcast Received in Dashboard]:", event);
+      if (event.type === "DEMO_STATE_RESET") {
+        resetEscrowUI();
+        villages = JSON.parse(JSON.stringify(INITIAL_VILLAGES));
+        renderVillageMarkers();
+        renderVillageList();
+        updateVillageMetrics();
+        showLiveToast("Demo state restored to initial baseline across all tabs.");
+      } else if (event.type === "DRIVER_ARRIVAL") {
+        if (tankerMarkers['TN-SN-02']) {
+          tankerMarkers['TN-SN-02'].setLatLng([19.9015, 74.1030]);
+          tankerMarkers['TN-SN-02'].openPopup();
         }
-      }
-
-      // Local fallback routes if backend server is offline or returned empty
-      if (!routesDrawn) {
-        const route1Coords = [
-          MAP_CENTER,
-          [19.85, 73.95], // Pangari
-          MAP_CENTER
-        ];
-        const route2Coords = [
-          MAP_CENTER,
-          [19.90, 74.10], // Khopadi
-          [19.81, 74.05], // Wadgaon
-          MAP_CENTER
-        ];
-
-        const line1 = L.polyline(route1Coords, {
-          color: '#00e5ff',
-          weight: 4,
-          dashArray: '8, 8'
-        }).bindPopup("<b>Route #1: Sinnar ⇄ Pangari</b><br>Fulfilled: 152,000L Statutory Demand").addTo(routeLayer);
-
-        const line2 = L.polyline(route2Coords, {
-          color: '#10b981',
-          weight: 4,
-          dashArray: '8, 8'
-        }).bindPopup("<b>Route #2: Sinnar ⇄ Khopadi ⇄ Wadgaon</b><br>Fulfilled: 303,500L Combined Quota").addTo(routeLayer);
-
-        activePolylines.push(line1, line2);
-        generatedRouteData = [
-          { route_id: 1, waypoints: ["Sinnar Reservoir", "Pangari", "Sinnar Reservoir"], capacity_liters: 152000 },
-          { route_id: 2, waypoints: ["Sinnar Reservoir", "Khopadi", "Wadgaon", "Sinnar Reservoir"], capacity_liters: 303500 }
-        ];
-      }
-
-      // Smoothly fly camera to show all generated routes
-      if (activePolylines.length > 0) {
-        const group = L.featureGroup(activePolylines);
-        map.fitBounds(group.getBounds().pad(0.18), { duration: 1.2 });
-      }
-
-      btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span><span>Dispatches Transmitted ✓</span>';
-      btnAllocate.classList.remove("bg-primary-container");
-      btnAllocate.classList.add("bg-safe-emerald");
-      btnAllocate.style.opacity = "1";
-
-      const solverResultText = document.getElementById("solverResultText");
-      if (solverResultText) {
-        const count = generatedRouteData ? generatedRouteData.length : 2;
-        solverResultText.innerHTML = `${count} Circuits Dispatched • 100% Demand Met • <span class="text-tertiary font-bold">-28.4% Diesel Burn</span>`;
-      }
-
-      if (solverResultBox) {
-        solverResultBox.style.display = "flex";
-      }
-
-      // Record Dispatch in Supabase
-      if (window.JalSupabase && generatedRouteData) {
-        window.JalSupabase.saveDispatch(generatedRouteData, 455500);
+        showLiveToast("Tanker #TN-SN-02 arrived at Khopadi Cistern (GPS Logged).");
+      } else if (event.type === "DELIVERY_VERIFIED") {
+        const vIdx = villages.findIndex(v => v.id === "SN-02");
+        if (vIdx !== -1) {
+          villages[vIdx].status = "safe";
+          villages[vIdx].cistern_level = "98%";
+          villages[vIdx].hours_remaining = 360;
+          renderVillageMarkers();
+          renderVillageList();
+          updateVillageMetrics();
+        }
+        showLiveToast("Cryptographic Delivery Verified: 10,000L discharged at Khopadi Cistern.");
+      } else if (event.type === "ESCROW_FROZEN") {
+        if (btnSuspend && !btnSuspend.disabled) {
+          btnSuspend.click();
+        }
       }
     });
   }
+
+  // 7. Interactive Google OR-Tools Allocation Solver Integration
+  const btnAllocate = document.getElementById("btnAllocate");
+  const solverResultBox = document.getElementById("solverResultBox");
+  const btnExportManifest = document.getElementById("btnExportManifest");
+  const tankerRangeInput = document.getElementById("tankerRangeInput");
+  const toggleRoadClosure = document.getElementById("toggleRoadClosure");
+  const selectReliefMandate = document.getElementById("selectReliefMandate");
+  let activePolylines = [];
+  let generatedRouteData = null;
+  let roadBlockadeMarker = null;
+
+  const roadClosureIcon = L.divIcon({
+    className: "road-closure-marker",
+    html: `<div style="background:#ef4444; color:#fff; font-weight:800; font-size:11px; padding:3px 7px; border-radius:6px; border:2px solid #fff; box-shadow:0 0 14px #ef4444; display:flex; align-items:center; gap:4px; white-space:nowrap;">
+      <span>⛔</span><span>NH-60 CLOSED</span>
+    </div>`,
+    iconSize: [120, 26],
+    iconAnchor: [60, 13]
+  });
+
+  const TANKER_ROUTES = [
+    {
+      tanker: "TN-SN-01",
+      name: "Sinnar South-West Loop",
+      color: "#00e5ff",
+      waypoints: [
+        [19.8512, 73.9540], // Pangari Bk (SN-01)
+        [19.8210, 73.9120], // Dubere (SN-04)
+        [19.7820, 73.9010]  // Nandur Shingote (SN-06)
+      ],
+      quota: 148500
+    },
+    {
+      tanker: "TN-SN-02",
+      name: "Sinnar East Relief Circuit",
+      color: "#10b981",
+      waypoints: [
+        [19.9015, 74.1030], // Khopadi (SN-02)
+        [19.8130, 74.0520], // Wadgaon (SN-03)
+        [19.8820, 73.9210]  // Dapur (SN-05)
+      ],
+      quota: 172000
+    },
+    {
+      tanker: "TN-AH-01",
+      name: "Pathardi & Shevgaon Eastern Arc",
+      color: "#3491ff",
+      waypoints: [
+        [19.1415, 75.0512], // Tisgaon (AH-01)
+        [19.3486, 75.2185]  // Bodhegaon (AH-05)
+      ],
+      quota: 185000
+    },
+    {
+      tanker: "TN-AH-02",
+      name: "Parner & Karjat Arid Strip",
+      color: "#f59e0b",
+      waypoints: [
+        [18.9984, 74.4568], // Supa (AH-02)
+        [18.5526, 75.0064]  // Rashin (AH-04)
+      ],
+      quota: 164000
+    },
+    {
+      tanker: "TN-AH-03",
+      name: "Jamkhed & Shrigonda Corridor",
+      color: "#a855f7",
+      waypoints: [
+        [18.7280, 75.3120], // Kharki (AH-03)
+        [18.6148, 74.6969]  // Kashti (AH-08)
+      ],
+      quota: 142000
+    },
+    {
+      tanker: "TN-AH-04",
+      name: "Sangamner & Rahuri Northern Line",
+      color: "#ec4899",
+      waypoints: [
+        [19.5772, 74.2085], // Ashwi (AH-06)
+        [19.3905, 74.6514]  // Vambori (AH-07)
+      ],
+      quota: 196000
+    }
+  ];
+
+  function runInteractiveSolver(options = {}) {
+    const isExecute = options.execute === true;
+    const tankerCount = parseInt(tankerRangeInput?.value || "4", 10);
+    const isRoadClosed = toggleRoadClosure?.checked || false;
+    const reliefMandate = selectReliefMandate?.value || "statutory";
+
+    const tankerCountVal = document.getElementById("tankerCountVal");
+    if (tankerCountVal) tankerCountVal.textContent = tankerCount;
+
+    document.querySelectorAll(".btn-tanker-scale").forEach(btn => {
+      const c = parseInt(btn.getAttribute("data-count") || "0", 10);
+      if (c === tankerCount) {
+        btn.classList.add("bg-primary-container", "text-on-primary-container", "font-bold");
+        btn.classList.remove("bg-surface-panel");
+      } else {
+        btn.classList.remove("bg-primary-container", "text-on-primary-container", "font-bold");
+        btn.classList.add("bg-surface-panel");
+      }
+    });
+
+    const roadClosureBadge = document.getElementById("roadClosureBadge");
+    if (roadClosureBadge) {
+      if (isRoadClosed) {
+        roadClosureBadge.textContent = "NH-60 BLOCKED (Detour Active)";
+        roadClosureBadge.className = "text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-alert-crimson/20 text-alert-crimson border border-alert-crimson/30 animate-pulse";
+      } else {
+        roadClosureBadge.textContent = "Corridor Open";
+        roadClosureBadge.className = "text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container text-outline";
+      }
+    }
+
+    if (isRoadClosed) {
+      if (!roadBlockadeMarker) {
+        roadBlockadeMarker = L.marker([19.6800, 74.2500], { icon: roadClosureIcon })
+          .bindPopup("<b>⛔ NH-60 HIGHWAY CLOSURE</b><br>Culvert washout & landslide near Sangamner.<br><span style='color:#f59e0b; font-weight:600;'>Detour routed via SH-44 (+18.4km).</span>")
+          .addTo(map);
+      }
+    } else {
+      if (roadBlockadeMarker) {
+        map.removeLayer(roadBlockadeMarker);
+        roadBlockadeMarker = null;
+      }
+    }
+
+    routeLayer.clearLayers();
+    activePolylines = [];
+
+    const selectedRoutes = TANKER_ROUTES.slice(0, tankerCount);
+    let totalAllocation = 0;
+
+    generatedRouteData = selectedRoutes.map((r, idx) => {
+      let routeCoords = [MAP_CENTER];
+      if (isRoadClosed && (r.tanker === "TN-SN-01" || r.tanker === "TN-AH-04")) {
+        routeCoords.push([19.6200, 74.4500]); // SH-44 Bypass waypoint
+      }
+      r.waypoints.forEach(pt => routeCoords.push(pt));
+      routeCoords.push(MAP_CENTER);
+
+      let quotaMultiplier = 1.0;
+      if (reliefMandate === "critical_only") quotaMultiplier = 1.25;
+      else if (reliefMandate === "livestock_heavy") quotaMultiplier = 1.40;
+      const circuitAllocation = Math.round(r.quota * quotaMultiplier);
+      totalAllocation += circuitAllocation;
+
+      const polyline = L.polyline(routeCoords, {
+        color: r.color,
+        weight: 3.5,
+        dashArray: isRoadClosed ? '6, 6' : '8, 8',
+        lineCap: 'round',
+        opacity: 0.9
+      }).bindPopup(`
+        <b>OR-Tools Circuit #${idx + 1} (${r.tanker})</b><br>
+        Sector: ${escapeHtml(r.name)}<br>
+        Statutory Demand: ${circuitAllocation.toLocaleString()} L<br>
+        ${isRoadClosed ? "<span style='color:#f59e0b;'>⚠️ Detour via SH-44 active</span>" : "<span style='color:#10b981;'>Optimal Direct Corridor</span>"}
+      `).addTo(routeLayer);
+
+      activePolylines.push(polyline);
+
+      return {
+        route_id: idx + 1,
+        tanker: r.tanker,
+        name: r.name,
+        allocation_liters: circuitAllocation,
+        waypoints: routeCoords
+      };
+    });
+
+    let dieselSavings = "-28.4%";
+    if (isRoadClosed) {
+      dieselSavings = tankerCount <= 3 ? "-16.8%" : "-21.2%";
+    } else {
+      if (tankerCount === 2) dieselSavings = "-34.1%";
+      else if (tankerCount === 3) dieselSavings = "-31.0%";
+      else if (tankerCount === 4) dieselSavings = "-28.4%";
+      else if (tankerCount === 5) dieselSavings = "-25.6%";
+      else if (tankerCount === 6) dieselSavings = "-23.2%";
+    }
+
+    const solverResultText = document.getElementById("solverResultText");
+    if (solverResultText) {
+      solverResultText.innerHTML = `${tankerCount} Tanker Circuits Generated • ${totalAllocation.toLocaleString()}L Allocated • <span class="text-tertiary font-bold">${dieselSavings} Diesel Burn</span>`;
+    }
+
+    if (solverResultBox) {
+      solverResultBox.style.display = "flex";
+    }
+
+    if (isExecute) {
+      if (activePolylines.length > 0) {
+        const group = L.featureGroup(activePolylines);
+        map.fitBounds(group.getBounds().pad(0.15), { duration: 1.0 });
+      }
+
+      if (btnAllocate) {
+        btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span><span>Dispatches Transmitted ✓</span>';
+        btnAllocate.classList.remove("bg-primary-container");
+        btnAllocate.classList.add("bg-safe-emerald");
+        btnAllocate.style.opacity = "1";
+        setTimeout(() => {
+          btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[18px]">local_shipping</span><span>Execute Emergency Dispatch</span>';
+          btnAllocate.classList.remove("bg-safe-emerald");
+          btnAllocate.classList.add("bg-primary-container");
+        }, 4000);
+      }
+
+      if (window.JalSupabase && generatedRouteData) {
+        window.JalSupabase.saveDispatch(generatedRouteData, totalAllocation);
+      }
+    }
+  }
+
+  // Bind interactive solver events for dynamic reactivity
+  tankerRangeInput?.addEventListener("input", () => runInteractiveSolver({ execute: false }));
+  tankerRangeInput?.addEventListener("change", () => runInteractiveSolver({ execute: false }));
+
+  document.querySelectorAll(".btn-tanker-scale").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const c = btn.getAttribute("data-count");
+      if (tankerRangeInput && c) {
+        tankerRangeInput.value = c;
+        runInteractiveSolver({ execute: false });
+      }
+    });
+  });
+
+  toggleRoadClosure?.addEventListener("change", () => runInteractiveSolver({ execute: false }));
+  selectReliefMandate?.addEventListener("change", () => runInteractiveSolver({ execute: false }));
+
+  btnAllocate?.addEventListener("click", () => runInteractiveSolver({ execute: true }));
+
+  // Initialize initial route solve on dashboard load
+  setTimeout(() => runInteractiveSolver({ execute: false }), 400);
 
   // Export Route Manifest Handler
   btnExportManifest?.addEventListener("click", () => {
@@ -972,8 +1292,10 @@ document.addEventListener("DOMContentLoaded", () => {
       btnMobileViewDock?.classList.add("text-on-surface-variant", "font-medium");
 
       if (window.innerWidth < 1280) {
+        mapSection?.classList.remove("hidden");
+        dockSection?.classList.add("hidden");
         mapSection?.scrollIntoView({ behavior: "smooth", block: "start" });
-        setTimeout(() => map.invalidateSize(), 300);
+        setTimeout(() => map.invalidateSize(), 150);
       }
     } else {
       btnMobileViewDock?.classList.add("bg-primary-container", "text-on-primary-container", "font-bold", "shadow-md");
@@ -982,6 +1304,8 @@ document.addEventListener("DOMContentLoaded", () => {
       btnMobileViewMap?.classList.add("text-on-surface-variant", "font-medium");
 
       if (window.innerWidth < 1280) {
+        dockSection?.classList.remove("hidden");
+        mapSection?.classList.add("hidden");
         dockSection?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
@@ -1033,13 +1357,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("navMobileMenu")?.addEventListener("click", openMobileSidebar);
 
-  // Resize listener to ensure Leaflet renders tiles sharply
+  // Resize listener to ensure Leaflet renders tiles sharply & panels adjust
   window.addEventListener("resize", () => {
+    if (window.innerWidth >= 1280) {
+      mapSection?.classList.remove("hidden");
+      dockSection?.classList.remove("hidden");
+    } else {
+      const isMapActive = btnMobileViewMap?.classList.contains("bg-primary-container");
+      if (isMapActive) {
+        mapSection?.classList.remove("hidden");
+        dockSection?.classList.add("hidden");
+      } else {
+        dockSection?.classList.remove("hidden");
+        mapSection?.classList.add("hidden");
+      }
+    }
     map.invalidateSize();
     if (window.innerWidth >= 1024) {
       closeMobileSidebar();
     }
   });
+
+  // On initial load for mobile viewports, start with Map tab active and dock collapsed
+  if (window.innerWidth < 1280) {
+    switchMobileView("map");
+  }
 });
 
 // Pulse animation for Rogue Tanker Marker

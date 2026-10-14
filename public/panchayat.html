@@ -94,6 +94,45 @@
     #qrReader__dashboard_section, #qrReader__header_message {
       display: none !important;
     }
+
+    /* High-Contrast Outdoor Daylight / Sunlight Mode */
+    html.sunlight-theme, html.sunlight-theme body {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+    }
+    html.sunlight-theme .bg-surface,
+    html.sunlight-theme .bg-surface-base,
+    html.sunlight-theme .bg-surface-panel,
+    html.sunlight-theme .bg-surface-card,
+    html.sunlight-theme .bg-surface-container,
+    html.sunlight-theme .bg-surface-container-low,
+    html.sunlight-theme .bg-surface-container-high,
+    html.sunlight-theme .bg-surface-container-lowest {
+      background-color: #f8fafc !important;
+      border: 1.5px solid #0f172a !important;
+      color: #0f172a !important;
+    }
+    html.sunlight-theme header,
+    html.sunlight-theme nav {
+      background-color: #ffffff !important;
+      border-bottom: 2px solid #0f172a !important;
+    }
+    html.sunlight-theme .text-on-surface,
+    html.sunlight-theme .text-on-surface-variant,
+    html.sunlight-theme .text-muted-foreground {
+      color: #0f172a !important;
+      font-weight: 600 !important;
+    }
+    html.sunlight-theme .text-primary {
+      color: #0284c7 !important;
+      font-weight: 700 !important;
+    }
+    html.sunlight-theme .shadow-xl,
+    html.sunlight-theme .shadow-2xl,
+    html.sunlight-theme .shadow-lg {
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15) !important;
+      border: 2px solid #0f172a !important;
+    }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">
@@ -214,6 +253,18 @@
         </a>
 
         <div class="flex items-center gap-2 shrink-0">
+          <!-- Sunlight Mode Toggle Button -->
+          <button id="btnSunlightTogglePanchayat" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-amber-400 px-2 py-1 rounded border border-white/10 font-label-tactical text-[11px] font-semibold transition-all cursor-pointer" title="Toggle Outdoor Daylight Theme">
+            <span class="material-symbols-outlined text-[15px] text-amber-400">wb_sunny</span>
+            <span class="hidden xs:inline">Sunlight</span>
+          </button>
+
+          <!-- Reset Demo State Button -->
+          <button id="btnResetDemoPanchayat" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo State Baseline">
+            <span class="material-symbols-outlined text-[15px]">restart_alt</span>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+
           <!-- Language Selector -->
           <div class="relative flex items-center">
             <select id="langSwitcher" class="appearance-none bg-surface-container-high text-on-surface-variant font-label-tactical text-label-tactical py-1 pl-2 pr-5 rounded border border-white/10 focus:outline-none" aria-label="Language Selector">
@@ -584,6 +635,7 @@
   <script src="js/auth-router.js"></script>
   <script src="js/offline-queue.js"></script>
   <script src="js/lang.js"></script>
+  <script src="js/html5-qrcode.min.js"></script>
   <script src="js/panchayat.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

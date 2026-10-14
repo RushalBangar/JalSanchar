@@ -723,4 +723,56 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // High-Contrast Outdoor Sunlight Theme Controller
+  const btnSunlightTogglePanchayat = document.getElementById("btnSunlightTogglePanchayat");
+  function applySunlightTheme(isSunlight) {
+    if (isSunlight) {
+      document.documentElement.classList.add("sunlight-theme");
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("jalsanjeevani_theme", "sunlight");
+      if (btnSunlightTogglePanchayat) btnSunlightTogglePanchayat.innerHTML = '<span class="material-symbols-outlined text-[15px] text-amber-500">dark_mode</span><span class="hidden xs:inline">Dark</span>';
+    } else {
+      document.documentElement.classList.remove("sunlight-theme");
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("jalsanjeevani_theme", "dark");
+      if (btnSunlightTogglePanchayat) btnSunlightTogglePanchayat.innerHTML = '<span class="material-symbols-outlined text-[15px] text-amber-400">wb_sunny</span><span class="hidden xs:inline">Sunlight</span>';
+    }
+  }
+
+  const savedTheme = localStorage.getItem("jalsanjeevani_theme");
+  if (savedTheme === "sunlight") {
+    applySunlightTheme(true);
+  }
+
+  btnSunlightTogglePanchayat?.addEventListener("click", () => {
+    const isCurrentlySunlight = document.documentElement.classList.contains("sunlight-theme");
+    applySunlightTheme(!isCurrentlySunlight);
+  });
+
+  // Reset Demo State Action & Cross-Tab Broadcast Synchronization
+  const btnResetDemoPanchayat = document.getElementById("btnResetDemoPanchayat");
+  btnResetDemoPanchayat?.addEventListener("click", async () => {
+    if (confirm("Reset JalSanjeevani demo state across all tabs back to initial baseline?")) {
+      if (window.JalSupabase) {
+        await window.JalSupabase.resetDemoState();
+      }
+      triggerToast("🔄 Demo State Reset! Reloading baseline...");
+      setTimeout(() => window.location.reload(), 1000);
+    }
+  });
+
+  if (window.JalSupabase) {
+    window.JalSupabase.onStateBroadcast((event) => {
+      console.log("📡 Panchayat Verifier received cross-tab event:", event);
+      if (event.type === "DEMO_STATE_RESET") {
+        triggerToast("🔄 Demo State Reset across tabs. Reloading...");
+        setTimeout(() => window.location.reload(), 1200);
+      } else if (event.type === "DRIVER_ARRIVAL") {
+        triggerToast(`📍 Tanker ${event.data.tankerId || '#04'} logged arrival at Cistern! Ready for optical scan.`);
+        const radar = document.querySelector(".animate-ping");
+        if (radar) radar.classList.add("bg-safe-emerald");
+      }
+    });
+  }
 });

@@ -176,6 +176,44 @@
       height: auto !important;
       margin: 0 auto;
     }
+
+    /* High-Contrast Outdoor Daylight / Sunlight Mode */
+    html.sunlight-theme, html.sunlight-theme body {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+    }
+    html.sunlight-theme .bg-surface,
+    html.sunlight-theme .bg-surface-base,
+    html.sunlight-theme .bg-surface-panel,
+    html.sunlight-theme .bg-surface-card,
+    html.sunlight-theme .bg-surface-container,
+    html.sunlight-theme .bg-surface-container-low,
+    html.sunlight-theme .bg-surface-container-high,
+    html.sunlight-theme .bg-surface-container-lowest {
+      background-color: #f8fafc !important;
+      border: 1.5px solid #0f172a !important;
+      color: #0f172a !important;
+    }
+    html.sunlight-theme header,
+    html.sunlight-theme nav {
+      background-color: #ffffff !important;
+      border-bottom: 2px solid #0f172a !important;
+    }
+    html.sunlight-theme .text-on-surface,
+    html.sunlight-theme .text-on-surface-variant,
+    html.sunlight-theme .text-secondary {
+      color: #0f172a !important;
+      font-weight: 600 !important;
+    }
+    html.sunlight-theme .text-primary {
+      color: #0284c7 !important;
+      font-weight: 700 !important;
+    }
+    html.sunlight-theme .shadow-xl,
+    html.sunlight-theme .shadow-lg {
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15) !important;
+      border: 2px solid #0f172a !important;
+    }
   </style>
   <script src="js/qrcode.min.js"></script>
   <script>if (typeof QRCode === 'undefined') { document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>'); }</script>
@@ -195,6 +233,18 @@
         </a>
 
         <div class="flex items-center gap-2">
+          <!-- Sunlight Mode Toggle Button -->
+          <button id="btnSunlightToggle" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-amber-400 px-2 py-1 rounded border border-white/10 font-label-tactical text-[11px] font-semibold transition-all cursor-pointer" title="Toggle Outdoor Daylight Theme">
+            <span class="material-symbols-outlined text-[15px] text-amber-400">wb_sunny</span>
+            <span class="hidden xs:inline">Sunlight</span>
+          </button>
+
+          <!-- Reset Demo State Button -->
+          <button id="btnResetDemoDriver" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo State Baseline">
+            <span class="material-symbols-outlined text-[15px]">restart_alt</span>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+
           <!-- Online/Offline Live Network Indicator -->
           <div id="networkStatusBadge" class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full border border-safe-emerald/30">
             <span id="networkStatusDot" class="w-2 h-2 rounded-full bg-safe-emerald animate-pulse"></span>
@@ -370,6 +420,26 @@
           <div class="bg-slate-100 text-slate-800 px-3 py-1.5 rounded w-full flex items-center justify-center space-x-1.5">
             <span class="material-symbols-outlined text-[13px] text-slate-600">vpn_key</span>
             <span id="driverCryptoKey" class="font-label-tactical text-label-tactical tracking-wider font-bold">KEY: 0x9F3B4E • GEOFENCE ENCRYPTED</span>
+          </div>
+
+          <!-- Anti-Replay 30s TOTP Progress Bar & Rotating Nonce Hash -->
+          <div class="w-full bg-slate-50 p-2 rounded-lg border border-slate-200 flex flex-col gap-1 text-left">
+            <div class="flex items-center justify-between font-mono text-[10px] font-bold text-slate-700">
+              <span class="flex items-center gap-1 text-cyan-700">
+                <span class="material-symbols-outlined text-[13px]">timer</span>
+                <span>TOTP NONCE VALIDITY</span>
+              </span>
+              <span id="totpCountdownText" class="text-cyan-800 font-bold font-mono">30s</span>
+            </div>
+            <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+              <div id="totpProgressBar" class="h-full bg-cyan-600 transition-all duration-1000 ease-linear rounded-full" style="width: 100%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[9px] font-mono text-slate-600 pt-0.5">
+              <span>NONCE: <strong id="liveNonceHash" class="text-slate-900 font-bold">0x8F4C2E1B</strong></span>
+              <span class="text-emerald-700 font-bold flex items-center gap-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ROTATING 30s
+              </span>
+            </div>
           </div>
         </div>
 

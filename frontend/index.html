@@ -13,7 +13,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
   <link rel="stylesheet" href="css/tailwind.min.css">
   <style>
@@ -29,6 +29,13 @@
     ::-webkit-scrollbar-track { background: #070e1a; }
     ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.25); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+    /* Devanagari Font Rendering & Replacement Box Fix */
+    html[lang="mr"], html[lang="hi"],
+    [lang="mr"] *, [lang="hi"] *,
+    .font-devanagari {
+      font-family: 'Noto Sans Devanagari', 'Mukta', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="tailwind-config">
@@ -42,7 +49,7 @@
         <a class="flex items-center gap-3 group" data-path="landing" href="#hero">
           <img alt="JalSanjeevani Logo" class="h-10 w-auto object-contain rounded-md shadow-sm group-hover:scale-105 transition-transform" src="assets/logo.jpg"/>
           <div class="flex flex-col">
-            <span class="font-headline-sm text-headline-sm text-text-primary tracking-tight leading-none group-hover:text-primary transition-colors">JalSanjeevani</span>
+            <span class="font-headline-sm text-headline-sm text-text-primary tracking-tight leading-none group-hover:text-primary transition-colors">JalSanjeevani <span class="text-primary font-normal text-xs">(जलसंजीवनी)</span></span>
             <span class="font-label-caps text-label-caps text-text-muted uppercase leading-tight">Sanjeevani Grid</span>
           </div>
         </a>
@@ -143,7 +150,7 @@
                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-container"></span>
                 </span>
                 <span data-i18n="hero_badge" class="font-label-caps text-label-caps text-primary tracking-widest uppercase">
-                  AI-POWERED SCARCITY PREDICTION
+                  AI-POWERED SCARCITY PREDICTION (जलसंजीवनी)
                 </span>
               </div>
               
@@ -630,26 +637,26 @@
           <ul class="space-y-2 font-body-sm text-body-sm">
             <li><a class="hover:text-on-surface transition-colors" href="#hero">Mission Overview</a></li>
             <li><a class="hover:text-on-surface transition-colors" href="#tech-section">Satellite Integration</a></li>
-            <li><a class="hover:text-on-surface transition-colors" href="dashboard.html">Hydrological Telemetry</a></li>
-            <li><a class="hover:text-on-surface transition-colors" href="#impact-section">Audit &amp; Transparency</a></li>
+            <li><a class="hover:text-on-surface transition-colors" href="dashboard.html#cistern-section">Hydrological Telemetry</a></li>
+            <li><button type="button" id="btnFooterAudit" class="hover:text-primary transition-colors text-left cursor-pointer">Audit &amp; Transparency</button></li>
           </ul>
         </div>
         <div>
           <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Institutional Governance</span>
           <ul class="space-y-2 font-body-sm text-body-sm">
-            <li><a class="hover:text-on-surface transition-colors" href="#pillars-section">State Water Protocols</a></li>
+            <li><button type="button" id="btnFooterProtocols" class="hover:text-primary transition-colors text-left cursor-pointer">State Water Protocols</button></li>
             <li><a class="hover:text-on-surface transition-colors" href="panchayat.html">Civil Supply Verification (Panchayat)</a></li>
             <li><a class="hover:text-on-surface transition-colors" href="driver.html">Tanker Logistics Portal (Driver)</a></li>
             <li><a class="hover:text-on-surface transition-colors" href="dashboard.html">Collectorate Terminal</a></li>
           </ul>
         </div>
         <div>
-          <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Institutional Partnerships</span>
+          <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Data Sources &amp; Standards Aligned With</span>
           <div class="flex flex-wrap gap-2">
-            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Central Ground Water Board</span>
-            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Copernicus Sentinel</span>
-            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Dept. of Water Resources</span>
-            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Disaster Management Auth</span>
+            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Central Ground Water Board (Aligned)</span>
+            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Copernicus Sentinel-1/2 (Open Data)</span>
+            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Dept. of Water Resources (Protocols)</span>
+            <span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-label-caps text-on-surface-variant">Disaster Management Auth (Guidelines)</span>
           </div>
         </div>
       </div>
@@ -657,7 +664,7 @@
         <p>© 2025 JalSanjeevani Grid. Government of India &amp; Civil Society Consortium. All telemetry cryptographically signed.</p>
         <div class="flex items-center gap-space-md">
           <span class="flex items-center gap-1.5 font-label-caps text-label-caps">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-telemetry-emerald"></span>ISO 27001 Certified Infrastructure
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-telemetry-emerald"></span>ISO 27001 Aligned Cryptographic Architecture
           </span>
         </div>
       </div>
@@ -763,6 +770,75 @@
           Done
         </button>
       </div>
+  <!-- State Water Protocols Modal -->
+  <div id="protocolsModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 transition-all opacity-0">
+    <div class="relative w-full max-w-3xl rounded-2xl bg-surface-container-low border border-surface-glass-border-bright shadow-2xl p-6 sm:p-8 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between border-b border-surface-container pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-secondary-container/10 border border-secondary-container/30 flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-[28px]">policy</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-text-primary font-bold">Maharashtra &amp; National State Water Protocols</h3>
+            <p class="font-body-sm text-body-sm text-text-secondary">Statutory Relief Standards, Emergency Quotas &amp; Anti-Diversion Mandates</p>
+          </div>
+        </div>
+        <button id="btnCloseProtocolsModal" class="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-container-high transition-colors" aria-label="Close modal">
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-xl bg-surface-container border border-surface-container-high flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-primary font-headline-sm font-semibold">
+            <span class="material-symbols-outlined text-[20px]">person</span>
+            <span>40L / Person / Day</span>
+          </div>
+          <span class="font-label-caps text-label-caps text-text-muted uppercase">Statutory Human Minimum</span>
+          <p class="text-xs text-text-secondary leading-relaxed">Mandated minimum drinking and domestic survival water allowance under the National Rural Drinking Water Contingency Framework.</p>
+        </div>
+        <div class="p-4 rounded-xl bg-surface-container border border-surface-container-high flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-secondary font-headline-sm font-semibold">
+            <span class="material-symbols-outlined text-[20px]">pets</span>
+            <span>70L / Livestock / Day</span>
+          </div>
+          <span class="font-label-caps text-label-caps text-text-muted uppercase">Bovine Sustenance Mandate</span>
+          <p class="text-xs text-text-secondary leading-relaxed">Dedicated water allocation to sustain cattle and draft animals in drought-affected talukas, preventing emergency distress cattle sales.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <span class="font-label-caps text-label-caps text-text-muted uppercase tracking-wider">3-Stage Drought Contingency Escalation Protocol</span>
+        <div class="space-y-2 text-xs">
+          <div class="p-3 rounded-lg bg-surface-container border-l-4 border-primary flex justify-between items-center">
+            <div>
+              <span class="font-bold text-text-primary">Stage 1: Predictive Advisory (T - 14 Days)</span>
+              <p class="text-text-secondary">Copernicus SAR &amp; NASA SMAP identify soil moisture &lt; 0.25 m³/m³ and aquifer drop &gt; 3cm/day.</p>
+            </div>
+            <span class="px-2 py-1 rounded bg-primary/20 text-primary font-mono text-[10px] font-bold">STAGE I</span>
+          </div>
+          <div class="p-3 rounded-lg bg-surface-container border-l-4 border-alert-amber flex justify-between items-center">
+            <div>
+              <span class="font-bold text-text-primary">Stage 2: Municipal Logistics Solver (T - 7 Days)</span>
+              <p class="text-text-secondary">Village cistern levels hit &lt; 20% dead storage. Google OR-Tools CVRP auto-dispatches municipal tankers.</p>
+            </div>
+            <span class="px-2 py-1 rounded bg-alert-amber/20 text-alert-amber font-mono text-[10px] font-bold">STAGE II</span>
+          </div>
+          <div class="p-3 rounded-lg bg-surface-container border-l-4 border-alert-critical-red flex justify-between items-center">
+            <div>
+              <span class="font-bold text-text-primary">Stage 3: Anti-Diversion &amp; Escrow Freeze</span>
+              <p class="text-text-secondary">Corridor deviation &gt; 500m or missing Gram Panchayat QR handshake immediately freezes contractor escrow and alerts RTO.</p>
+            </div>
+            <span class="px-2 py-1 rounded bg-alert-critical-red/20 text-alert-critical-red font-mono text-[10px] font-bold">STAGE III</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-surface-container">
+        <button id="btnCloseProtocolsModalBtn" class="px-5 py-2 rounded-lg bg-primary-container text-on-primary-container text-xs font-semibold hover:bg-tertiary-container transition-all">
+          Acknowledge &amp; Close
+        </button>
+      </div>
     </div>
   </div>
 
@@ -788,31 +864,50 @@
     const btnCloseAuditModal = document.getElementById('btnCloseAuditModal');
     const btnCloseAuditModalBtn = document.getElementById('btnCloseAuditModalBtn');
     const btnExportLedgerJson = document.getElementById('btnExportLedgerJson');
+    const btnFooterAudit = document.getElementById('btnFooterAudit');
 
-    function openAudit() {
-      if (!auditModal) return;
-      auditModal.classList.remove('hidden');
-      auditModal.classList.add('flex');
-      setTimeout(() => {
-        auditModal.classList.remove('opacity-0');
-      }, 10);
+    // Protocols Modal Handlers
+    const protocolsModal = document.getElementById('protocolsModal');
+    const btnFooterProtocols = document.getElementById('btnFooterProtocols');
+    const btnCloseProtocolsModal = document.getElementById('btnCloseProtocolsModal');
+    const btnCloseProtocolsModalBtn = document.getElementById('btnCloseProtocolsModalBtn');
+
+    function openModal(el) {
+      if (!el) return;
+      el.classList.remove('hidden');
+      el.classList.add('flex');
+      setTimeout(() => el.classList.remove('opacity-0'), 10);
     }
 
-    function closeAudit() {
-      if (!auditModal) return;
-      auditModal.classList.add('opacity-0');
+    function closeModal(el) {
+      if (!el) return;
+      el.classList.add('opacity-0');
       setTimeout(() => {
-        auditModal.classList.remove('flex');
-        auditModal.classList.add('hidden');
+        el.classList.remove('flex');
+        el.classList.add('hidden');
       }, 200);
     }
 
+    function openAudit() { openModal(auditModal); }
+    function closeAudit() { closeModal(auditModal); }
+
+    function openProtocols() { openModal(protocolsModal); }
+    function closeProtocols() { closeModal(protocolsModal); }
+
     btnOpenAuditModal?.addEventListener('click', openAudit);
+    btnFooterAudit?.addEventListener('click', openAudit);
     btnCloseAuditModal?.addEventListener('click', closeAudit);
     btnCloseAuditModalBtn?.addEventListener('click', closeAudit);
 
+    btnFooterProtocols?.addEventListener('click', openProtocols);
+    btnCloseProtocolsModal?.addEventListener('click', closeProtocols);
+    btnCloseProtocolsModalBtn?.addEventListener('click', closeProtocols);
+
     auditModal?.addEventListener('click', (e) => {
       if (e.target === auditModal) closeAudit();
+    });
+    protocolsModal?.addEventListener('click', (e) => {
+      if (e.target === protocolsModal) closeProtocols();
     });
 
     // Export Signed Ledger JSON

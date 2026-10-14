@@ -273,6 +273,12 @@
 
       <!-- Right Action Controls (Compact Mobile Aware) -->
       <div class="flex items-center gap-1.5 sm:gap-space-sm flex-shrink-0">
+        <!-- Reset Demo State Button -->
+        <button id="btnResetDemoDashboard" class="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-amber-400 hover:text-amber-300 font-label-tactical text-[10px] sm:text-label-tactical uppercase font-bold border border-amber-400/30 transition-all cursor-pointer" title="Reset Demo State Baseline">
+          <span class="material-symbols-outlined text-[14px]">restart_alt</span>
+          <span class="hidden sm:inline">Reset Demo</span>
+        </button>
+
         <!-- Language Switcher -->
         <div class="relative">
           <select id="langSwitcher" class="bg-surface-container-low text-on-surface font-telemetry-code text-[11px] sm:text-telemetry-code pl-2 pr-6 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer border border-border-subtle" aria-label="Language Selector">
@@ -673,6 +679,54 @@
                 <p class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant leading-relaxed">
                   Automate equitable distribution routes. Guarantees statutory 40L per citizen and 70L per bovine across Ahilyanagar &amp; Sinnar.
                 </p>
+
+                <!-- Interactive Solver Constraint Configuration Controls -->
+                <div class="p-3 rounded-lg bg-surface-container/70 border border-border-subtle flex flex-col gap-2.5">
+                  <div class="flex items-center justify-between font-label-tactical text-[10px] uppercase text-outline">
+                    <span class="flex items-center gap-1 text-primary">
+                      <span class="material-symbols-outlined text-[14px]">tune</span>
+                      <span>Solver Optimization Constraints</span>
+                    </span>
+                    <span id="solverStatusTag" class="text-tertiary font-bold font-mono">Real-Time Reactive</span>
+                  </div>
+
+                  <!-- Constraint 1: Available Tanker Fleet Scale -->
+                  <div class="flex flex-col gap-1">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-on-surface-variant font-label-tactical text-[11px]">Active Tanker Fleet:</span>
+                      <span class="font-mono font-bold text-primary text-xs"><span id="tankerCountVal">4</span> Tankers (Scaled 2-6)</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <input id="tankerRangeInput" type="range" min="2" max="6" value="4" step="1" class="w-full accent-primary h-1.5 bg-surface-base rounded-lg cursor-pointer">
+                      <div class="flex gap-1">
+                        <button type="button" data-count="2" class="btn-tanker-scale px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-panel hover:bg-surface-card border border-border-subtle cursor-pointer">2</button>
+                        <button type="button" data-count="4" class="btn-tanker-scale px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary-container text-on-primary-container font-bold border border-border-subtle cursor-pointer">4</button>
+                        <button type="button" data-count="6" class="btn-tanker-scale px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-panel hover:bg-surface-card border border-border-subtle cursor-pointer">6</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Constraint 2: Road Blockade / Landslide Simulation Toggle -->
+                  <div class="flex items-center justify-between pt-1 border-t border-border-subtle text-xs">
+                    <div class="flex items-center gap-1.5">
+                      <input id="toggleRoadClosure" type="checkbox" class="w-3.5 h-3.5 accent-alert-crimson rounded cursor-pointer">
+                      <label for="toggleRoadClosure" class="font-label-tactical text-[11px] text-on-surface cursor-pointer select-none">
+                        Simulate NH-60 Road Closure / Landslide
+                      </label>
+                    </div>
+                    <span id="roadClosureBadge" class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container text-outline">Corridor Open</span>
+                  </div>
+
+                  <!-- Constraint 3: Livestock Quota Priority Policy -->
+                  <div class="flex items-center justify-between pt-1 border-t border-border-subtle text-xs">
+                    <span class="font-label-tactical text-[11px] text-on-surface-variant">Relief Mandate:</span>
+                    <select id="selectReliefMandate" class="bg-surface-base text-on-surface text-[10px] font-mono py-1 px-2 rounded border border-border-subtle focus:outline-none cursor-pointer">
+                      <option value="statutory">Statutory (40L Human + 70L Bovine)</option>
+                      <option value="critical_only">Critical Hamlets First (T &lt; 24h)</option>
+                      <option value="livestock_heavy">Cattle Enclosure Surge (90L Bovine)</option>
+                    </select>
+                  </div>
+                </div>
 
                 <!-- Computed Result Block -->
                 <div class="p-2.5 sm:p-space-md rounded-lg bg-surface-card flex flex-col gap-space-xs border border-border-subtle" id="solverResultBox">

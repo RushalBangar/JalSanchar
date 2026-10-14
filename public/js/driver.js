@@ -480,4 +480,85 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // 7. Live 30-Second TOTP Anti-Replay Loop & Rotating Nonce Hash
+  let totpSecondsLeft = 30;
+  const totpCountdownText = document.getElementById("totpCountdownText");
+  const totpProgressBar = document.getElementById("totpProgressBar");
+  const liveNonceHash = document.getElementById("liveNonceHash");
+
+  if (liveNonceHash && currentDynamicToken) {
+    liveNonceHash.textContent = "0x" + currentDynamicToken.nonce.slice(0, 8).toUpperCase();
+  }
+
+  setInterval(() => {
+    totpSecondsLeft--;
+    if (totpCountdownText) totpCountdownText.textContent = `${totpSecondsLeft}s`;
+    if (totpProgressBar) totpProgressBar.style.width = `${(totpSecondsLeft / 30) * 100}%`;
+
+    if (totpSecondsLeft <= 0) {
+      totpSecondsLeft = 30;
+      refreshDynamicToken(false);
+      if (liveNonceHash && currentDynamicToken) {
+        liveNonceHash.textContent = "0x" + currentDynamicToken.nonce.slice(0, 8).toUpperCase();
+      }
+      if (totpProgressBar) {
+        totpProgressBar.style.width = "100%";
+      }
+    }
+  }, 1000);
+
+  // 8. High-Contrast Outdoor Sunlight Theme Controller
+  const btnSunlightToggle = document.getElementById("btnSunlightToggle");
+  function applySunlightTheme(isSunlight) {
+    if (isSunlight) {
+      document.documentElement.classList.add("sunlight-theme");
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("jalsanjeevani_theme", "sunlight");
+      if (btnSunlightToggle) btnSunlightToggle.innerHTML = '<span class="material-symbols-outlined text-[15px] text-amber-500">dark_mode</span><span class="hidden xs:inline">Dark</span>';
+    } else {
+      document.documentElement.classList.remove("sunlight-theme");
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("jalsanjeevani_theme", "dark");
+      if (btnSunlightToggle) btnSunlightToggle.innerHTML = '<span class="material-symbols-outlined text-[15px] text-amber-400">wb_sunny</span><span class="hidden xs:inline">Sunlight</span>';
+    }
+  }
+
+  const savedTheme = localStorage.getItem("jalsanjeevani_theme");
+  if (savedTheme === "sunlight") {
+    applySunlightTheme(true);
+  }
+
+  btnSunlightToggle?.addEventListener("click", () => {
+    const isCurrentlySunlight = document.documentElement.classList.contains("sunlight-theme");
+    applySunlightTheme(!isCurrentlySunlight);
+  });
+
+  // 9. Reset Demo State Action & Cross-Tab Realtime Synchronization
+  const btnResetDemoDriver = document.getElementById("btnResetDemoDriver");
+  btnResetDemoDriver?.addEventListener("click", async () => {
+    if (confirm("Reset JalSanjeevani demo state across all tabs back to initial baseline?")) {
+      if (window.JalSupabase) {
+        await window.JalSupabase.resetDemoState();
+      }
+      showToast("🔄 Demo State Reset! Reloading baseline...");
+      setTimeout(() => window.location.reload(), 1000);
+    }
+  });
+
+  if (window.JalSupabase) {
+    window.JalSupabase.onStateBroadcast((event) => {
+      console.log("📡 Driver Cockpit received cross-tab event:", event);
+      if (event.type === "DEMO_STATE_RESET") {
+        showToast("🔄 Demo State Reset across tabs. Reloading...");
+        setTimeout(() => window.location.reload(), 1200);
+      } else if (event.type === "DELIVERY_VERIFIED") {
+        showToast(`✓ Panchayat Confirmed Handshake for ${event.data.tanker || 'Tanker'}! Escrow Released.`);
+        if (transitBadge) {
+          transitBadge.textContent = "DISCHARGED ✓";
+          transitBadge.className = "font-label-tactical text-label-tactical font-bold text-safe-emerald uppercase tracking-wider";
+        }
+      }
+    });
+  }
 });

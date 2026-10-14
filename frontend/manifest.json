@@ -1,21 +1,48 @@
 {
   "name": "JalSanjeevani Field PWA",
   "short_name": "JalSanjeevani",
-  "description": "Offline-first sovereign drought water logistics and verification system.",
+  "description": "Offline-first sovereign drought water logistics, routing, and cryptographic verification system.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#070e1a",
   "theme_color": "#00e5ff",
   "icons": [
     {
       "src": "./assets/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "./assets/logo.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tanker Driver Cockpit",
+      "short_name": "Driver",
+      "description": "GPS logging, route guidance, and rotating dynamic TOTP token",
+      "url": "./driver.html",
+      "icons": [{ "src": "./assets/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Gram Panchayat Verifier",
+      "short_name": "Panchayat",
+      "description": "Cryptographic delivery verification and escrow release scanner",
+      "url": "./panchayat.html",
+      "icons": [{ "src": "./assets/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Collector Dashboard",
+      "short_name": "Collector",
+      "description": "GIS telemetry, scarcity matrix, and anti-diversion monitor",
+      "url": "./dashboard.html",
+      "icons": [{ "src": "./assets/favicon.svg", "sizes": "any" }]
     }
   ]
 }

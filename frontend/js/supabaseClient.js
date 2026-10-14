@@ -197,7 +197,10 @@ class JalSanjeevaniSupabase {
           .from('tankers')
           .update(updateData)
           .eq('id', tankerId);
-        if (!error) return true;
+        if (!error) {
+          this.broadcastState("DRIVER_ARRIVAL", { tankerId, lat, lng, isRogue, status });
+          return true;
+        }
         console.warn("Supabase updateTankerLocation error, queueing offline:", error);
       } catch (err) {
         console.warn("Network error during updateTankerLocation, queueing offline:", err);
@@ -206,6 +209,7 @@ class JalSanjeevaniSupabase {
 
     // 2. OFFLINE FALLBACK: Queue update
     this.queueOfflineAction("tanker_location", { id: tankerId, data: updateData });
+    this.broadcastState("DRIVER_ARRIVAL", { tankerId, lat, lng, isRogue, status });
     return true;
   }
 
@@ -225,6 +229,7 @@ class JalSanjeevaniSupabase {
         }])
         .select();
       if (error) throw error;
+      this.broadcastState("DISPATCH_EXECUTED", { routes, totalLiters });
       return data;
     } catch (err) {
       console.error("Failed to save dispatch in Supabase:", err);
@@ -255,6 +260,7 @@ class JalSanjeevaniSupabase {
           .select();
         if (!error) {
           console.log("🌊 [Online-First] Delivery receipt saved to Supabase:", data);
+          this.broadcastState("DELIVERY_VERIFIED", payload);
           return { online: true, data };
         }
         console.warn("Supabase insert error, falling back to offline queue:", error);
@@ -265,6 +271,7 @@ class JalSanjeevaniSupabase {
 
     // 2. OFFLINE FALLBACK: Queue for automatic background sync when reconnected
     this.queueOfflineAction("receipt", payload);
+    this.broadcastState("DELIVERY_VERIFIED", payload);
     return { online: false, queued: true, payload };
   }
 
@@ -285,11 +292,108 @@ class JalSanjeevaniSupabase {
         .select();
       if (error) throw error;
       console.log("🌊 Escrow action logged to Supabase:", data);
+      this.broadcastState("ESCROW_FROZEN", { tankerId, penaltyAmount, reason });
       return data;
     } catch (err) {
       console.error("Failed to log escrow freeze in Supabase:", err);
+      this.broadcastState("ESCROW_FROZEN", { tankerId, penaltyAmount, reason });
       return null;
     }
+  }
+
+  /**
+   * Broadcast state event across open browser tabs & Supabase channels
+   */
+  broadcastState(type, data) {
+    const event = { type, data, timestamp: Date.now() };
+    try {
+      if (this.broadcastChannel) {
+        this.broadcastChannel.postMessage(event);
+      } else if (typeof BroadcastChannel !== "undefined") {
+        this.broadcastChannel = new BroadcastChannel("jalsanjeevani_demo_sync");
+        this.broadcastChannel.postMessage(event);
+      }
+    } catch (e) {
+      console.warn("BroadcastChannel error:", e);
+    }
+
+    try {
+      localStorage.setItem("jalsanjeevani_last_broadcast", JSON.stringify(event));
+    } catch (e) {}
+  }
+
+  /**
+   * Register listener for cross-tab broadcast events
+   */
+  onStateBroadcast(callback) {
+    try {
+      if (!this.broadcastChannel && typeof BroadcastChannel !== "undefined") {
+        this.broadcastChannel = new BroadcastChannel("jalsanjeevani_demo_sync");
+      }
+      if (this.broadcastChannel) {
+        this.broadcastChannel.addEventListener("message", (msg) => {
+          if (callback && msg && msg.data) callback(msg.data);
+        });
+      }
+    } catch (e) {
+      console.warn("Cross-tab sync listener failed:", e);
+    }
+
+    // Fallback: Storage event listener for older browser sessions
+    window.addEventListener("storage", (e) => {
+      if (e.key === "jalsanjeevani_last_broadcast" && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (callback) callback(parsed);
+        } catch (err) {}
+      }
+    });
+  }
+
+  /**
+   * Resets demo state back to baseline for live evaluators
+   */
+  async resetDemoState() {
+    console.log("🔄 Resetting JalSanjeevani demo state to baseline...");
+
+    // 1. Reset local storage demo flags
+    try {
+      localStorage.removeItem("jalsanjeevani_driver_arrived");
+      localStorage.removeItem("jalsanjeevani_panchayat_receipt");
+      localStorage.removeItem("jalsanjeevani_rogue_frozen");
+      localStorage.removeItem("jalsanjeevani_offline_sync_queue");
+    } catch (e) {}
+
+    // 2. Reset database state in Supabase if online
+    if (this.client && navigator.onLine) {
+      try {
+        // Reset Khopadi
+        await this.client
+          .from("villages")
+          .update({ cistern_level: "7%", status: "critical", hours_remaining: 13 })
+          .eq("id", "SN-02");
+
+        // Reset Rogue Tanker
+        await this.client
+          .from("tankers")
+          .update({ is_rogue: true, status: "diverted", lat: 18.5526, lng: 75.0064 })
+          .eq("id", "TN-ROGUE");
+
+        // Reset Driver Tanker
+        await this.client
+          .from("tankers")
+          .update({ is_rogue: false, status: "active", lat: 19.8920, lng: 74.0610 })
+          .eq("id", "TN-SN-02");
+
+        console.log("✓ Supabase database records reset to baseline");
+      } catch (e) {
+        console.warn("Could not reset remote Supabase state, local reset applied:", e);
+      }
+    }
+
+    // 3. Broadcast DEMO_STATE_RESET across all open tabs
+    this.broadcastState("DEMO_STATE_RESET", { reset_at: new Date().toISOString() });
+    return true;
   }
 
   /**
