@@ -217,8 +217,9 @@
           let synced = false;
 
           // 1. Attempt sync via Supabase client if available
-          if (window.supabaseClient) {
-            const { error } = await window.supabaseClient.from("cistern_deliveries").insert([{
+          const sbClient = (window.JalSupabase && window.JalSupabase.client) || window.supabaseClient;
+          if (sbClient) {
+            const { error } = await sbClient.from("delivery_receipts").insert([{
               tanker_id: item.tanker_id,
               target_village: item.target_village || item.village,
               volume_liters: item.volume_liters || 10000,
@@ -234,9 +235,13 @@
           // 2. Fallback to backend API if Supabase insert failed or wasn't configured
           if (!synced && window.JalAuth) {
             const apiBase = window.JalAuth.getApiBase();
-            const res = await fetch(`${apiBase}/api/verify-discharge`, {
+            const authHeaders = window.JalAuth.getAuthHeaders();
+            const res = await fetch(`${apiBase}/api/verify-delivery`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                ...authHeaders
+              },
               body: JSON.stringify({
                 tanker_id: item.tanker_id,
                 target_village: item.target_village || item.village,
@@ -251,8 +256,8 @@
             if (res && res.ok) synced = true;
           }
 
-          // In demo or offline simulation, consider local processing as successful sync
-          if (synced || !window.supabaseClient) {
+          // Only mark verified as synced when successful sync occurred
+          if (synced) {
             await this.markVerificationSynced(item.id);
             syncedCount++;
           }

@@ -34,9 +34,6 @@ const rootPublic = path.join(__dirname, 'public');
 console.log(`[build.js] Copying frontend assets to root public: ${rootPublic}`);
 copyFolderSync(sourceDir, rootPublic);
 
-// 3. Also populate frontend/public for fallback when Vercel root is set to 'frontend'
-const frontendPublic = path.join(sourceDir, 'public');
-console.log(`[build.js] Syncing to frontend/public: ${frontendPublic}`);
-copyFolderSync(sourceDir, frontendPublic);
+
 
 console.log('[build.js] Production static assets verified and built to public/ successfully!');

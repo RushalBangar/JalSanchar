@@ -334,10 +334,9 @@ class ProfileUpdateRequest(BaseModel):
 # =============================================================================
 
 @app.get("/")
-@app.get("/health")
-async def health_check():
+async def root_keepalive():
     """
-    Lightweight keep-alive health check endpoint.
+    Lightweight keep-alive root endpoint.
     Prevents free-tier instances on Render from idling and spinning down.
     """
     return {

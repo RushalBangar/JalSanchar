@@ -557,9 +557,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 7. Backend Verification Handshake Call
     try {
-      const backendUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '8000'
-        ? '/api/verify-delivery'
-        : 'https://jalsanjeevani.onrender.com/api/verify-delivery';
+      const apiBase = window.JalAuth ? window.JalAuth.getApiBase() : "https://jalsanjeevani.onrender.com";
+      const backendUrl = `${apiBase}/api/verify-delivery`;
 
       const authHeaders = window.JalAuth ? window.JalAuth.getAuthHeaders() : {};
       fetch(backendUrl, {

@@ -5,7 +5,10 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+.pytest_cache/
+frontend/public/
+*.log
+*.tmp
 *.json.secret
 *service_account*.json
 *service-account*.json
-

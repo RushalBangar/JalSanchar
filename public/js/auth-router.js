@@ -6,27 +6,26 @@
 async function routeAuthenticatedUser(user) {
   let role = (user && user.role) ? user.role.toLowerCase().trim() : '';
 
-  // If role isn't directly on user object, query Supabase user profile
-  if (!role && window.supabaseClient && user && user.id) {
-    try {
-      const { data: profile } = await window.supabaseClient
-        .from('gov_users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-      if (profile && profile.role) {
-        role = profile.role.toLowerCase().trim();
-      }
-    } catch (e) {
-      console.warn("🔐 [AuthRouter] Profile fetch notice:", e.message);
-    }
-  }
-
-  // Fallback check against active session if still empty
+  // Check active session via JalAuth first
   if (!role && window.JalAuth) {
     const session = window.JalAuth.getSession();
     if (session && session.role) {
       role = session.role.toLowerCase().trim();
+    }
+  }
+
+  // If role is still not resolved, query user profile safely through JalAuth backend API
+  if (!role && window.JalAuth && typeof window.JalAuth.fetchUsersFromSupabase === "function") {
+    try {
+      const users = await window.JalAuth.fetchUsersFromSupabase();
+      if (user && (user.id || user.email)) {
+        const matched = Object.values(users).find(u => u.id === user.id || u.email === user.email);
+        if (matched && matched.role) {
+          role = matched.role.toLowerCase().trim();
+        }
+      }
+    } catch (e) {
+      console.warn("🔐 [AuthRouter] Profile fetch notice:", e.message);
     }
   }
 

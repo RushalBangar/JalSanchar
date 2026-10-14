@@ -6,9 +6,13 @@ into the public.gov_users table in Supabase PostgreSQL.
 """
 
 import os
+import sys
 import bcrypt
 from dotenv import load_dotenv
 from supabase import create_client
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 load_dotenv("backend/.env")
 

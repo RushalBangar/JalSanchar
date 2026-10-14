@@ -326,8 +326,8 @@
         const isTestKey = cleanPwd === "sovereign_water_2025";
         const isSavedPwd = persona._savedPwd ? persona._savedPwd === cleanPwd : false;
 
-        // Allow authentication if test key matches, saved password matches, or in evaluation demo mode
-        if (isTestKey || isSavedPwd || cleanPwd.length >= 6) {
+        // Allow authentication if test key matches or saved password matches
+        if (isTestKey || isSavedPwd) {
           const effectiveRole = persona.role || cleanRole || "collector";
           const theme = this.ROLE_THEMES[effectiveRole] || this.ROLE_THEMES.collector;
           const redirectUrl = persona.redirect_url || theme.portalUrl || "dashboard.html";
@@ -932,11 +932,15 @@
           dropdown.classList.toggle("hidden");
         });
 
-        document.addEventListener("click", (e) => {
+        if (this._closeDropdownHandler) {
+          document.removeEventListener("click", this._closeDropdownHandler);
+        }
+        this._closeDropdownHandler = (e) => {
           if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
             dropdown.classList.add("hidden");
           }
-        });
+        };
+        document.addEventListener("click", this._closeDropdownHandler);
       }
 
       if (editProfileBtn) {

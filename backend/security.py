@@ -117,9 +117,10 @@ def verify_delivery_handshake(
         }
 
     # 2. Key Pair Validation
-    expected_key = village_info["cistern_key"]
+    expected_key = str(village_info.get("cistern_key") or "")
+    provided_key = str(cistern_key or "")
     # Strict cryptographic key match — no bypass allowed
-    keys_match = hmac.compare_digest(cistern_key, expected_key)
+    keys_match = bool(provided_key and expected_key and hmac.compare_digest(provided_key, expected_key))
 
     if not keys_match:
         return False, {

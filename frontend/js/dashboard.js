@@ -128,15 +128,15 @@ document.addEventListener("DOMContentLoaded", () => {
         radius: 2600
       }).bindPopup(`
         <div style="font-family: Inter, sans-serif; min-width: 210px;">
-          <h4 style="margin: 0 0 4px 0; color: #00e5ff; font-size: 1rem;">${v.name} Village</h4>
+          <h4 style="margin: 0 0 4px 0; color: #00e5ff; font-size: 1rem;">${escapeHtml(v.name)} Village</h4>
           <div style="margin-bottom: 8px;">
             <span style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; background: ${color}20; color: ${color}; border: 1px solid ${color}50;">
-              ${v.status.toUpperCase()} (${v.hours_remaining}h Reserve)
+              ${escapeHtml(String(v.status || "").toUpperCase())} (${escapeHtml(String(v.hours_remaining ?? ""))}h Reserve)
             </span>
           </div>
           <div style="font-size: 0.8rem; line-height: 1.5; color: #dce2f4;">
-            <p><strong>Cistern Level:</strong> ${v.cistern_level}</p>
-            <p><strong>Aquifer Trend:</strong> ${v.depletion_rate}</p>
+            <p><strong>Cistern Level:</strong> ${escapeHtml(v.cistern_level)}</p>
+            <p><strong>Aquifer Trend:</strong> ${escapeHtml(v.depletion_rate)}</p>
             <p><strong>Humans:</strong> ${v.population.toLocaleString()} (Min ${humanDemand.toLocaleString()}L)</p>
             <p><strong>Livestock:</strong> ${v.cattle.toLocaleString()} (Min ${cattleDemand.toLocaleString()}L)</p>
             <p style="margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); color: #00e5ff; font-weight: 600;">
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "text-warning-amber font-semibold"
         : "text-tertiary font-semibold";
       const reserveLabel = (v.hours_remaining !== undefined && v.hours_remaining < 24)
-        ? `T-${escapeHtml(v.hours_remaining)}h Deplete`
+        ? `T-${escapeHtml(String(v.hours_remaining ?? ''))}h Deplete`
         : `T-${Math.max(1, Math.round((v.hours_remaining || 48)/24))}d Reserve`;
 
       return `
@@ -388,8 +388,12 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             const icon = t.is_rogue ? rogueTankerIcon : tankerIcon;
             const targetLayer = t.is_rogue ? rogueLayer : fleetLayer;
+            const safeTankerId = escapeHtml(t.id);
+            const safeReg = escapeHtml(t.registration);
+            const safeDriver = escapeHtml(t.driver_name || 'Assigned');
+            const safeTarget = escapeHtml(t.target_village || 'Depot');
             const marker = L.marker([t.lat, t.lng], { icon: icon })
-              .bindPopup(`<b>${t.id} (${t.registration})</b><br>${t.is_rogue ? "<span style='color:#ef4444;'>Diverted Anomaly</span>" : "<span style='color:#10b981;'>Geofence Compliant</span>"}<br>Driver: ${t.driver_name || 'Assigned'}<br>Target: ${t.target_village || 'Depot'}`)
+              .bindPopup(`<b>${safeTankerId} (${safeReg})</b><br>${t.is_rogue ? "<span style='color:#ef4444;'>Diverted Anomaly</span>" : "<span style='color:#10b981;'>Geofence Compliant</span>"}<br>Driver: ${safeDriver}<br>Target: ${safeTarget}`)
               .addTo(targetLayer);
             tankerMarkers[t.id] = marker;
           }
@@ -403,17 +407,25 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!record) return;
         if (tankerMarkers[record.id]) {
           tankerMarkers[record.id].setLatLng([record.lat, record.lng]);
+          const safeId = escapeHtml(record.id);
+          const safeReg = escapeHtml(record.registration);
+          const safeDriver = escapeHtml(record.driver_name || 'Assigned');
+          const safeTarget = escapeHtml(record.target_village || 'Depot');
           tankerMarkers[record.id].setPopupContent(`
-            <b>${record.id} (${record.registration})</b><br>
+            <b>${safeId} (${safeReg})</b><br>
             ${record.is_rogue ? "<span style='color:#ef4444;'>Diverted Anomaly</span>" : "<span style='color:#10b981;'>Geofence Compliant</span>"}<br>
-            Driver: ${record.driver_name || 'Assigned'}<br>
-            Target: ${record.target_village || 'Depot'}
+            Driver: ${safeDriver}<br>
+            Target: ${safeTarget}
           `);
         } else {
           const icon = record.is_rogue ? rogueTankerIcon : tankerIcon;
           const targetLayer = record.is_rogue ? rogueLayer : fleetLayer;
+          const safeId = escapeHtml(record.id);
+          const safeReg = escapeHtml(record.registration);
+          const safeDriver = escapeHtml(record.driver_name || 'Assigned');
+          const safeTarget = escapeHtml(record.target_village || 'Depot');
           const marker = L.marker([record.lat, record.lng], { icon: icon })
-            .bindPopup(`<b>${record.id} (${record.registration})</b><br>${record.is_rogue ? "<span style='color:#ef4444;'>Diverted Anomaly</span>" : "<span style='color:#10b981;'>Geofence Compliant</span>"}<br>Driver: ${record.driver_name || 'Assigned'}<br>Target: ${record.target_village || 'Depot'}`)
+            .bindPopup(`<b>${safeId} (${safeReg})</b><br>${record.is_rogue ? "<span style='color:#ef4444;'>Diverted Anomaly</span>" : "<span style='color:#10b981;'>Geofence Compliant</span>"}<br>Driver: ${safeDriver}<br>Target: ${safeTarget}`)
             .addTo(targetLayer);
           tankerMarkers[record.id] = marker;
         }
@@ -449,12 +461,15 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Show live floating alert on Collector Dashboard
         const toast = document.createElement("div");
+        const safeVol = escapeHtml(record.volume_liters ? record.volume_liters.toLocaleString() : "10,000");
+        const safeVillage = escapeHtml(record.village || "Target Cistern");
+        const safeTanker = escapeHtml(record.tanker || "Fleet Unit");
         toast.innerHTML = `
           <div style="position: fixed; bottom: 24px; right: 24px; background: rgba(7, 14, 26, 0.95); border: 1px solid #10b981; border-left: 4px solid #10b981; padding: 12px 18px; border-radius: 8px; box-shadow: 0 8px 32px rgba(16, 185, 129, 0.25); z-index: 9999; display: flex; align-items: center; gap: 12px; font-family: Inter, sans-serif; backdrop-filter: blur(12px);">
             <span style="font-size: 1.4rem;">💧</span>
             <div>
               <div style="font-size: 0.8rem; font-weight: 700; color: #10b981;">CRYPTOGRAPHIC QR VERIFIED</div>
-              <div style="font-size: 0.75rem; color: #dce2f4;">${record.volume_liters.toLocaleString()}L discharged at ${record.village} by Tanker ${record.tanker}. Escrow released.</div>
+              <div style="font-size: 0.75rem; color: #dce2f4;">${safeVol}L discharged at ${safeVillage} by Tanker ${safeTanker}. Escrow released.</div>
             </div>
           </div>
         `;
@@ -648,9 +663,17 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       let routesDrawn = false;
+      const primaryBase = window.JalAuth ? window.JalAuth.getApiBase() : (
+        window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+          ? "http://127.0.0.1:8000"
+          : "https://jalsanjeevani.onrender.com"
+      );
+      const fallbackBase = primaryBase.includes("onrender.com")
+        ? "http://127.0.0.1:8000"
+        : "https://jalsanjeevani.onrender.com";
       const apiEndpoints = [
-        "https://jalsanjeevani.onrender.com/api/allocate",
-        "http://127.0.0.1:8000/api/allocate"
+        `${primaryBase}/api/allocate`,
+        `${fallbackBase}/api/allocate`
       ];
 
       for (const endpoint of apiEndpoints) {
@@ -773,7 +796,7 @@ document.addEventListener("DOMContentLoaded", () => {
     a.href = url;
     a.download = `jalsanjeevani_manifest_${new Date().toISOString().slice(0,10)}.json`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 
   // Official Signed Government Relief Order (.PDF) Generator
