@@ -7,7 +7,7 @@
  * 3. Supports Background Sync API to flush offline delivery receipts when connectivity returns.
  */
 
-const CACHE_NAME = 'jalsanjeevani-offline-pwa-v7';
+const CACHE_NAME = 'jalsanjeevani-offline-pwa-v8';
 const PRECACHE_ASSETS = [
   './',
   './manifest.json',
