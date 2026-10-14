@@ -68,8 +68,8 @@
         <a aria-current="page" class="transition-colors text-primary-container font-semibold" data-i18n="nav_features" href="#hero">Features</a>
         <a class="text-on-surface-variant font-label-ui text-label-ui hover:text-on-surface transition-colors" data-i18n="nav_tech" href="#tech-section">Technology</a>
         <a class="text-on-surface-variant font-label-ui text-label-ui hover:text-on-surface transition-colors" data-i18n="nav_pillars" href="#pillars-section">Pillars</a>
-        <a class="text-on-surface-variant font-label-ui text-label-ui hover:text-on-surface transition-colors" data-i18n="nav_telemetry" href="dashboard.html">Telemetry Live</a>
         <a class="text-on-surface-variant font-label-ui text-label-ui hover:text-on-surface transition-colors" data-i18n="nav_impact" href="#impact-section">Impact</a>
+        <button type="button" id="btnNavAudit" class="text-on-surface-variant font-label-ui text-label-ui hover:text-primary transition-colors cursor-pointer" data-i18n="nav_audit">Audit Ledger</button>
       </nav>
       <div class="flex items-center gap-space-sm">
         <div class="relative hidden sm:block">
@@ -82,15 +82,12 @@
         </div>
         <a class="hidden sm:inline-flex items-center justify-center font-label-ui text-label-ui font-semibold px-4 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-bright hover:text-text-primary transition-all border border-surface-glass-border" data-i18n="nav_login" href="login.html">Portal Login</a>
         <a class="hidden lg:inline-flex items-center justify-center font-label-ui text-label-ui font-semibold px-4 py-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-tertiary-container hover:text-on-tertiary-container shadow-[0_0_16px_rgba(0,229,255,0.25)] transition-all" data-i18n="nav_dashboard" href="dashboard.html">Access Dashboard</a>
-        <a href="login.html" title="Access Role Portal" class="hidden sm:flex w-8 h-8 rounded-full bg-primary/20 hover:bg-primary/30 border border-primary/40 items-center justify-center ml-1 transition-all group">
-          <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-[18px]">person</span>
-        </a>
         <button id="mobileMenuBtn" aria-label="Toggle Mobile Menu" class="lg:hidden flex items-center justify-center p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high focus:outline-none" type="button">
           <span class="material-symbols-outlined text-[24px]">menu</span>
         </button>
       </div>
     </div>
-    <!-- Mobile dropdown drawer with language selector and prominent Access Dashboard button -->
+    <!-- Mobile dropdown drawer with unique navigation destinations -->
     <div id="mobileMenu" class="hidden lg:hidden px-6 py-5 bg-surface-slate/95 backdrop-blur-2xl border-b border-surface-container-high flex flex-col gap-3 shadow-2xl">
       <div class="flex justify-between items-center pb-3 border-b border-surface-container/60">
         <span class="text-xs font-mono text-text-muted">Language / भाषा:</span>
@@ -112,15 +109,15 @@
         <span>Pillars</span>
         <span class="text-xs opacity-60">→</span>
       </a>
-      <a class="py-1.5 text-on-surface-variant hover:text-on-surface flex items-center justify-between" data-i18n="nav_telemetry" href="dashboard.html">
-        <span>Telemetry Live</span>
-        <span class="text-xs opacity-60">→</span>
-      </a>
       <a class="py-1.5 text-on-surface-variant hover:text-on-surface flex items-center justify-between" data-i18n="nav_impact" href="#impact-section">
         <span>Impact</span>
         <span class="text-xs opacity-60">→</span>
       </a>
-      <!-- Primary Action Buttons inside the 3-line mobile menu -->
+      <button type="button" id="btnMobileNavAudit" class="py-1.5 text-on-surface-variant hover:text-primary flex items-center justify-between text-left cursor-pointer w-full">
+        <span data-i18n="nav_audit">Audit Ledger</span>
+        <span class="text-xs opacity-60">→</span>
+      </button>
+      <!-- Primary Action Buttons inside mobile menu -->
       <div class="pt-3 border-t border-surface-container/60 flex flex-col gap-2.5">
         <a class="w-full py-2.5 px-4 rounded-xl bg-primary-container text-on-primary-container font-headline-sm text-sm font-semibold text-center shadow-[0_0_16px_rgba(0,229,255,0.25)] hover:bg-tertiary-container hover:text-on-tertiary-container transition-all flex items-center justify-center gap-2" data-i18n="nav_dashboard" href="dashboard.html">
           <span class="material-symbols-outlined text-[18px]">terminal</span>
@@ -633,21 +630,23 @@
           <p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">Sovereign water logistics architecture, precision drought response forecasting, and cryptographic tanker distribution governance.</p>
         </div>
         <div>
-          <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Navigation</span>
+          <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Platform Architecture</span>
           <ul class="space-y-2 font-body-sm text-body-sm">
             <li><a class="hover:text-on-surface transition-colors" href="#hero">Mission Overview</a></li>
-            <li><a class="hover:text-on-surface transition-colors" href="#tech-section">Satellite Integration</a></li>
-            <li><a class="hover:text-on-surface transition-colors" href="dashboard.html#cistern-section">Hydrological Telemetry</a></li>
-            <li><button type="button" id="btnFooterAudit" class="hover:text-primary transition-colors text-left cursor-pointer">Audit &amp; Transparency</button></li>
+            <li><a class="hover:text-on-surface transition-colors" href="#tech-section">Satellite Telemetry</a></li>
+            <li><a class="hover:text-on-surface transition-colors" href="#pillars-section">Solution Pillars</a></li>
+            <li><a class="hover:text-on-surface transition-colors" href="#impact-section">Sovereign Quotas &amp; Impact</a></li>
+            <li><button type="button" id="btnFooterAudit" class="hover:text-primary transition-colors text-left cursor-pointer">Cryptographic Ledger Audit</button></li>
           </ul>
         </div>
         <div>
-          <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Institutional Governance</span>
+          <span class="font-label-caps text-label-caps text-text-primary uppercase tracking-wider block mb-3">Operational Role Portals</span>
           <ul class="space-y-2 font-body-sm text-body-sm">
+            <li><a class="hover:text-on-surface transition-colors" href="dashboard.html">Collector Command Center</a></li>
+            <li><a class="hover:text-on-surface transition-colors" href="driver.html">Tanker Driver Cockpit</a></li>
+            <li><a class="hover:text-on-surface transition-colors" href="panchayat.html">Gram Panchayat Verifier</a></li>
+            <li><a class="hover:text-on-surface transition-colors" href="login.html">Authorized Portal Login</a></li>
             <li><button type="button" id="btnFooterProtocols" class="hover:text-primary transition-colors text-left cursor-pointer">State Water Protocols</button></li>
-            <li><a class="hover:text-on-surface transition-colors" href="panchayat.html">Civil Supply Verification (Panchayat)</a></li>
-            <li><a class="hover:text-on-surface transition-colors" href="driver.html">Tanker Logistics Portal (Driver)</a></li>
-            <li><a class="hover:text-on-surface transition-colors" href="dashboard.html">Collectorate Terminal</a></li>
           </ul>
         </div>
         <div>
@@ -896,6 +895,11 @@
 
     btnOpenAuditModal?.addEventListener('click', openAudit);
     btnFooterAudit?.addEventListener('click', openAudit);
+    document.getElementById('btnNavAudit')?.addEventListener('click', openAudit);
+    document.getElementById('btnMobileNavAudit')?.addEventListener('click', () => {
+      mobileMenu?.classList.add('hidden');
+      openAudit();
+    });
     btnCloseAuditModal?.addEventListener('click', closeAudit);
     btnCloseAuditModalBtn?.addEventListener('click', closeAudit);
 

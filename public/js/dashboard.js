@@ -1245,36 +1245,109 @@ document.addEventListener("DOMContentLoaded", () => {
     printWindow.document.close();
   });
 
-  // 8. Mobile Responsive Drawer & Navigation Controllers
+  // 8. Universal Tactical Sidebar Panel Controller (Open/Close for Desktop & Mobile)
   const tacticalSidebar = document.getElementById("tacticalSidebar");
   const sidebarBackdrop = document.getElementById("sidebarBackdrop");
-  const btnOpenMobileSidebar = document.getElementById("btnMobileSidebarToggle");
-  const btnCloseMobileSidebar = document.getElementById("btnCloseMobileSidebar");
+  const btnSidebarToggle = document.getElementById("btnSidebarToggle");
+  const btnCloseSidebar = document.getElementById("btnCloseSidebar");
+  const btnFloatingOpenSidebar = document.getElementById("btnFloatingOpenSidebar");
+  const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+  const mainContentWrapper = document.getElementById("mainContentWrapper");
 
-  function openMobileSidebar() {
-    if (!tacticalSidebar) return;
-    tacticalSidebar.classList.remove("-translate-x-full");
-    tacticalSidebar.classList.add("translate-x-0");
-    if (sidebarBackdrop) sidebarBackdrop.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
+  let isSidebarOpen = window.innerWidth >= 1024;
+  const savedSidebarPref = localStorage.getItem("jalsanjeevani_sidebar_open");
+  if (savedSidebarPref !== null) {
+    isSidebarOpen = savedSidebarPref === "true";
   }
 
-  function closeMobileSidebar() {
+  function applySidebarState(open, animate = true) {
+    isSidebarOpen = open;
+    localStorage.setItem("jalsanjeevani_sidebar_open", String(open));
+
     if (!tacticalSidebar) return;
-    tacticalSidebar.classList.add("-translate-x-full");
-    tacticalSidebar.classList.remove("translate-x-0");
-    if (sidebarBackdrop) sidebarBackdrop.classList.add("hidden");
-    document.body.style.overflow = "";
+
+    if (open) {
+      tacticalSidebar.classList.remove("-translate-x-full");
+      tacticalSidebar.classList.add("translate-x-0");
+      if (sidebarToggleIcon) sidebarToggleIcon.textContent = "dock_to_left";
+      if (btnFloatingOpenSidebar) {
+        btnFloatingOpenSidebar.classList.add("hidden");
+        btnFloatingOpenSidebar.classList.remove("flex");
+      }
+
+      if (window.innerWidth >= 1024) {
+        mainContentWrapper?.classList.add("lg:pl-72");
+        mainContentWrapper?.classList.remove("lg:pl-0");
+        if (sidebarBackdrop) sidebarBackdrop.classList.add("hidden");
+        document.body.style.overflow = "";
+      } else {
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+    } else {
+      tacticalSidebar.classList.add("-translate-x-full");
+      tacticalSidebar.classList.remove("translate-x-0");
+      if (sidebarToggleIcon) sidebarToggleIcon.textContent = "menu_open";
+
+      if (window.innerWidth >= 1024) {
+        mainContentWrapper?.classList.remove("lg:pl-72");
+        mainContentWrapper?.classList.add("lg:pl-0");
+        if (btnFloatingOpenSidebar) {
+          btnFloatingOpenSidebar.classList.remove("hidden");
+          btnFloatingOpenSidebar.classList.add("flex");
+        }
+      }
+      if (sidebarBackdrop) sidebarBackdrop.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    if (animate) {
+      setTimeout(() => {
+        if (map && typeof map.invalidateSize === "function") {
+          map.invalidateSize();
+        }
+      }, 310);
+    }
   }
 
-  btnOpenMobileSidebar?.addEventListener("click", openMobileSidebar);
-  btnCloseMobileSidebar?.addEventListener("click", closeMobileSidebar);
-  sidebarBackdrop?.addEventListener("click", closeMobileSidebar);
+  function toggleSidebar() {
+    applySidebarState(!isSidebarOpen);
+  }
+
+  btnSidebarToggle?.addEventListener("click", toggleSidebar);
+  btnCloseSidebar?.addEventListener("click", () => applySidebarState(false));
+  btnFloatingOpenSidebar?.addEventListener("click", () => applySidebarState(true));
+  sidebarBackdrop?.addEventListener("click", () => applySidebarState(false));
+
+  // Keyboard shortcut: Ctrl+B / Cmd+B to toggle sidebar, Escape to close on mobile
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+      e.preventDefault();
+      toggleSidebar();
+    } else if (e.key === "Escape" && isSidebarOpen && window.innerWidth < 1024) {
+      applySidebarState(false);
+    }
+  });
 
   // Close sidebar drawer when clicking any link inside it on mobile
-  tacticalSidebar?.querySelectorAll(".sidebar-nav-link")?.forEach(link => {
+  tacticalSidebar?.querySelectorAll("a")?.forEach(link => {
     link.addEventListener("click", () => {
-      if (window.innerWidth < 1024) closeMobileSidebar();
+      if (window.innerWidth < 1024) applySidebarState(false);
+    });
+  });
+
+  // Initialize initial sidebar state immediately
+  applySidebarState(isSidebarOpen, false);
+
+  // Automatically switch mobile tab when in-page navigation anchors are clicked
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", () => {
+      const targetId = anchor.getAttribute("href");
+      if (targetId === "#mapSection") {
+        if (window.innerWidth < 1280) switchMobileView("map");
+      } else if (targetId === "#anomaly-section" || targetId === "#fleet-section" || targetId === "#cistern-section") {
+        if (window.innerWidth < 1280) switchMobileView("dock");
+      }
     });
   });
 
@@ -1355,7 +1428,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("cistern-section")?.scrollIntoView({ behavior: "smooth" });
   });
 
-  document.getElementById("navMobileMenu")?.addEventListener("click", openMobileSidebar);
+  document.getElementById("navMobileMenu")?.addEventListener("click", () => applySidebarState(true));
 
   // Resize listener to ensure Leaflet renders tiles sharply & panels adjust
   window.addEventListener("resize", () => {
@@ -1373,9 +1446,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     map.invalidateSize();
-    if (window.innerWidth >= 1024) {
-      closeMobileSidebar();
-    }
   });
 
   // On initial load for mobile viewports, start with Map tab active and dock collapsed

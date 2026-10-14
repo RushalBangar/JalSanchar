@@ -216,9 +216,9 @@
       
       <!-- Brand & Mobile Hamburger Toggle -->
       <div class="flex items-center gap-2 sm:gap-space-md flex-shrink-0">
-        <!-- Mobile Sidebar Toggle -->
-        <button id="btnMobileSidebarToggle" class="lg:hidden p-1.5 rounded-lg bg-surface-container text-on-surface hover:text-primary transition-colors flex items-center justify-center cursor-pointer" aria-label="Toggle Navigation Drawer">
-          <span class="material-symbols-outlined text-[22px]">menu</span>
+        <!-- Universal Sidebar Toggle Button (Desktop & Mobile) -->
+        <button id="btnSidebarToggle" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface hover:text-primary transition-all flex items-center justify-center cursor-pointer border border-border-subtle" aria-label="Toggle Tactical Sidebar" title="Toggle Command Units Panel [Ctrl+B]">
+          <span class="material-symbols-outlined text-[22px]" id="sidebarToggleIcon">dock_to_left</span>
         </button>
 
         <a href="index.html" class="flex items-center gap-2">
@@ -263,12 +263,13 @@
         </div>
       </div>
 
-      <!-- Desktop Middle Section Links (No Cross-Portal Role Switching) -->
+      <!-- Desktop Middle Section Links -->
       <nav class="hidden lg:flex items-center gap-space-xs">
-        <a aria-current="page" class="px-space-md py-1.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm text-body-sm" href="#fleetGrid">Collector Telemetry</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#dispatchPlanSection">CVRP Dispatch</a>
+        <a aria-current="page" class="px-space-md py-1.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm text-body-sm" href="#mapSection">Satellite GIS</a>
+        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#anomaly-section">Anti-Diversion</a>
+        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#fleet-section">OR-Tools Solver</a>
         <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#cistern-section">Cistern Matrix</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="index.html">Public Transparency</a>
+        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="index.html">Public Portal</a>
       </nav>
 
       <!-- Right Action Controls (Compact Mobile Aware) -->
@@ -308,17 +309,17 @@
   <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
   <div id="sidebarBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 lg:hidden" style="z-index: 45;"></div>
 
-  <!-- TACTICAL SIDEBAR (SLIDE-OUT DRAWER ON MOBILE, FIXED ON DESKTOP) -->
-  <aside id="tacticalSidebar" class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-72 max-w-[85vw] bg-surface-panel/98 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-md border-r border-border-subtle transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 shadow-2xl overflow-y-auto" style="z-index: 50;">
+  <!-- TACTICAL SIDEBAR (SLIDE-OUT DRAWER ON MOBILE, COLLAPSIBLE ON DESKTOP) -->
+  <aside id="tacticalSidebar" class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-72 max-w-[85vw] bg-surface-panel/98 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-md border-r border-border-subtle transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto" style="z-index: 50;">
     <div class="flex flex-col gap-space-md">
-      <!-- Drawer Header with Mobile Close Button -->
+      <!-- Drawer Header with Close / Collapse Button -->
       <div class="px-space-lg flex items-center justify-between">
         <div class="flex flex-col">
           <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-outline">Tactical Command Units</span>
           <span class="font-telemetry-code text-telemetry-code text-primary">GRID SEC-04 • LIVE</span>
         </div>
-        <button id="btnCloseMobileSidebar" class="lg:hidden p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" aria-label="Close Sidebar">
-          <span class="material-symbols-outlined text-[20px]">close</span>
+        <button id="btnCloseSidebar" class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors cursor-pointer border border-border-subtle flex items-center justify-center" aria-label="Collapse Sidebar" title="Collapse Panel">
+          <span class="material-symbols-outlined text-[20px]">first_page</span>
         </button>
       </div>
 
@@ -342,9 +343,16 @@
         </a>
       </nav>
 
-      <!-- Public Transparency Link in Drawer -->
-      <div class="px-space-md pt-2 border-t border-border-subtle flex flex-col gap-1 lg:hidden">
-        <a href="index.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container text-body-sm">
+      <!-- Operational Role Portals Switcher in Drawer -->
+      <div class="px-space-md pt-2 border-t border-border-subtle flex flex-col gap-1">
+        <span class="font-label-tactical text-[9px] uppercase tracking-wider text-outline px-space-md pt-1">Role Portals</span>
+        <a href="driver.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all text-body-sm">
+          <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span> Tanker Driver Cockpit
+        </a>
+        <a href="panchayat.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-tertiary transition-all text-body-sm">
+          <span class="material-symbols-outlined text-[18px] text-tertiary">how_to_reg</span> Gram Panchayat Verifier
+        </a>
+        <a href="index.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-all text-body-sm">
           <span class="material-symbols-outlined text-[18px] text-secondary">public</span> Public Transparency Portal
         </a>
       </div>
@@ -370,8 +378,14 @@
     </div>
   </aside>
 
+  <!-- FLOATING SIDEBAR EXPAND BUTTON (VISIBLE WHEN SIDEBAR IS COLLAPSED) -->
+  <button id="btnFloatingOpenSidebar" class="hidden fixed left-3 top-20 z-30 py-1.5 px-2.5 rounded-lg bg-surface-panel/95 backdrop-blur-xl border border-primary/40 text-primary hover:bg-surface-container shadow-2xl transition-all cursor-pointer items-center gap-1.5" title="Open Command Units [Ctrl+B]">
+    <span class="material-symbols-outlined text-[18px]">dock_to_left</span>
+    <span class="font-label-tactical text-[10px] uppercase font-bold pr-0.5">Units</span>
+  </button>
+
   <!-- MAIN WORKSPACE (RESPONSIVE PADDING & MARGINS) -->
-  <div class="pl-0 lg:pl-64 w-full transition-all">
+  <div id="mainContentWrapper" class="pl-0 lg:pl-72 w-full transition-all duration-300">
     <main class="relative pt-14 w-full bg-surface-base min-h-screen pb-20 lg:pb-8">
       <div class="flex flex-col w-full">
         <div class="w-full p-2.5 sm:p-gutter-desktop flex flex-col gap-3 sm:gap-space-lg">
