@@ -56,7 +56,7 @@
     })();
   </script>
 
-  <title>Tanker Driver Cockpit | JalSanjeevani</title>
+  <title>Tanker Driver Portal | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="manifest" href="manifest.json">
   <!-- Google Fonts: Inter, JetBrains Mono, Noto Sans Devanagari, Plus Jakarta Sans -->
@@ -220,7 +220,7 @@
 </head>
 <body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen">
 
-  <!-- Tactical Header -->
+  <!-- Header -->
   <header class="fixed top-0 w-full z-50 pt-safe bg-surface-panel/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.35)] border-b border-white/5">
     <div class="h-20 px-4 flex flex-col justify-between py-2">
       <div class="flex items-center justify-between gap-2">
@@ -228,7 +228,7 @@
           <img alt="JalSanjeevani Logo" class="h-8 w-auto object-contain rounded" src="assets/logo.jpg"/>
           <div class="flex flex-col">
             <span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight leading-none">JalSanjeevani</span>
-            <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Driver PWA</span>
+            <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Driver App</span>
           </div>
         </a>
 
@@ -240,7 +240,7 @@
           </button>
 
           <!-- Reset Demo State Button -->
-          <button id="btnResetDemoDriver" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo State Baseline">
+          <button id="btnResetDemoDriver" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo Data">
             <span class="material-symbols-outlined text-[15px]">restart_alt</span>
             <span class="hidden sm:inline">Reset</span>
           </button>
@@ -266,7 +266,7 @@
             <span class="material-symbols-outlined absolute right-0.5 pointer-events-none text-on-surface-variant text-[14px]">expand_more</span>
           </div>
 
-          <!-- Tactical User Profile Mount -->
+          <!-- User Profile Mount -->
           <div id="userProfileMount" class="shrink-0"></div>
         </div>
       </div>
@@ -274,11 +274,11 @@
       <!-- Sector & Role Sub-strip -->
       <div class="flex items-center justify-between px-1 pb-0.5">
         <div class="flex items-center gap-2">
-          <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-wider">Active Sector:</span>
-          <span class="font-label-tactical text-label-tactical text-secondary font-semibold uppercase">Ahilyanagar - Sinnar</span>
+          <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-wider">Delivery Area:</span>
+          <span class="font-label-tactical text-label-tactical text-secondary font-semibold uppercase">Ahilyanagar &amp; Sinnar</span>
         </div>
         <div class="flex items-center">
-          <span class="font-label-tactical text-label-tactical text-on-surface font-semibold uppercase tracking-wider">Driver Cockpit</span>
+          <span class="font-label-tactical text-label-tactical text-on-surface font-semibold uppercase tracking-wider">Driver Portal</span>
         </div>
       </div>
     </div>
@@ -288,20 +288,20 @@
   <main class="flex flex-col relative w-full pt-24 pb-28 bg-surface min-h-screen">
     <div class="flex flex-col w-full px-4 py-2 space-y-3 max-w-lg mx-auto">
 
-      <!-- Mission Alert Banner & Telemetry Pings -->
+      <!-- Mission Alert Banner -->
       <div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-xl shadow-sm border border-white/5">
         <div class="flex items-center space-x-2">
           <span class="relative flex h-2.5 w-2.5">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe-emerald opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-safe-emerald"></span>
           </span>
-          <span id="missionActiveBannerText" class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Mission Active</span>
+          <span id="missionActiveBannerText" class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Trip in Progress</span>
         </div>
         <div class="flex items-center space-x-1.5 text-on-surface-variant font-label-tactical text-label-tactical">
           <span class="material-symbols-outlined text-[14px] text-primary">satellite_alt</span>
-          <span>9 Sats Lock</span>
+          <span>GPS Connected</span>
           <span class="text-surface-variant">•</span>
-          <span class="text-secondary font-semibold">Corridor OK</span>
+          <span class="text-secondary font-semibold">Route Clear</span>
         </div>
       </div>
 
@@ -313,14 +313,14 @@
         <!-- Target Title & Transit Pill -->
         <div class="flex items-start justify-between gap-2">
           <div class="flex flex-col">
-            <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Active Dispatch Order</span>
+            <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Water Delivery Destination</span>
             <h1 id="targetVillageTitle" class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight mt-0.5">
-              Target: Khopadi Cistern
+              Destination: Khopadi Village Tank
             </h1>
           </div>
           <div class="inline-flex items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-full shrink-0 border border-primary/20">
             <span id="transitDot" class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span id="transitBadge" class="font-label-tactical text-label-tactical font-bold text-primary uppercase tracking-wider">IN TRANSIT</span>
+            <span id="transitBadge" class="font-label-tactical text-label-tactical font-bold text-primary uppercase tracking-wider">ON THE WAY</span>
           </div>
         </div>
 
@@ -330,7 +330,7 @@
             <div class="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center text-primary">
               <span class="material-symbols-outlined text-[18px]">water_drop</span>
             </div>
-            <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Load Volume</span>
+            <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Water Quantity</span>
           </div>
           <div class="text-right">
             <span class="font-telemetry-metric text-telemetry-metric text-primary tracking-tight font-bold">10,000</span>
@@ -344,27 +344,27 @@
           <div class="flex items-center justify-between bg-surface-container/60 px-3 py-2 rounded">
             <div class="flex items-center space-x-2">
               <span class="material-symbols-outlined text-[16px] text-safe-emerald">verified_user</span>
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Statutory Allocation</span>
+              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Daily Quota</span>
             </div>
-            <span class="font-body-md text-body-md font-semibold text-safe-emerald">40L / Citizen • 70L / Cattle</span>
+            <span class="font-body-md text-body-md font-semibold text-safe-emerald">40L / Person • 70L / Animal</span>
           </div>
 
           <!-- Designated Cistern -->
           <div class="flex items-center justify-between bg-surface-container/60 px-3 py-2 rounded">
             <div class="flex items-center space-x-2">
               <span class="material-symbols-outlined text-[16px] text-secondary">warehouse</span>
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Designated Cistern</span>
+              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Delivery Tank</span>
             </div>
-            <span class="font-body-md text-body-md font-semibold text-on-surface">Gram Panchayat Enclosure #02</span>
+            <span class="font-body-md text-body-md font-semibold text-on-surface">Village Water Tank #02</span>
           </div>
 
           <!-- Required Handshake -->
           <div class="flex items-center justify-between bg-surface-container/60 px-3 py-2 rounded">
             <div class="flex items-center space-x-2">
               <span class="material-symbols-outlined text-[16px] text-warning-amber">badge</span>
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Required Handshake</span>
+              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Verified By</span>
             </div>
-            <span class="font-body-md text-body-md font-semibold text-warning-amber">Gram Panchayat Secretary</span>
+            <span class="font-body-md text-body-md font-semibold text-warning-amber">Gram Panchayat Official</span>
           </div>
         </div>
       </div>
@@ -375,39 +375,39 @@
           <div class="flex items-center space-x-2">
             <span id="geofenceRadarIcon" class="material-symbols-outlined text-[20px] text-primary animate-pulse">radar</span>
             <div class="flex flex-col">
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-wider">Geo-Telemetry Distance</span>
-              <span id="geofenceStatusText" class="font-body-lg text-body-lg font-bold text-on-surface">Geofence: 180m from Target</span>
+              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-wider">Tanker Distance</span>
+              <span id="geofenceStatusText" class="font-body-lg text-body-lg font-bold text-on-surface">Distance: 180m to Village Tank</span>
             </div>
           </div>
-          <span id="geofenceRangeBadge" class="bg-warning-amber/15 text-warning-amber px-2 py-0.5 rounded font-label-tactical text-label-tactical uppercase font-bold">Within Corridor</span>
+          <span id="geofenceRangeBadge" class="bg-warning-amber/15 text-warning-amber px-2 py-0.5 rounded font-label-tactical text-label-tactical uppercase font-bold">On Route</span>
         </div>
 
         <!-- Tactile Push Trigger Button -->
         <button id="btnLogArrival" class="w-full min-h-[50px] bg-primary-container text-on-primary-container hover:bg-primary font-headline-md text-headline-md font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 active:scale-[0.98] transition-all cursor-pointer">
           <span class="material-symbols-outlined text-[22px]">where_to_vote</span>
-          <span id="btnLogArrivalText">Log Arrival Coordinates</span>
+          <span id="btnLogArrivalText">Confirm Arrival at Tank</span>
         </button>
 
         <div id="arrivalSuccessBanner" class="hidden flex items-center space-x-1.5 justify-center py-1.5 bg-safe-emerald/10 rounded-lg text-safe-emerald border border-safe-emerald/20">
           <span class="material-symbols-outlined text-[16px]">check_circle</span>
-          <span class="font-label-tactical text-label-tactical uppercase font-semibold">GPS Verified (12m Perimeter) &amp; Synced to District Node</span>
+          <span class="font-label-tactical text-label-tactical uppercase font-semibold">Arrival Confirmed • Tanker at Village Tank</span>
         </div>
       </div>
 
-      <!-- Cryptographic Token Presentation Container -->
+      <!-- Water Delivery QR Code Container -->
       <div class="bg-surface-card rounded-xl p-4 shadow-xl flex flex-col items-center space-y-3 text-center border border-white/5">
         <div class="flex flex-col space-y-1">
           <div class="flex items-center justify-center space-x-1.5 text-primary">
             <span class="material-symbols-outlined text-[18px]">lock</span>
-            <span class="font-label-tactical text-label-tactical uppercase tracking-wider font-bold">Dual-Key Escrow Verification</span>
+            <span class="font-label-tactical text-label-tactical uppercase tracking-wider font-bold">Water Delivery Proof (QR Code)</span>
           </div>
           <p class="font-body-md text-body-md text-on-surface-variant max-w-xs px-2">
-            Present this offline cryptographic QR token to the Panchayat official at the community cistern to unlock payment escrow.
+            Show this QR code to the village official at the water tank to confirm delivery and approve payment.
           </p>
-          <!-- Anti-Replay Dynamic Token Freshness Badge -->
+          <!-- Dynamic Token Freshness Badge -->
           <div id="tokenDynamicBadge" class="flex items-center justify-center gap-1.5 text-[11px] font-label-tactical text-safe-emerald bg-safe-emerald/10 px-2.5 py-1 rounded-full border border-safe-emerald/20">
             <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span>
-            <span>Anti-Replay Dynamic Token • Valid 10m</span>
+            <span>Secure QR Code • Valid for 10 min</span>
           </div>
         </div>
 
@@ -419,15 +419,15 @@
           <!-- Token Identification Strip -->
           <div class="bg-slate-100 text-slate-800 px-3 py-1.5 rounded w-full flex items-center justify-center space-x-1.5">
             <span class="material-symbols-outlined text-[13px] text-slate-600">vpn_key</span>
-            <span id="driverCryptoKey" class="font-label-tactical text-label-tactical tracking-wider font-bold">KEY: 0x9F3B4E • GEOFENCE ENCRYPTED</span>
+            <span id="driverCryptoKey" class="font-label-tactical text-label-tactical tracking-wider font-bold">DELIVERY CODE: 0x9F3B4E • TANK LOCATION MATCHED</span>
           </div>
 
-          <!-- Anti-Replay 30s TOTP Progress Bar & Rotating Nonce Hash -->
+          <!-- 30s Auto-Refresh Progress Bar -->
           <div class="w-full bg-slate-50 p-2 rounded-lg border border-slate-200 flex flex-col gap-1 text-left">
             <div class="flex items-center justify-between font-mono text-[10px] font-bold text-slate-700">
               <span class="flex items-center gap-1 text-cyan-700">
                 <span class="material-symbols-outlined text-[13px]">timer</span>
-                <span>TOTP NONCE VALIDITY</span>
+                <span>QR CODE AUTO-REFRESH</span>
               </span>
               <span id="totpCountdownText" class="text-cyan-800 font-bold font-mono">30s</span>
             </div>
@@ -435,9 +435,9 @@
               <div id="totpProgressBar" class="h-full bg-cyan-600 transition-all duration-1000 ease-linear rounded-full" style="width: 100%;"></div>
             </div>
             <div class="flex items-center justify-between text-[9px] font-mono text-slate-600 pt-0.5">
-              <span>NONCE: <strong id="liveNonceHash" class="text-slate-900 font-bold">0x8F4C2E1B</strong></span>
+              <span>CODE: <strong id="liveNonceHash" class="text-slate-900 font-bold">0x8F4C2E1B</strong></span>
               <span class="text-emerald-700 font-bold flex items-center gap-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ROTATING 30s
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Refreshes every 30s
               </span>
             </div>
           </div>
@@ -470,7 +470,7 @@
         <!-- Expandable JSON Proof Inspector -->
         <div id="jsonProofDrawer" class="hidden w-full text-left bg-surface-container-lowest p-3 rounded-lg font-telemetry-code text-telemetry-code text-primary space-y-1 border border-white/10">
           <div class="flex justify-between items-center text-on-surface-variant font-label-tactical text-label-tactical">
-            <span>CRYPTOGRAPHIC_ESCROW_PAYLOAD.JSON</span>
+            <span>DELIVERY_RECEIPT_DETAILS.JSON</span>
             <button id="closeJsonProofBtn" class="text-on-surface hover:text-alert-crimson font-bold text-sm">✕</button>
           </div>
           <pre id="payloadJsonView" class="overflow-x-auto text-[10px] leading-4 text-secondary bg-surface-base p-2 rounded max-h-48 whitespace-pre-wrap word-break-all"></pre>
@@ -482,22 +482,22 @@
         <div class="flex items-center space-x-2">
           <span class="material-symbols-outlined text-[16px] text-primary">local_gas_station</span>
           <div class="flex flex-col">
-            <span class="font-label-tactical text-label-tactical">Diesel Reserve</span>
-            <span class="font-telemetry-code text-telemetry-code text-on-surface font-semibold">76% (Est. 140km)</span>
+            <span class="font-label-tactical text-label-tactical">Fuel Level</span>
+            <span class="font-telemetry-code text-telemetry-code text-on-surface font-semibold">76% (~140km)</span>
           </div>
         </div>
         <div class="h-6 w-[1px] bg-surface-variant"></div>
         <div class="flex items-center space-x-2">
           <span class="material-symbols-outlined text-[16px] text-safe-emerald">shield</span>
           <div class="flex flex-col">
-            <span class="font-label-tactical text-label-tactical">Flow Seal Tamper</span>
-            <span class="font-telemetry-code text-telemetry-code text-safe-emerald font-semibold">Intact (0.00 PSI)</span>
+            <span class="font-label-tactical text-label-tactical">Water Valve Seal</span>
+            <span class="font-telemetry-code text-telemetry-code text-safe-emerald font-semibold">Intact &amp; Sealed</span>
           </div>
         </div>
         <div class="h-6 w-[1px] bg-surface-variant"></div>
         <button id="sosBeaconBtn" class="flex items-center space-x-1 bg-alert-crimson/15 hover:bg-alert-crimson/25 text-alert-crimson px-2.5 py-1.5 rounded transition-all cursor-pointer">
           <span class="material-symbols-outlined text-[16px]">sos</span>
-          <span class="font-label-tactical text-label-tactical font-bold uppercase">Corridor SOS</span>
+          <span class="font-label-tactical text-label-tactical font-bold uppercase">Emergency SOS</span>
         </button>
       </div>
 

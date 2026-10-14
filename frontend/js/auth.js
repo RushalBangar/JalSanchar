@@ -22,15 +22,15 @@
     collector: {
       key: "collector",
       roleLabel: "District Collector",
-      roleBadge: "LEVEL-1 AUTHORITY",
+      roleBadge: "ADMINISTRATIVE ACCESS",
       badgeColor: "#00e5ff",
       icon: "shield_person",
       portalUrl: "dashboard.html"
     },
     driver: {
       key: "driver",
-      roleLabel: "Tanker Pilot",
-      roleBadge: "TACTICAL PWA",
+      roleLabel: "Tanker Driver",
+      roleBadge: "DRIVER APP",
       badgeColor: "#10b981",
       icon: "local_shipping",
       portalUrl: "driver.html"
@@ -38,7 +38,7 @@
     panchayat: {
       key: "panchayat",
       roleLabel: "Gram Panchayat",
-      roleBadge: "VERIFIER ENCLOSURE",
+      roleBadge: "VILLAGE TANK VERIFIER",
       badgeColor: "#f59e0b",
       icon: "account_balance",
       portalUrl: "panchayat.html"
@@ -195,7 +195,7 @@
       "driver.mh15@sinnar.jalsanjeevani.gov.in": {
         id: "USR-DRV-15",
         name: "Ramesh V. Patil",
-        title: "Municipal Tanker Pilot",
+        title: "Water Tanker Driver",
         role: "driver",
         badge_id: "RTO-MH15-WT-881",
         jurisdiction: "Tanker TN-SN-02 (MH-15-TK-5512)",

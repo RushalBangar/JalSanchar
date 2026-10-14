@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      if (cameraBtnText) cameraBtnText.textContent = "Arming Camera Sensor...";
+      if (cameraBtnText) cameraBtnText.textContent = "Starting Camera...";
       if (btnToggleCamera) btnToggleCamera.disabled = true;
 
       const config = {
@@ -318,14 +318,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (cameraBtnIcon) cameraBtnIcon.textContent = "stop_circle";
       if (cameraBtnText) cameraBtnText.textContent = "Stop Camera";
-      setFeedback("📷 Camera active. Align Driver QR code inside optical frame.");
+      setFeedback("📷 Camera active. Point camera at the driver's QR code.");
 
     } catch (err) {
       console.error("Camera start error:", err);
       await stopCamera();
       const isSecure = window.isSecureContext;
       const secureNotice = !isSecure ? "<br><small class='text-amber-400'>Note: Camera requires HTTPS or localhost.</small>" : "";
-      setFeedback(`⚠️ Camera sensor could not start.${secureNotice} Use <b>Upload QR</b>, <b>Paste Token</b>, or <b>1-Tap Demo</b>.`, true);
+      setFeedback(`⚠️ Camera could not start.${secureNotice} Use <b>Upload QR Image</b>, <b>Paste Code</b>, or <b>Instant Test</b>.`, true);
     }
   }
 
@@ -362,7 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnToggleCamera.classList.add("bg-primary", "hover:bg-primary-container", "text-on-primary");
     }
     if (cameraBtnIcon) cameraBtnIcon.textContent = "photo_camera";
-    if (cameraBtnText) cameraBtnText.textContent = "Open Live Camera Scan";
+    if (cameraBtnText) cameraBtnText.textContent = "Open Camera to Scan QR";
   }
 
   /**
@@ -413,24 +413,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const tokenAgeSec = Math.floor((Date.now() - tokenTime) / 1000);
       // Reject if older than 15 minutes (900s) or more than 5 minutes in future (clock skew)
       if (tokenAgeSec > 900 || tokenAgeSec < -300) {
-        setFeedback(`❌ <b>Verification Rejected: QR Token Expired</b> (${Math.max(0, Math.round(tokenAgeSec / 60))} min old). Tokens expire in 10 minutes. Click <b>Refresh QR</b> on Driver Cockpit and re-scan.`, true);
-        triggerToast("❌ Verification Failed: QR Token Expired");
+        setFeedback(`❌ <b>Verification Expired</b>: This QR code has expired (${Math.max(0, Math.round(tokenAgeSec / 60))} min old). QR codes are valid for 10 minutes. Ask driver to tap <b>Refresh QR</b> and scan again.`, true);
+        triggerToast("❌ Verification Failed: QR Code Expired");
         return;
       }
     }
 
-    // 2. Cryptographic Nonce Deduplication (Anti-Replay Protection)
+    // 2. Nonce Deduplication (Anti-Replay Protection)
     if (nonce && window.JalOfflineQueue) {
       const isRedeemed = await window.JalOfflineQueue.isNonceRedeemed(nonce);
       if (isRedeemed) {
-        setFeedback(`❌ <b>Replay Attack Detected</b>: QR Token Nonce [<code>${nonce}</code>] has already been redeemed for an authorized discharge. Duplicate transaction rejected.`, true);
-        triggerToast("❌ Replay Attack Blocked: Nonce Already Redeemed");
+        setFeedback(`❌ <b>Already Scanned</b>: This QR code was already used to confirm a delivery. Duplicate scans are blocked.`, true);
+        triggerToast("❌ Already Used: This QR code was already scanned");
         return;
       }
     }
 
-    // 3. Dual-Factor Geofencing Verification (Gram Panchayat Verifier + Cistern Radius)
-    setFeedback("📍 Verifying Dual-Factor Geofence at Village Cistern...", false);
+    // 3. Location Verification (Gram Panchayat Verifier + Cistern Radius)
+    setFeedback("📍 Checking location at village water tank...", false);
     const verifierGeo = await getVerifierPosition();
     let verifierDistance = 12; // Baseline on-site perimeter (12m)
 
@@ -449,11 +449,11 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       if (realVerifierDistance > 100) {
         if (isDemoEnvironment) {
-          console.log(`ℹ️ Evaluator / Demo Environment (${realVerifierDistance}m away). Calibrating virtual geofence to 12m perimeter.`);
+          console.log(`ℹ️ Demo Environment (${realVerifierDistance}m away). Calibrating to 12m perimeter.`);
           verifierDistance = 12;
         } else {
-          setFeedback(`❌ <b>Verification Rejected: Dual-Factor Geofence Violation</b><br>Gram Panchayat verifier device is <b>${realVerifierDistance}m</b> away from community cistern (Max 100m permitted perimeter). On-site discharge verification required.`, true);
-          triggerToast("❌ Geofence Violation: Device outside 100m perimeter");
+          setFeedback(`❌ <b>Wrong Location</b><br>Your phone is <b>${realVerifierDistance}m</b> away from the village water tank (Must be within 100 meters). You must be at the tank to confirm delivery.`, true);
+          triggerToast("❌ Location Alert: Must be within 100m of village water tank");
           return;
         }
       } else {
@@ -475,11 +475,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (tankerDistance > 200) {
       if (isDemoEnvironment) {
-        console.log(`ℹ️ Demo Evaluation mode: Tanker telemetry (${tankerDistance}m away) calibrated to Khopadi corridor.`);
+        console.log(`ℹ️ Demo mode: Tanker (${tankerDistance}m away) calibrated to Khopadi tank.`);
         tankerDistance = 14;
       } else {
-        setFeedback(`❌ <b>Verification Rejected: Tanker Geofence Breach</b><br>Tanker reported coordinates are <b>${tankerDistance}m</b> away from cistern enclosure #02 (Max 200m allowed). Delivery corridor deviation detected.`, true);
-        triggerToast("❌ Verification Failed: Tanker Geofence Deviation");
+        setFeedback(`❌ <b>Tanker Not at Tank</b><br>The tanker is reported to be <b>${tankerDistance}m</b> away from the water tank (Max 200m allowed). The tanker must arrive at the tank first.`, true);
+        triggerToast("❌ Location Alert: Tanker is not at the village tank");
         return;
       }
     }
@@ -507,18 +507,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (verifiedVolume) verifiedVolume.textContent = `${volume.toLocaleString()} Liters`;
     if (verifiedGeofence) {
       const displayDistance = verifierDistance !== null ? verifierDistance : tankerDistance;
-      verifiedGeofence.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span> Dual-Factor Geofence Passed (${displayDistance}m • Cistern Confirmed)`;
+      verifiedGeofence.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span> At Village Water Tank (${displayDistance}m • Location Confirmed)`;
       verifiedGeofence.className = "font-body-sm text-body-sm text-safe-emerald font-semibold flex items-center gap-1";
     }
     if (verifiedEscrow) {
-      verifiedEscrow.textContent = "RELEASED ✓ (Direct DBT Authorized)";
+      verifiedEscrow.textContent = "APPROVED ✓ (Payment Released)";
     }
     if (verifiedUpdatedReserve) {
-      verifiedUpdatedReserve.textContent = "12,000 L (48% Safe) ↑";
+      verifiedUpdatedReserve.textContent = "12,000 L (48% Full) ↑";
     }
     if (verifiedSignature) {
       const sigDisplay = signature.startsWith("SHA256:") || signature.startsWith("HMAC-") ? signature : `SHA256:${signature}`;
-      verifiedSignature.textContent = nonce ? `${sigDisplay} • NONCE:${nonce.slice(0, 8)}` : sigDisplay;
+      verifiedSignature.textContent = nonce ? `${sigDisplay} • ID:${nonce.slice(0, 8)}` : sigDisplay;
     }
     if (verifiedTimestamp) {
       verifiedTimestamp.textContent = new Date().toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -543,11 +543,11 @@ document.addEventListener("DOMContentLoaded", () => {
       gaugePercentText.classList.add("text-safe-emerald");
     }
     if (gaugeHoursText) {
-      gaugeHoursText.textContent = "Sufficient for ~72h";
+      gaugeHoursText.textContent = "Sufficient for ~3 days";
       gaugeHoursText.className = "font-label-tactical text-[10px] text-safe-emerald mt-1 text-center font-semibold";
     }
     if (cisternStatusBadge) {
-      cisternStatusBadge.textContent = "● 48% SAFE RESERVE";
+      cisternStatusBadge.textContent = "● 48% SUFFICIENT WATER";
       cisternStatusBadge.className = "px-2.5 py-1 rounded bg-safe-emerald/20 text-safe-emerald font-label-tactical text-label-tactical uppercase font-bold shadow-[0_0_12px_rgba(16,185,129,0.4)] shrink-0";
     }
     if (cisternCurrentReserve) {
@@ -560,10 +560,10 @@ document.addEventListener("DOMContentLoaded", () => {
       barometerTrackFill.style.boxShadow = "0 0 10px rgba(16, 185, 129, 0.7)";
     }
     if (geofencePassBadge) {
-      geofencePassBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span> DELIVERED & VERIFIED ✓`;
+      geofencePassBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span> WATER DELIVERED & CONFIRMED ✓`;
     }
 
-    triggerToast("✓ Dual-Factor Cryptographic Handshake Verified");
+    triggerToast("✓ Water Delivery Successfully Confirmed!");
 
     // 5. Store signed receipt locally in offline storage & sovereign IndexedDB queue
     const receipt = {
@@ -593,9 +593,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 6. Online-First Sync with Supabase Database & Offline Queue Auto-Flush
     if (syncStatusNotice) {
       if (navigator.onLine) {
-        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span><span>Synced live with Supabase PostgreSQL • Dual-Factor Verified</span>`;
+        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span><span>Saved to server • Water delivery verified</span>`;
       } else {
-        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-warning-amber"></span><span>⚡ Queued in Local Sovereign IndexedDB (Will auto-sync when online)</span>`;
+        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-warning-amber"></span><span>⚡ Saved offline (Will automatically sync when internet connects)</span>`;
       }
     }
 
@@ -749,7 +749,7 @@ document.addEventListener("DOMContentLoaded", () => {
         signature: "HMAC-SHA256:8f4c2e1b9a7d3c5e00b8c6a4e321598f"
       };
 
-      setFeedback("⚡ Processing instant cryptographic handshake...", false);
+      setFeedback("⚡ Verifying water delivery...", false);
       setTimeout(() => {
         onScanSuccess(JSON.stringify(demoPayload));
       }, 400);
@@ -759,15 +759,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Background Sync completion feedback
   window.addEventListener("jalsanjeevani-queue-synced", (e) => {
     const count = e.detail && e.detail.count ? e.detail.count : 1;
-    triggerToast(`✅ Flushed ${count} Offline Verifications to Cloud Ledger`);
+    triggerToast(`✅ Uploaded ${count} offline deliveries to server`);
   });
 
-  // Copy SHA-256 Hash Handler
+  // Copy Receipt Code Handler
   if (btnCopyHash) {
     btnCopyHash.addEventListener("click", () => {
       const digest = verifiedSignature ? verifiedSignature.textContent : "SHA256:8f4c2e1b9a7d3c5e";
       navigator.clipboard?.writeText(digest);
-      triggerToast("SHA-256 Digest Copied to Clipboard");
+      triggerToast("Delivery Verification Code Copied");
     });
   }
 
@@ -816,7 +816,7 @@ document.addEventListener("DOMContentLoaded", () => {
       geofencePassBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span> IN RANGE (12m)`;
     }
 
-    triggerToast("Buffer Cleared. Ready for Next Tanker.");
+    triggerToast("Reset complete. Ready for next tanker.");
   }
 
   // Functional smooth scrolling & Ledger auto-reveal for bottom navigation
@@ -873,7 +873,7 @@ document.addEventListener("DOMContentLoaded", () => {
         triggerToast("🔄 Demo State Reset across tabs. Reloading...");
         setTimeout(() => window.location.reload(), 1200);
       } else if (event.type === "DRIVER_ARRIVAL") {
-        triggerToast(`📍 Tanker ${event.data.tankerId || '#04'} logged arrival at Cistern! Ready for optical scan.`);
+        triggerToast(`📍 Tanker ${event.data.tankerId || '#04'} arrived at Village Tank! Ready to scan QR code.`);
         const radar = document.querySelector(".animate-ping");
         if (radar) radar.classList.add("bg-safe-emerald");
       }

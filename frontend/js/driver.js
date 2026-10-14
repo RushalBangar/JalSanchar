@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLogArrival.disabled = true;
         btnLogArrival.classList.add("opacity-75");
         if (btnLogArrivalText) {
-          btnLogArrivalText.textContent = "Acquiring GPS Lock...";
+          btnLogArrivalText.textContent = "Checking Location...";
         }
 
         setTimeout(() => {
@@ -286,11 +286,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Update Status Text & Badges
           if (geofenceStatusText) {
-            geofenceStatusText.textContent = "✓ Inside Cistern Perimeter (12m)";
+            geofenceStatusText.textContent = "✓ At Village Tank (12m)";
             geofenceStatusText.className = "font-body-lg text-body-lg font-bold text-safe-emerald";
           }
           if (geofenceRangeBadge) {
-            geofenceRangeBadge.textContent = "GPS Locked";
+            geofenceRangeBadge.textContent = "Location Confirmed";
             geofenceRangeBadge.className = "bg-safe-emerald/15 text-safe-emerald px-2 py-0.5 rounded font-label-tactical text-label-tactical uppercase font-bold";
           }
           if (geofenceRadarIcon) {
@@ -300,10 +300,10 @@ document.addEventListener("DOMContentLoaded", () => {
             arrivalSuccessBanner.classList.remove("hidden");
           }
           if (driverCryptoKey) {
-            driverCryptoKey.textContent = "TOKEN READY: 0x9F3B4E • GEOFENCE VERIFIED";
+            driverCryptoKey.textContent = "QR READY: 0x9F3B4E • LOCATION CONFIRMED";
           }
           if (transitBadge) {
-            transitBadge.textContent = "ARRIVED AT CISTERN";
+            transitBadge.textContent = "ARRIVED AT VILLAGE TANK";
             transitBadge.className = "font-label-tactical text-label-tactical font-bold text-safe-emerald uppercase tracking-wider";
           }
           if (transitDot) {
@@ -315,12 +315,12 @@ document.addEventListener("DOMContentLoaded", () => {
           btnLogArrival.classList.remove("opacity-75", "bg-primary-container", "hover:bg-primary");
           btnLogArrival.classList.add("bg-safe-emerald", "text-surface-base");
           if (btnLogArrivalText) {
-            btnLogArrivalText.textContent = "Arrival Verified ✓ (Reset)";
+            btnLogArrivalText.textContent = "Arrival Confirmed ✓ (Click to Reset)";
           }
 
           // Re-render QR code with locked GPS coordinates and fresh dynamic token
           refreshDynamicToken(false);
-          showToast("✓ Arrival Locked: QR Armed for Panchayat Scan");
+          showToast("✓ Arrival Confirmed: QR Code Ready to Scan");
 
           // Sync arrival to Supabase
           if (window.JalSupabase) {

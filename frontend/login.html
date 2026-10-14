@@ -8,7 +8,7 @@
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
-  <title>Sovereign Operational Portal | JalSanjeevani</title>
+  <title>Login | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   
   <!-- Google Fonts: Inter, JetBrains Mono, Noto Sans Devanagari, Plus Jakarta Sans -->
@@ -32,7 +32,7 @@
       <img src="assets/logo.jpg" alt="JalSanjeevani Logo">
       <div class="brand-text">
         <span class="brand-title">JalSanjeevani</span>
-        <span class="brand-subtitle">Government of Maharashtra • Relief Operations</span>
+        <span class="brand-subtitle">Government of Maharashtra • Drought Relief Portal</span>
       </div>
     </a>
     
@@ -49,7 +49,7 @@
 
       <a href="index.html" class="btn btn-outline btn-sm back-home-btn">
         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-        <span>Public Portal</span>
+        <span>Back to Home</span>
       </a>
     </div>
   </nav>
@@ -62,11 +62,11 @@
       <header class="login-header">
         <div class="login-badge">
           <span class="badge-dot">●</span>
-          <span id="headerBadgeText">Disaster Governance &amp; Anti-Diversion Escrow</span>
+          <span id="headerBadgeText">Official Water Supply &amp; Relief Management</span>
         </div>
-        <h1 class="portal-heading" id="portalTitle">Authorized Portal Access</h1>
+        <h1 class="portal-heading" id="portalTitle">Sign in to JalSanjeevani</h1>
         <p class="portal-subheading" id="portalDesc">
-          Select your authorized operational role or authenticate with state credentials.
+          Select your role to access your dashboard, or sign in below.
         </p>
       </header>
 
@@ -74,11 +74,11 @@
       <div class="auth-mode-container" role="tablist" aria-label="Authentication Mode">
         <button type="button" class="auth-mode-btn active" id="modeSignInBtn" data-mode="signin" role="tab" aria-selected="true">
           <span class="material-symbols-outlined text-[16px]">lock_open</span>
-          <span>Authorized Sign-In</span>
+          <span>Sign-In</span>
         </button>
         <button type="button" class="auth-mode-btn" id="modeRegisterBtn" data-mode="register" role="tab" aria-selected="false">
           <span class="material-symbols-outlined text-[16px]">person_add</span>
-          <span>Register New Profile</span>
+          <span>Register New Account</span>
         </button>
       </div>
 
@@ -87,7 +87,7 @@
         <span class="material-symbols-outlined alert-icon">error</span>
         <div class="alert-content">
           <span class="alert-title" id="alertTitle">Access Denied</span>
-          <span class="alert-desc" id="alertMessage">Invalid cryptographic access key.</span>
+          <span class="alert-desc" id="alertMessage">Invalid email or password.</span>
         </div>
       </div>
 
@@ -95,7 +95,7 @@
       <div id="roleSelectionWrapper" style="margin-bottom: 1.25rem;">
         <div class="role-selection-heading" id="roleSelectionHeading" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8; margin-bottom: 8px;">
           <span class="material-symbols-outlined text-[16px]" style="color: #00e5ff;">badge</span>
-          <span id="roleSelectionTitle">Select Operational Role:</span>
+          <span id="roleSelectionTitle">Select Your Role:</span>
         </div>
         <div class="role-tabs" id="roleTabsContainer" role="tablist" aria-label="Operational Role Selection">
           <!-- 1. Collector -->
@@ -103,7 +103,7 @@
             <span class="material-symbols-outlined role-tab-icon">shield_person</span>
             <div class="role-tab-info">
               <span class="role-tab-name">District Collector</span>
-              <span class="role-tab-tag">GIS &amp; OR-Tools Command</span>
+              <span class="role-tab-tag">Water Map &amp; Monitoring</span>
             </div>
           </button>
 
@@ -112,7 +112,7 @@
             <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
             <div class="role-tab-info">
               <span class="role-tab-name">Tanker Driver</span>
-              <span class="role-tab-tag">GPS Cockpit &amp; Dynamic QR</span>
+              <span class="role-tab-tag">GPS Route &amp; QR Code</span>
             </div>
           </button>
 
@@ -121,7 +121,7 @@
             <span class="material-symbols-outlined role-tab-icon">account_balance</span>
             <div class="role-tab-info">
               <span class="role-tab-name">Gram Panchayat</span>
-              <span class="role-tab-tag">Cistern QR &amp; Escrow Verifier</span>
+              <span class="role-tab-tag">Village Tank &amp; QR Scanner</span>
             </div>
           </button>
         </div>
@@ -133,18 +133,18 @@
         <!-- REGISTRATION FIELDS CONTAINER (Strictly visible in Registration Mode only) -->
         <div id="registrationFields" class="hidden" style="display: none;">
 
-          <!-- Full Official Name -->
+          <!-- Full Name -->
           <div class="form-group" id="groupFullName">
             <label for="regFullName">
               <span class="material-symbols-outlined label-icon">person</span>
-              <span>Full Official Name</span>
+              <span>Full Name</span>
             </label>
             <div class="input-wrapper">
               <input 
                 type="text" 
                 id="regFullName" 
                 class="form-control" 
-                placeholder="e.g. Shri. Rajesh K. Patil"
+                placeholder="e.g. Rajesh K. Patil"
                 autocomplete="name"
               >
             </div>
@@ -154,7 +154,7 @@
           <div class="form-group" id="groupPhone">
             <label for="regPhone">
               <span class="material-symbols-outlined label-icon">call</span>
-              <span>Official Phone / WhatsApp Number</span>
+              <span>Phone / WhatsApp Number</span>
             </label>
             <div class="input-wrapper">
               <input 
@@ -172,11 +172,11 @@
             <!-- Collector Registration Fields -->
             <div class="role-fields-block" id="fieldsCollector">
               <div class="role-specific-title">
-                <span class="material-symbols-outlined text-[15px]">shield_person</span> Collector Administrative Details
+                <span class="material-symbols-outlined text-[15px]">shield_person</span> Collector Office Details
               </div>
               <div class="reg-grid" style="margin-top: 8px;">
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regCollectorBadge" style="font-size: 0.75rem;">Officer Badge / IAS ID</label>
+                  <label for="regCollectorBadge" style="font-size: 0.75rem;">Officer Badge / Government ID</label>
                   <input type="text" id="regCollectorBadge" class="form-control" placeholder="MH-IAS-0822">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
@@ -185,15 +185,15 @@
                 </div>
               </div>
               <div class="form-group" style="margin-top: 8px; margin-bottom: 0;">
-                <label for="regCollectorJurisdiction" style="font-size: 0.75rem;">Administrative Jurisdiction Division</label>
-                <input type="text" id="regCollectorJurisdiction" class="form-control" placeholder="Ahilyanagar &amp; Sinnar Disaster Division">
+                <label for="regCollectorJurisdiction" style="font-size: 0.75rem;">District / Division</label>
+                <input type="text" id="regCollectorJurisdiction" class="form-control" placeholder="Ahilyanagar &amp; Sinnar Division">
               </div>
             </div>
 
             <!-- Driver Registration Fields -->
             <div class="role-fields-block hidden" id="fieldsDriver" style="display: none;">
               <div class="role-specific-title" style="color: #10b981;">
-                <span class="material-symbols-outlined text-[15px]">local_shipping</span> Tanker Logistics &amp; Fleet Registration
+                <span class="material-symbols-outlined text-[15px]">local_shipping</span> Water Tanker Details
               </div>
               <div class="reg-grid" style="margin-top: 8px;">
                 <div class="form-group" style="margin-bottom: 0;">
@@ -201,17 +201,17 @@
                   <input type="text" id="regDriverTankerId" class="form-control" placeholder="TN-SN-04">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regDriverRegNumber" style="font-size: 0.75rem;">RTO Vehicle Registration</label>
+                  <label for="regDriverRegNumber" style="font-size: 0.75rem;">Vehicle Number (RTO)</label>
                   <input type="text" id="regDriverRegNumber" class="form-control" placeholder="MH-15-TK-5512">
                 </div>
               </div>
               <div class="reg-grid" style="margin-top: 8px;">
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regDriverKey" style="font-size: 0.75rem;">Driver License / Hardware Key</label>
-                  <input type="text" id="regDriverKey" class="form-control" placeholder="0x9F3B4ED812C4">
+                  <label for="regDriverKey" style="font-size: 0.75rem;">Driver License Number</label>
+                  <input type="text" id="regDriverKey" class="form-control" placeholder="MH-15-2022-004">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regDriverRoute" style="font-size: 0.75rem;">Assigned Target Village / Route</label>
+                  <label for="regDriverRoute" style="font-size: 0.75rem;">Assigned Village / Route</label>
                   <input type="text" id="regDriverRoute" class="form-control" placeholder="Khopadi (Sinnar Taluka)">
                 </div>
               </div>
@@ -220,11 +220,11 @@
             <!-- Panchayat Registration Fields -->
             <div class="role-fields-block hidden" id="fieldsPanchayat" style="display: none;">
               <div class="role-specific-title" style="color: #f59e0b;">
-                <span class="material-symbols-outlined text-[15px]">account_balance</span> Gram Panchayat &amp; Cistern Enclosure
+                <span class="material-symbols-outlined text-[15px]">account_balance</span> Gram Panchayat Details
               </div>
               <div class="reg-grid" style="margin-top: 8px;">
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regPanchayatVillage" style="font-size: 0.75rem;">Gram Panchayat Village Name</label>
+                  <label for="regPanchayatVillage" style="font-size: 0.75rem;">Village Name</label>
                   <input type="text" id="regPanchayatVillage" class="form-control" placeholder="Khopadi (Sinnar Taluka)">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
@@ -234,12 +234,12 @@
               </div>
               <div class="reg-grid" style="margin-top: 8px;">
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regPanchayatCisternKey" style="font-size: 0.75rem;">Cistern Hardware Geokey</label>
-                  <input type="text" id="regPanchayatCisternKey" class="form-control" placeholder="0x74CE8A1109B2">
+                  <label for="regPanchayatCisternKey" style="font-size: 0.75rem;">Water Tank ID / Key</label>
+                  <input type="text" id="regPanchayatCisternKey" class="form-control" placeholder="TANK-KHP-02">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label for="regPanchayatTitle" style="font-size: 0.75rem;">Officer Designation</label>
-                  <input type="text" id="regPanchayatTitle" class="form-control" placeholder="Sarpanch &amp; Water Vigilance Head">
+                  <label for="regPanchayatTitle" style="font-size: 0.75rem;">Designation</label>
+                  <input type="text" id="regPanchayatTitle" class="form-control" placeholder="Sarpanch / Water Committee Member">
                 </div>
               </div>
             </div>
@@ -251,14 +251,14 @@
         <div class="form-group" id="groupEmail">
           <label for="email" id="labelEmail">
             <span class="material-symbols-outlined label-icon">badge</span>
-            <span>Government Service Email / ID</span>
+            <span>Email Address / Official ID</span>
           </label>
           <div class="input-wrapper">
             <input 
               type="email" 
               id="email" 
               class="form-control" 
-              placeholder="Enter your government service email" 
+              placeholder="Enter your email or official ID" 
               required 
               autocomplete="email"
             >
@@ -270,7 +270,7 @@
           <div class="label-with-action">
             <label for="password" id="labelPassword">
               <span class="material-symbols-outlined label-icon">key</span>
-              <span>Cryptographic Access Key / Password</span>
+              <span>Password</span>
             </label>
             <button type="button" class="btn-toggle-pwd" id="btnTogglePassword" title="Show/Hide Password" aria-label="Toggle password visibility">
               <span class="material-symbols-outlined text-[16px]" id="pwdEyeIcon">visibility</span>
@@ -282,7 +282,7 @@
               type="password" 
               id="password" 
               class="form-control" 
-              placeholder="Enter your access key (min 8 chars)" 
+              placeholder="Enter your password (min 8 characters)" 
               required 
               autocomplete="current-password"
               minlength="8"
@@ -302,13 +302,13 @@
         <!-- SUBMIT BUTTON -->
         <button type="submit" id="btnSubmitLogin" class="btn btn-primary btn-block btn-authorize">
           <span class="material-symbols-outlined btn-icon" id="btnIcon">login</span>
-          <span id="btnText">Authorize &amp; Enter Console →</span>
+          <span id="btnText">Sign In →</span>
         </button>
 
         <!-- Instant 1-Tap Evaluation Sign-In Button -->
         <button type="button" id="btnInstantDemo" class="btn btn-outline btn-block btn-demo">
           <span class="material-symbols-outlined text-[18px]">bolt</span>
-          <span id="btnDemoText">Instant 1-Tap Evaluation Sign-In</span>
+          <span id="btnDemoText">Instant 1-Click Demo Login</span>
         </button>
       </form>
 
@@ -316,47 +316,47 @@
       <div class="credentials-helper" id="credentialsHelperContainer">
         <button type="button" class="helper-toggle-btn" id="btnToggleHelper">
           <span class="material-symbols-outlined text-[15px]">info</span>
-          <span>View Verified Test Credentials</span>
+          <span>View Demo Login Accounts</span>
           <span class="material-symbols-outlined helper-chevron" id="helperChevron">expand_more</span>
         </button>
         <div class="helper-drawer hidden" id="helperDrawer">
           <div class="helper-card" data-role="collector">
             <div class="helper-header">
               <span class="helper-role">🏛️ District Collector</span>
-              <span class="helper-badge">LEVEL-1</span>
+              <span class="helper-badge">ADMIN</span>
             </div>
             <code>collector@sinnar.jalsanjeevani.gov.in</code>
           </div>
           <div class="helper-card" data-role="driver">
             <div class="helper-header">
-              <span class="helper-role">🚛 Tanker Pilot</span>
-              <span class="helper-badge" style="color: #10b981;">MH-15</span>
+              <span class="helper-role">🚛 Tanker Driver</span>
+              <span class="helper-badge" style="color: #10b981;">DRIVER</span>
             </div>
             <code>driver.mh15@sinnar.jalsanjeevani.gov.in</code>
           </div>
           <div class="helper-card" data-role="panchayat">
             <div class="helper-header">
               <span class="helper-role">🌾 Gram Panchayat</span>
-              <span class="helper-badge" style="color: #f59e0b;">KHOPADI</span>
+              <span class="helper-badge" style="color: #f59e0b;">VILLAGE</span>
             </div>
             <code>panchayat.khopadi@sinnar.jalsanjeevani.gov.in</code>
           </div>
           <div class="helper-footer">
-            Universal Password: <code>sovereign_water_2025</code>
+            Password: <code>sovereign_water_2025</code>
           </div>
         </div>
       </div>
 
-      <!-- Escrow Policy Assurance Footnote -->
+      <!-- Footer -->
       <footer class="login-footer">
         <div class="security-indicator">
           <span class="status-pulse-dot"></span>
-          <span>Protected by State Treasury Anti-Diversion Escrow Protocol</span>
+          <span>Protected with Secure Water Delivery Verification</span>
         </div>
         <div class="return-home">
           <a href="index.html" class="back-link">
             <span>←</span>
-            <span>Return to JalSanjeevani Overview</span>
+            <span>Return to JalSanjeevani Homepage</span>
           </a>
         </div>
       </footer>

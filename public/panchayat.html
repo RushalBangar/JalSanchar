@@ -56,7 +56,7 @@
     })();
   </script>
 
-  <title>Panchayat Verifier | JalSanjeevani</title>
+  <title>Village Water Verifier | JalSanjeevani</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="manifest" href="manifest.json">
   <!-- Google Fonts: Inter, JetBrains Mono, Noto Sans Devanagari, Plus Jakarta Sans -->
@@ -253,7 +253,7 @@
 </head>
 <body class="bg-surface font-body-md text-on-surface min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
 
-  <!-- Tactical Header -->
+  <!-- Header -->
   <header class="fixed top-0 inset-x-0 z-50 bg-surface-panel/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.45)] pt-safe border-b border-white/5">
     <div class="h-20 px-4 flex flex-col justify-center gap-1.5">
       <div class="flex items-center justify-between gap-2">
@@ -262,9 +262,9 @@
           <div class="flex flex-col min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="font-headline-md text-headline-md tracking-tight uppercase text-on-surface truncate">JalSanjeevani</span>
-              <span class="px-2 py-0.5 rounded-lg bg-surface-container font-label-tactical text-label-tactical tracking-wider text-primary border border-primary/20">GP-VERIFY</span>
+              <span class="px-2 py-0.5 rounded-lg bg-surface-container font-label-tactical text-label-tactical tracking-wider text-primary border border-primary/20">VILLAGE VERIFIER</span>
             </div>
-            <span class="font-label-tactical text-label-tactical text-on-surface-variant truncate">Panchayat Discharge Verifier</span>
+            <span class="font-label-tactical text-label-tactical text-on-surface-variant truncate">Village Water Delivery Verifier</span>
           </div>
         </a>
 
@@ -276,7 +276,7 @@
           </button>
 
           <!-- Reset Demo State Button -->
-          <button id="btnResetDemoPanchayat" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo State Baseline">
+          <button id="btnResetDemoPanchayat" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo Data">
             <span class="material-symbols-outlined text-[15px]">restart_alt</span>
             <span class="hidden sm:inline">Reset</span>
           </button>
@@ -291,12 +291,12 @@
             <span class="material-symbols-outlined absolute right-0.5 pointer-events-none text-on-surface-variant text-[14px]">expand_more</span>
           </div>
 
-          <!-- Tactical User Profile Mount -->
+          <!-- User Profile Mount -->
           <div id="userProfileMount" class="shrink-0"></div>
         </div>
       </div>
 
-      <!-- Network Live Status & Cistern Enclosure Tag (Responsive Flex Wrap with Truncation) -->
+      <!-- Network Live Status & Village Tag -->
       <div class="flex flex-wrap items-center justify-between gap-2 text-xs pt-0.5">
         <span class="truncate max-w-[190px] sm:max-w-none bg-surface-container px-2.5 py-1 rounded-md text-muted-foreground border border-white/5 flex items-center gap-1">
           <span class="material-symbols-outlined text-[13px] text-primary shrink-0">verified_user</span>
@@ -304,43 +304,43 @@
         </span>
         <div id="networkStatusBadge" class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container text-safe-emerald border border-safe-emerald/20">
           <span id="networkStatusDot" class="inline-block w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span>
-          <span id="networkStatusText" class="text-[11px] text-primary/80 font-mono">LIVE GRID</span>
+          <span id="networkStatusText" class="text-[11px] text-primary/80 font-mono">ONLINE</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Viewport with pb-28 to eliminate content clipping -->
+  <!-- Main Content Viewport -->
   <main class="pt-24 pb-28 px-4 max-w-lg mx-auto space-y-4">
 
-      <!-- TOP CONTEXT HUD BANNER -->
+      <!-- Top Banner -->
       <div class="w-full bg-surface-panel/95 rounded-xl p-4 shadow-xl backdrop-blur-xl relative overflow-hidden border border-white/5">
         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-alert-crimson/10 blur-2xl pointer-events-none"></div>
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-alert-crimson animate-ping"></span>
-            <span class="font-label-tactical text-label-tactical text-alert-crimson uppercase tracking-wider">Telemetry Beacon Active</span>
+            <span class="font-label-tactical text-label-tactical text-alert-crimson uppercase tracking-wider">Live Monitoring Active</span>
           </div>
           <div class="flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded-lg text-safe-emerald border border-white/5">
             <span class="material-symbols-outlined text-[13px]">satellite_alt</span>
-            <span class="font-label-tactical text-label-tactical">GPS LOCK • 9 SATS</span>
+            <span class="font-label-tactical text-label-tactical">GPS Connected</span>
           </div>
         </div>
 
         <div class="flex items-baseline justify-between gap-3">
           <div>
-            <h1 id="panchayatCisternTitle" class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Khopadi Community Cistern</h1>
-            <p id="panchayatCisternSub" class="font-label-tactical text-label-tactical text-on-surface-variant uppercase mt-0.5">Sinnar Taluka • Node #GP-402</p>
+            <h1 id="panchayatCisternTitle" class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Khopadi Village Water Tank</h1>
+            <p id="panchayatCisternSub" class="font-label-tactical text-label-tactical text-on-surface-variant uppercase mt-0.5">Sinnar Taluka • Ward #02</p>
           </div>
           <span id="cisternStatusBadge" class="px-2.5 py-1 rounded bg-alert-crimson/20 text-alert-crimson font-label-tactical text-label-tactical uppercase font-bold shadow-[0_0_12px_rgba(239,68,68,0.4)] animate-pulse shrink-0">
-            8% CRITICAL
+            8% LOW WATER
           </span>
         </div>
       </div>
 
-      <!-- SECTION 1: COMMUNITY CISTERN STATUS BENTO -->
+      <!-- SECTION 1: VILLAGE WATER TANK STATUS -->
       <div id="cistern-card" class="scroll-mt-24 w-full bg-surface-card/90 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-3 border border-white/5">
-        <!-- Gauge + High Density Metrics Grid -->
+        <!-- Gauge + Water Level Grid -->
         <div class="grid grid-cols-12 gap-3 items-center">
           <!-- Circular Progress Visual -->
           <div class="col-span-5 flex flex-col items-center justify-center relative">
@@ -356,13 +356,13 @@
                 <span class="font-label-tactical text-[9px] uppercase tracking-wider text-on-surface-variant mt-1">CAPACITY</span>
               </div>
             </div>
-            <span id="gaugeHoursText" class="font-label-tactical text-[10px] text-on-surface-variant mt-1 text-center">Reserves Dry in ~4h</span>
+            <span id="gaugeHoursText" class="font-label-tactical text-[10px] text-on-surface-variant mt-1 text-center">Water finishes in ~4 hours</span>
           </div>
 
           <!-- Quantitative Readings -->
           <div class="col-span-7 flex flex-col gap-2 justify-center">
             <div class="bg-surface-container-low p-2.5 rounded-lg border border-white/5">
-              <span class="font-label-tactical text-[10px] text-on-surface-variant uppercase tracking-wider block">Current Fluid Reserve</span>
+              <span class="font-label-tactical text-[10px] text-on-surface-variant uppercase tracking-wider block">Current Water in Tank</span>
               <div class="flex items-baseline gap-1 mt-0.5">
                 <span id="cisternCurrentReserve" class="font-telemetry-metric text-headline-md font-bold text-on-surface">2,000</span>
                 <span class="font-label-tactical text-label-tactical text-on-surface-variant">/ 25,000 L</span>
@@ -374,25 +374,25 @@
             </div>
 
             <div class="bg-surface-container-low p-2.5 rounded-lg border border-white/5">
-              <span class="font-label-tactical text-[10px] text-on-surface-variant uppercase tracking-wider block">Quorum Beneficiaries</span>
+              <span class="font-label-tactical text-[10px] text-on-surface-variant uppercase tracking-wider block">Village Population</span>
               <div class="flex items-center gap-1.5 mt-0.5 text-on-surface">
                 <span class="material-symbols-outlined text-primary text-[15px]">group</span>
-                <span class="font-body-sm text-body-sm font-semibold">3,200 Humans • 1,200 Livestock</span>
+                <span class="font-body-sm text-body-sm font-semibold">3,200 Residents • 1,200 Cattle</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Active Inbound Tanker Highlight Card -->
+        <!-- Inbound Tanker Highlight Card -->
         <div class="w-full bg-surface-overlay/80 rounded-lg p-3 flex flex-col gap-2 border border-white/5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-primary text-[18px]">local_shipping</span>
-              <span class="font-label-tactical text-label-tactical text-primary font-bold uppercase tracking-wider">Incoming Authorized Drop</span>
+              <span class="font-label-tactical text-label-tactical text-primary font-bold uppercase tracking-wider">Incoming Water Tanker</span>
             </div>
             <span id="geofencePassBadge" class="px-2 py-0.5 rounded bg-safe-emerald/20 text-safe-emerald font-label-tactical text-[10px] uppercase font-bold flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span>
-              IN RANGE (12m)
+              ARRIVED (12m)
             </span>
           </div>
 
@@ -402,34 +402,34 @@
               <span id="incomingDropTanker" class="font-label-tactical text-label-tactical text-on-surface-variant">Tanker TN-SN-02 • MH-15-TK-5512</span>
             </div>
             <div class="text-right">
-              <span class="font-label-tactical text-label-tactical text-safe-emerald block font-semibold">✓ GEOFENCE PASS</span>
-              <span class="font-label-tactical text-[10px] text-on-surface-variant">12m from Cistern Center</span>
+              <span class="font-label-tactical text-label-tactical text-safe-emerald block font-semibold">✓ LOCATION VERIFIED</span>
+              <span class="font-label-tactical text-[10px] text-on-surface-variant">12m from Village Tank</span>
             </div>
           </div>
         </div>
 
-        <!-- Visual Satellite Context Snippet -->
+        <!-- Map Location Preview Snippet -->
         <div class="w-full h-24 rounded-lg overflow-hidden relative shadow-inner border border-white/5">
           <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80');"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-surface-panel via-surface-panel/40 to-transparent flex items-end justify-between p-2">
             <div class="flex items-center gap-1 bg-surface-base/90 px-2 py-1 rounded backdrop-blur-md border border-white/10">
               <span class="material-symbols-outlined text-safe-emerald text-[14px]">pin_drop</span>
-              <span class="font-label-tactical text-[10px] text-on-surface">Cistern Perimeter: 15.0m Radius</span>
+              <span class="font-label-tactical text-[10px] text-on-surface">Tank Area: Within 15m</span>
             </div>
-            <span class="font-label-tactical text-[9px] text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">19.9015° N, 74.1030° E</span>
+            <span class="font-label-tactical text-[9px] text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">Khopadi Center</span>
           </div>
         </div>
       </div>
 
-      <!-- SECTION 2: HANDSHAKE VERIFICATION & SCANNING HUD DECK -->
+      <!-- SECTION 2: QR CODE SCANNER -->
       <div id="reader-card" class="scroll-mt-24 w-full bg-surface-card/90 rounded-xl p-4 shadow-2xl backdrop-blur-md flex flex-col gap-3 border border-white/5">
         <div class="flex flex-col gap-1">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</span>
-            <h2 class="font-headline-md text-headline-md text-on-surface">Cryptographic Discharge Scanner</h2>
+            <h2 class="font-headline-md text-headline-md text-on-surface">Water Delivery QR Scanner</h2>
           </div>
           <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-            Scan the driver's encrypted delivery QR inside the 15m geofence perimeter to verify water discharge and authorize direct payment escrow.
+            Scan the tanker driver's QR code at the water tank to confirm delivery and approve payment.
           </p>
         </div>
 
@@ -450,23 +450,23 @@
           <!-- Live WebRTC QR Reader Container -->
           <div id="qrReader" class="hidden w-full h-full object-cover"></div>
 
-          <!-- Optical Target Center Placeholder -->
+          <!-- Center Placeholder -->
           <div id="scannerPlaceholder" class="w-36 h-36 rounded-lg bg-primary/5 flex flex-col items-center justify-center p-2 text-center relative border border-primary/20">
             <div class="w-full h-full flex items-center justify-center opacity-40">
               <span class="material-symbols-outlined text-[64px] text-primary">qr_code_2</span>
             </div>
             <div class="absolute bottom-2 flex items-center gap-1 bg-surface-panel/90 px-2 py-0.5 rounded-full border border-white/10">
               <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-ping"></span>
-              <span id="scannerStatusPrompt" class="font-label-tactical text-[9px] text-on-surface tracking-wider uppercase">CAMERA ARMED</span>
+              <span id="scannerStatusPrompt" class="font-label-tactical text-[9px] text-on-surface tracking-wider uppercase">CAMERA READY</span>
             </div>
           </div>
 
-          <!-- HUD Telemetry Watermarks -->
+          <!-- Watermarks -->
           <div class="absolute top-2 left-3 font-label-tactical text-[9px] text-on-surface-variant uppercase tracking-widest pointer-events-none">
-            ENCRYPT: AES-256-GCM
+            SECURE VERIFICATION
           </div>
           <div class="absolute bottom-2 right-3 font-label-tactical text-[9px] text-on-surface-variant uppercase tracking-widest pointer-events-none">
-            FPS: 60 • 1080P SENSOR
+            TAP TO SCAN
           </div>
         </div>
 
@@ -478,31 +478,31 @@
           <!-- Main Action: Open Live Camera -->
           <button id="btnToggleCamera" class="w-full bg-primary hover:bg-primary-container text-on-primary font-headline-md text-[15px] font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.35)] active:scale-[0.98] transition-all cursor-pointer">
             <span id="cameraBtnIcon" class="material-symbols-outlined text-[22px]">photo_camera</span>
-            <span id="cameraBtnText">Open Live Camera Scan</span>
+            <span id="cameraBtnText">Open Camera to Scan QR</span>
           </button>
 
           <!-- Auxiliary Scan Buttons Grid -->
           <div class="grid grid-cols-3 gap-2 text-xs">
             <button id="btnUploadQR" class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-medium py-2.5 px-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors border border-white/5 cursor-pointer">
               <span class="material-symbols-outlined text-base">file_upload</span>
-              <span class="truncate">Upload QR</span>
+              <span class="truncate">Upload QR Image</span>
             </button>
             <input type="file" id="qrFileInput" accept="image/*" class="hidden" />
 
-            <button id="btnPasteToken" class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-medium py-2.5 px-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors border border-white/5 cursor-pointer" title="Paste Cryptographic QR Token JSON">
+            <button id="btnPasteToken" class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-medium py-2.5 px-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors border border-white/5 cursor-pointer" title="Paste QR Code">
               <span class="material-symbols-outlined text-base">content_paste</span>
-              <span class="truncate">Paste Token</span>
+              <span class="truncate">Paste Code</span>
             </button>
 
             <button id="btnInstantDemo" class="w-full bg-surface-container hover:bg-surface-container-high text-primary font-medium py-2.5 px-1.5 rounded-lg flex items-center justify-center gap-1 transition-colors border border-primary/20 cursor-pointer">
               <span class="material-symbols-outlined text-base">bolt</span>
-              <span class="truncate">1-Tap Demo</span>
+              <span class="truncate">Instant Test</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- SECTION 3: VERIFIED CRYPTOGRAPHIC HANDSHAKE AUDIT CARD -->
+      <!-- SECTION 3: VERIFIED DELIVERY AUDIT CARD -->
       <div id="ledger-card" class="scroll-mt-24">
         <div id="statusBox" class="hidden w-full bg-surface-panel/95 rounded-xl p-4 shadow-2xl backdrop-blur-xl flex flex-col gap-3 relative overflow-hidden border border-safe-emerald/30 transition-all duration-300">
         <!-- Top Green Verified Accent Banner -->
@@ -511,10 +511,10 @@
             <div class="w-6 h-6 rounded-full bg-safe-emerald/20 flex items-center justify-center">
               <span class="material-symbols-outlined text-safe-emerald text-[16px]">verified</span>
             </div>
-            <span class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Dual-Key Handshake Verified</span>
+            <span class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Water Delivery Confirmed ✓</span>
           </div>
           <span class="px-2 py-0.5 rounded bg-surface-container font-label-tactical text-[9px] text-on-surface-variant font-mono border border-white/5">
-            TX #8942-VER
+            RECEIPT #8942
           </span>
         </div>
 
@@ -525,46 +525,46 @@
             <span id="verifiedTankerId" class="font-telemetry-code text-telemetry-code text-on-surface font-semibold">TN-SN-02 (MH-15-TK-5512)</span>
           </div>
           <div class="flex items-center justify-between py-1">
-            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Target Village</span>
+            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Village</span>
             <span id="verifiedVillage" class="font-body-md text-body-md text-on-surface font-medium">Khopadi (Sinnar)</span>
           </div>
           <div class="flex items-center justify-between py-1">
-            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Driver Key</span>
+            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Driver Code</span>
             <div class="flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded border border-white/5">
               <span id="verifiedDriverKey" class="font-telemetry-code text-[11px] text-primary">0x9F3B4ED812C4</span>
               <span class="material-symbols-outlined text-[13px] text-on-surface-variant">key</span>
             </div>
           </div>
           <div class="flex items-center justify-between py-1">
-            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Cistern Geokey</span>
+            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Tank Location</span>
             <div class="flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded border border-white/5">
               <span id="verifiedCisternKey" class="font-telemetry-code text-[11px] text-secondary">0x74CE8A1109B2</span>
               <span class="material-symbols-outlined text-[13px] text-on-surface-variant">location_on</span>
             </div>
           </div>
           <div class="flex items-center justify-between py-1">
-            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Discharge Volume</span>
+            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Delivered Water</span>
             <span id="verifiedVolume" class="font-telemetry-code text-telemetry-code text-safe-emerald font-bold">10,000 Liters</span>
           </div>
           <div class="flex items-center justify-between py-1">
-            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Geofence Perimeter</span>
+            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Delivery Location</span>
             <span id="verifiedGeofence" class="font-body-sm text-body-sm text-safe-emerald font-semibold flex items-center gap-1">
               <span class="material-symbols-outlined text-[14px]">check_circle</span>
-              Inside Perimeter (12m)
+              At Village Tank (12m)
             </span>
           </div>
           <div class="flex items-center justify-between py-1">
-            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Escrow Status</span>
+            <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Payment Status</span>
             <span id="verifiedEscrow" class="px-2 py-0.5 rounded bg-safe-emerald/20 text-safe-emerald font-label-tactical text-label-tactical uppercase font-bold tracking-wider">
-              RELEASED ✓ (Direct DBT Authorized)
+              APPROVED ✓ (Payment Released)
             </span>
           </div>
 
           <!-- Updated Reserves Bar -->
           <div class="mt-1 pt-2 flex flex-col gap-1 border-t border-white/5">
             <div class="flex items-center justify-between">
-              <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">Updated Cistern Reserve</span>
-              <span id="verifiedUpdatedReserve" class="font-telemetry-code text-telemetry-code text-safe-emerald font-bold">12,000 L (48% Safe) ↑</span>
+              <span class="font-label-tactical text-[11px] text-on-surface-variant uppercase">New Water Level in Tank</span>
+              <span id="verifiedUpdatedReserve" class="font-telemetry-code text-telemetry-code text-safe-emerald font-bold">12,000 L (48% Full) ↑</span>
             </div>
             <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden flex">
               <div class="h-full bg-alert-crimson w-[8%]"></div>
@@ -573,13 +573,13 @@
           </div>
         </div>
 
-        <!-- Cryptographic Proof Footer -->
+        <!-- Verification Receipt Footer -->
         <div class="flex flex-col gap-1 bg-surface-container-low p-2.5 rounded-lg border border-white/5">
           <div class="flex items-center justify-between">
-            <span class="font-label-tactical text-[9px] text-on-surface-variant uppercase">SHA256 Cryptographic Digest</span>
+            <span class="font-label-tactical text-[9px] text-on-surface-variant uppercase">Digital Verification Receipt</span>
             <button id="btnCopyHash" class="flex items-center gap-0.5 text-primary text-[10px] hover:underline font-label-tactical cursor-pointer">
               <span class="material-symbols-outlined text-[12px]">content_copy</span>
-              <span>Copy Hash</span>
+              <span>Copy Receipt</span>
             </button>
           </div>
           <div id="verifiedSignature" class="font-telemetry-code text-[11px] text-secondary truncate">
@@ -588,16 +588,16 @@
           <div class="flex items-center justify-between pt-1 text-on-surface-variant font-label-tactical text-[9px]">
             <div id="syncStatusNotice" class="flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span>
-              <span>Synced live with Supabase PostgreSQL • UTC Synchronized</span>
+              <span>Delivery saved live in government records</span>
             </div>
-            <span id="verifiedTimestamp" class="font-mono">T-00:02m</span>
+            <span id="verifiedTimestamp" class="font-mono">Just Now</span>
           </div>
         </div>
 
         <!-- Reset / Rescan Action -->
         <button id="btnResetScan" class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-tactical text-label-tactical py-3 rounded-lg flex items-center justify-center gap-2 active:scale-95 transition-all border border-white/5 cursor-pointer">
           <span class="material-symbols-outlined text-[16px] text-primary">restart_alt</span>
-          <span>Scan Another Tanker / Reset Handshake</span>
+          <span>Scan Another Tanker / Reset</span>
         </button>
       </div>
       </div>

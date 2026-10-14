@@ -149,12 +149,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Update Headings
     if (portalTitle) {
-      portalTitle.textContent = isRegister ? "Register Operational Profile" : "Authorized Portal Access";
+      portalTitle.textContent = isRegister ? "Create New Account" : "Sign in to JalSanjeevani";
     }
     if (portalDesc) {
       portalDesc.textContent = isRegister 
-        ? "Select your operational role and register your profile into the sovereign state database."
-        : "Enter your government service email and cryptographic access key to sign in.";
+        ? "Select your role and enter your details to create an account."
+        : "Enter your email and password to sign in.";
     }
 
     // Update Role-Specific Field Blocks in Register Mode
@@ -165,8 +165,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Update Submit Button Label
     if (btnText) {
       btnText.textContent = isRegister
-        ? `Register & Launch ${theme ? theme.roleLabel : 'Portal'} Console →`
-        : "Authorize & Enter Console →";
+        ? `Create Account & Open ${theme ? theme.roleLabel : 'Portal'} →`
+        : "Sign In →";
     }
 
     // If switching to register, clear pre-filled email so user inputs real credentials
@@ -229,8 +229,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Update Submit Button Label
     if (btnText) {
       btnText.textContent = currentAuthMode === "register"
-        ? `Register & Launch ${theme.roleLabel} Console →`
-        : `Authorize & Enter ${theme.roleLabel} Console →`;
+        ? `Create Account & Open ${theme.roleLabel} →`
+        : `Sign in to ${theme.roleLabel} →`;
     }
 
     hideAlert();
@@ -252,8 +252,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (passwordInput) passwordInput.value = "sovereign_water_2025";
 
       btnInstantDemo.disabled = true;
-      const roleName = window.JalAuth?.ROLE_THEMES[activeRoleKey]?.roleLabel || "Console";
-      btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Authorizing ${roleName}...`;
+      const roleName = window.JalAuth?.ROLE_THEMES[activeRoleKey]?.roleLabel || "Portal";
+      btnInstantDemo.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Signing in as ${roleName}...`;
 
       const result = await window.JalAuth.login({
         email: displayInfo.email,
