@@ -70,9 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
     volume_liters: 10000,
     driver_key: (loggedInUser && loggedInUser.driver_key) ? loggedInUser.driver_key : "0x9F3B4ED812C4",
     cistern_key: "0x74CE8A1109B2",
-    lat: 19.8920,
-    lng: 74.0610,
-    geofence_status: "EN_ROUTE_180M"
+    lat: 19.9016,
+    lng: 74.1028,
+    geofence_status: "WITHIN_CORRIDOR_15M"
   };
 
   /**
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       expires_at: currentDynamicToken.expires_at,
       nonce: currentDynamicToken.nonce,
       signature: currentDynamicToken.signature
-    }, null, 2);
+    });
   }
 
   /**
@@ -194,20 +194,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const payloadText = getCurrentPayloadString();
 
-    // Update JSON preview if visible
+    // Update human-readable JSON preview if visible
     if (payloadJsonView) {
-      payloadJsonView.textContent = payloadText;
+      try {
+        payloadJsonView.textContent = JSON.stringify(JSON.parse(payloadText), null, 2);
+      } catch (_) {
+        payloadJsonView.textContent = payloadText;
+      }
     }
 
     if (typeof QRCode !== "undefined") {
       qrContainer.innerHTML = "";
       qrcodeInstance = new QRCode(qrContainer, {
         text: payloadText,
-        width: 190,
-        height: 190,
+        width: 220,
+        height: 220,
         colorDark: "#070e1a",
         colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
+        correctLevel: QRCode.CorrectLevel.M
       });
     } else {
       console.warn("QRCode library not loaded yet.");
@@ -424,7 +428,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let dataUrl = null;
       if (canvas) {
-        dataUrl = canvas.toDataURL("image/png");
+        // Add crisp white quiet zone border around QR for 100% decoder reliability
+        const paddedCanvas = document.createElement("canvas");
+        const pad = 24;
+        paddedCanvas.width = canvas.width + pad * 2;
+        paddedCanvas.height = canvas.height + pad * 2;
+        const ctx = paddedCanvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
+        ctx.drawImage(canvas, pad, pad);
+        dataUrl = paddedCanvas.toDataURL("image/png");
       } else if (img && img.src) {
         dataUrl = img.src;
       }
