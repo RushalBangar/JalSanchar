@@ -79,7 +79,26 @@ def create_data_model(villages, num_tankers, tanker_capacity, depot_coords=None,
     return data
 
 def optimize_routes(villages, num_tankers, tanker_capacity, depot_coords=None, depot_name=None):
-    """Uses Google OR-Tools CVRP (Capacitated Vehicle Routing Problem)"""
+    """Uses Google OR-Tools CVRP (Capacitated Vehicle Routing Problem) with fallback heuristic."""
+    if not villages:
+        return []
+
+    try:
+        num_tankers = int(num_tankers)
+    except (TypeError, ValueError):
+        num_tankers = 1
+
+    if num_tankers <= 0:
+        return []
+
+    try:
+        tanker_capacity = int(tanker_capacity)
+    except (TypeError, ValueError):
+        tanker_capacity = 10000
+
+    if tanker_capacity <= 0:
+        tanker_capacity = 10000
+
     data = create_data_model(villages, num_tankers, tanker_capacity, depot_coords, depot_name)
     
     if len(data['demands']) <= 1:
@@ -125,6 +144,7 @@ def optimize_routes(villages, num_tankers, tanker_capacity, depot_coords=None, d
 
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+    search_parameters.time_limit.seconds = 5
     
     solution = routing.SolveWithParameters(search_parameters)
     
@@ -153,5 +173,32 @@ def optimize_routes(villages, num_tankers, tanker_capacity, depot_coords=None, d
             # Only return routes that actually visited a village
             if len(route) > 2: 
                 routes.append(route)
-                
+
+    # Fallback heuristic: If OR-Tools finds no feasible solution, generate greedy cluster routes
+    if not routes and len(data['locations']) > 1:
+        depot_node = {
+            "name": data['names'][0],
+            "coords": data['locations'][0],
+            "delivery_drop": 0
+        }
+        # Distribute distressed villages round-robin across available tankers
+        vehicle_drops = [[] for _ in range(num_tankers)]
+        vehicle_loads = [0] * num_tankers
+
+        for node_idx in range(1, len(data['locations'])):
+            demand = data['demands'][node_idx]
+            # Find vehicle with least load that can accommodate or minimum load vehicle
+            chosen_veh = min(range(num_tankers), key=lambda idx: vehicle_loads[idx])
+            vehicle_drops[chosen_veh].append({
+                "name": data['names'][node_idx],
+                "coords": data['locations'][node_idx],
+                "delivery_drop": demand
+            })
+            vehicle_loads[chosen_veh] += demand
+
+        for veh_idx in range(num_tankers):
+            if vehicle_drops[veh_idx]:
+                route = [depot_node] + vehicle_drops[veh_idx] + [depot_node]
+                routes.append(route)
+
     return routes

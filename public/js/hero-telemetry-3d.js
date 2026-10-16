@@ -466,7 +466,7 @@
     }
     if (btnToggleViewMode) {
       btnToggleViewMode.innerHTML = mode3D
-        ? '<span class="material-symbols-outlined text-[14px]">view_in_ar</span><span>3D Hologram</span>'
+        ? '<span class="material-symbols-outlined text-[14px]">view_in_ar</span><span>3D Terrain</span>'
         : '<span class="material-symbols-outlined text-[14px]">map</span><span>2D GIS</span>';
     }
     if (mode3D && !animFrameId) {

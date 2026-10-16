@@ -122,11 +122,11 @@ app = FastAPI(
 # Security Headers Middleware
 app.add_middleware(SecurityHeadersMiddleware)
 
-# CORS — supports configured origins and dynamic localhost/127.0.0.1 dev ports
+# CORS — supports configured origins, dynamic localhost dev ports, Vercel & GitHub preview domains
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app|https://.*\.github\.io)$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],

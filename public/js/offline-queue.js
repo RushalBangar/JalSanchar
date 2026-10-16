@@ -220,14 +220,13 @@
           const sbClient = (window.JalSupabase && window.JalSupabase.client) || window.supabaseClient;
           if (sbClient) {
             const { error } = await sbClient.from("delivery_receipts").insert([{
-              tanker_id: item.tanker_id,
-              target_village: item.target_village || item.village,
-              volume_liters: item.volume_liters || 10000,
+              village: item.village || item.target_village,
+              tanker: item.tanker || item.tanker_id,
+              volume_liters: item.volume_liters || item.volume || 10000,
               driver_key: item.driver_key,
               cistern_key: item.cistern_key,
               signature: item.signature,
-              geofence_verified: true,
-              timestamp: item.timestamp || item.queued_at
+              status: item.status || "VERIFIED_DELIVERED"
             }]);
             if (!error) synced = true;
           }
@@ -243,13 +242,13 @@
                 ...authHeaders
               },
               body: JSON.stringify({
-                tanker_id: item.tanker_id,
-                target_village: item.target_village || item.village,
+                tanker_id: item.tanker || item.tanker_id,
+                target_village: item.village || item.target_village,
                 driver_lat: item.lat || 19.9015,
                 driver_lng: item.lng || 74.1030,
                 driver_key: item.driver_key,
                 cistern_key: item.cistern_key,
-                volume_liters: item.volume_liters || 10000
+                volume_liters: item.volume_liters || item.volume || 10000
               })
             }).catch(() => null);
 

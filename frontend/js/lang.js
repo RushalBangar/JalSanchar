@@ -36,7 +36,28 @@ const translations = {
     stat_cattle: "Cattle: 70L Daily",
     btn_dispatch: "Send Emergency Water Tanker",
     btn_freeze: "Hold Contractor Payment",
-    audit_title: "Water Delivery Audit Records"
+    audit_title: "Water Delivery Audit Records",
+    login_back_home: "Back to Home",
+    login_badge: "Official Water Supply & Relief Management",
+    login_title: "Sign in to JalSanjeevani",
+    login_desc: "Select your role to access your dashboard, or sign in below.",
+    login_tab_signin: "Sign-In",
+    login_tab_register: "Register New Account",
+    login_select_role: "Select Your Role:",
+    role_collector: "District Collector",
+    role_collector_tag: "Water Map & Monitoring",
+    role_driver: "Tanker Driver",
+    role_driver_tag: "GPS Route & QR Code",
+    role_panchayat: "Gram Panchayat",
+    role_panchayat_tag: "Village Tank & QR Scanner",
+    label_email: "Email Address / Official ID",
+    placeholder_email: "Enter your email or official ID",
+    label_password: "Password",
+    placeholder_password: "Enter your password (min 8 characters)",
+    remember_session: "Keep secure session active for 24 hours",
+    btn_submit_signin: "Sign In →",
+    btn_demo_login: "Instant 1-Click Demo Login",
+    helper_title: "View Demo Login Accounts"
   },
   mr: {
     nav_brand: "जलसंजीवनी (JalSanjeevani)",
@@ -75,7 +96,28 @@ const translations = {
     stat_cattle: "जनावरांसाठी: दररोज ७० लिटर",
     btn_dispatch: "आपत्कालीन टँकर रवाना करा",
     btn_freeze: "कंत्राटदाराचे बिल रोखा",
-    audit_title: "पाणीवाटप तपासणी नोंदी"
+    audit_title: "पाणीवाटप तपासणी नोंदी",
+    login_back_home: "मुख्य पानावर परत",
+    login_badge: "अधिकृत पाणी पुरवठा व दुष्काळ निवारण व्यवस्थापन",
+    login_title: "जलसंजीवनी पोर्टल लॉगिन",
+    login_desc: "आपल्या डॅशबोर्डवर जाण्यासाठी आपली भूमिका निवडा किंवा लॉगिन करा.",
+    login_tab_signin: "लॉगिन",
+    login_tab_register: "नवीन खाते नोंदणी",
+    login_select_role: "आपली भूमिका निवडा:",
+    role_collector: "जिल्हाधिकारी",
+    role_collector_tag: "पाणी नकाशा व देखरेख",
+    role_driver: "टँकर चालक",
+    role_driver_tag: "जीपीएस मार्ग व क्यूआर कोड",
+    role_panchayat: "ग्रामपंचायत",
+    role_panchayat_tag: "पाण्याची टाकी व क्यूआर स्कॅनर",
+    label_email: "ईमेल पत्ता / अधिकृत ओळख",
+    placeholder_email: "आपला ईमेल किंवा अधिकृत ओळख प्रविष्ट करा",
+    label_password: "पासवर्ड",
+    placeholder_password: "पासवर्ड प्रविष्ट करा (किमान ८ अक्षरे)",
+    remember_session: "२४ तास सत्र सुरक्षित ठेवा",
+    btn_submit_signin: "लॉगिन करा →",
+    btn_demo_login: "१-क्लिक चाचणी लॉगिन",
+    helper_title: "चाचणी लॉगिन खाती पहा"
   },
   hi: {
     nav_brand: "जलसंजीवनी (JalSanjeevani)",
@@ -114,16 +156,50 @@ const translations = {
     stat_cattle: "प्रति मवेशी: 70 लीटर रोज",
     btn_dispatch: "आपातकालीन टैंकर भेजें",
     btn_freeze: "ठेकेदार का भुगतान रोकें",
-    audit_title: "जल वितरण सत्यापन रिकॉर्ड"
+    audit_title: "जल वितरण सत्यापन रिकॉर्ड",
+    login_back_home: "मुख्य पृष्ठ पर वापस",
+    login_badge: "आधिकारिक जल आपूर्ति एवं सूखा राहत प्रबंधन",
+    login_title: "जलसंजीवनी पोर्टल लॉगिन",
+    login_desc: "अपने डैशबोर्ड पर जाने के लिए अपनी भूमिका चुनें या लॉगिन करें।",
+    login_tab_signin: "साइन-इन",
+    login_tab_register: "नया खाता पंजीकरण",
+    login_select_role: "अपनी भूमिका चुनें:",
+    role_collector: "ज़िलाधिकारी",
+    role_collector_tag: "जल मैप व निगरानी",
+    role_driver: "टैंकर चालक",
+    role_driver_tag: "जीपीएस रूट व क्यूआर कोड",
+    role_panchayat: "ग्राम पंचायत",
+    role_panchayat_tag: "गाँव की पानी की टंकी व क्यूआर स्कैनर",
+    label_email: "ईमेल पता / आधिकारिक आईडी",
+    placeholder_email: "अपना ईमेल या आधिकारिक आईडी दर्ज करें",
+    label_password: "पासवर्ड",
+    placeholder_password: "पासवर्ड दर्ज करें (कम से कम 8 अक्षर)",
+    remember_session: "24 घंटे सुरक्षित सत्र सक्रिय रखें",
+    btn_submit_signin: "साइन इन करें →",
+    btn_demo_login: "1-क्लिक डेमो लॉगिन",
+    helper_title: "डेमो लॉगिन खाते देखें"
   }
 };
 
 function applyTranslation(lang) {
+  if (!translations[lang]) lang = "en";
   document.documentElement.lang = lang;
+
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
     if (translations[lang] && translations[lang][key]) {
-      el.textContent = translations[lang][key];
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        el.placeholder = translations[lang][key];
+      } else {
+        el.textContent = translations[lang][key];
+      }
+    }
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (translations[lang] && translations[lang][key]) {
+      el.placeholder = translations[lang][key];
     }
   });
 }

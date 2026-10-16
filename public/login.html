@@ -32,7 +32,7 @@
       <img src="assets/logo.jpg" alt="JalSanjeevani Logo">
       <div class="brand-text">
         <span class="brand-title">JalSanjeevani</span>
-        <span class="brand-subtitle">Government of Maharashtra • Drought Relief Portal</span>
+        <span class="brand-subtitle">Rural Drought Water Supply &amp; Logistics Grid</span>
       </div>
     </a>
     
@@ -49,7 +49,7 @@
 
       <a href="index.html" class="btn btn-outline btn-sm back-home-btn">
         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-        <span>Back to Home</span>
+        <span data-i18n="login_back_home">Back to Home</span>
       </a>
     </div>
   </nav>
@@ -62,10 +62,10 @@
       <header class="login-header">
         <div class="login-badge">
           <span class="badge-dot">●</span>
-          <span id="headerBadgeText">Official Water Supply &amp; Relief Management</span>
+          <span id="headerBadgeText" data-i18n="login_badge">Official Water Supply &amp; Relief Management</span>
         </div>
-        <h1 class="portal-heading" id="portalTitle">Sign in to JalSanjeevani</h1>
-        <p class="portal-subheading" id="portalDesc">
+        <h1 class="portal-heading" id="portalTitle" data-i18n="login_title">Sign in to JalSanjeevani</h1>
+        <p class="portal-subheading" id="portalDesc" data-i18n="login_desc">
           Select your role to access your dashboard, or sign in below.
         </p>
       </header>
@@ -74,11 +74,11 @@
       <div class="auth-mode-container" role="tablist" aria-label="Authentication Mode">
         <button type="button" class="auth-mode-btn active" id="modeSignInBtn" data-mode="signin" role="tab" aria-selected="true">
           <span class="material-symbols-outlined text-[16px]">lock_open</span>
-          <span>Sign-In</span>
+          <span data-i18n="login_tab_signin">Sign-In</span>
         </button>
         <button type="button" class="auth-mode-btn" id="modeRegisterBtn" data-mode="register" role="tab" aria-selected="false">
           <span class="material-symbols-outlined text-[16px]">person_add</span>
-          <span>Register New Account</span>
+          <span data-i18n="login_tab_register">Register New Account</span>
         </button>
       </div>
 
@@ -95,15 +95,15 @@
       <div id="roleSelectionWrapper" style="margin-bottom: 1.25rem;">
         <div class="role-selection-heading" id="roleSelectionHeading" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: #94a3b8; margin-bottom: 8px;">
           <span class="material-symbols-outlined text-[16px]" style="color: #00e5ff;">badge</span>
-          <span id="roleSelectionTitle">Select Your Role:</span>
+          <span id="roleSelectionTitle" data-i18n="login_select_role">Select Your Role:</span>
         </div>
         <div class="role-tabs" id="roleTabsContainer" role="tablist" aria-label="Operational Role Selection">
           <!-- 1. Collector -->
           <button type="button" class="role-tab active" id="tabCollector" data-role="collector" role="tab" aria-selected="true">
             <span class="material-symbols-outlined role-tab-icon">shield_person</span>
             <div class="role-tab-info">
-              <span class="role-tab-name">District Collector</span>
-              <span class="role-tab-tag">Water Map &amp; Monitoring</span>
+              <span class="role-tab-name" data-i18n="role_collector">District Collector</span>
+              <span class="role-tab-tag" data-i18n="role_collector_tag">Water Map &amp; Monitoring</span>
             </div>
           </button>
 
@@ -111,8 +111,8 @@
           <button type="button" class="role-tab" id="tabDriver" data-role="driver" role="tab" aria-selected="false">
             <span class="material-symbols-outlined role-tab-icon">local_shipping</span>
             <div class="role-tab-info">
-              <span class="role-tab-name">Tanker Driver</span>
-              <span class="role-tab-tag">GPS Route &amp; QR Code</span>
+              <span class="role-tab-name" data-i18n="role_driver">Tanker Driver</span>
+              <span class="role-tab-tag" data-i18n="role_driver_tag">GPS Route &amp; QR Code</span>
             </div>
           </button>
 
@@ -120,8 +120,8 @@
           <button type="button" class="role-tab" id="tabPanchayat" data-role="panchayat" role="tab" aria-selected="false">
             <span class="material-symbols-outlined role-tab-icon">account_balance</span>
             <div class="role-tab-info">
-              <span class="role-tab-name">Gram Panchayat</span>
-              <span class="role-tab-tag">Village Tank &amp; QR Scanner</span>
+              <span class="role-tab-name" data-i18n="role_panchayat">Gram Panchayat</span>
+              <span class="role-tab-tag" data-i18n="role_panchayat_tag">Village Tank &amp; QR Scanner</span>
             </div>
           </button>
         </div>
@@ -251,7 +251,7 @@
         <div class="form-group" id="groupEmail">
           <label for="email" id="labelEmail">
             <span class="material-symbols-outlined label-icon">badge</span>
-            <span>Email Address / Official ID</span>
+            <span data-i18n="label_email">Email Address / Official ID</span>
           </label>
           <div class="input-wrapper">
             <input 
@@ -259,6 +259,7 @@
               id="email" 
               class="form-control" 
               placeholder="Enter your email or official ID" 
+              data-i18n-placeholder="placeholder_email"
               required 
               autocomplete="email"
             >
@@ -270,7 +271,7 @@
           <div class="label-with-action">
             <label for="password" id="labelPassword">
               <span class="material-symbols-outlined label-icon">key</span>
-              <span>Password</span>
+              <span data-i18n="label_password">Password</span>
             </label>
             <button type="button" class="btn-toggle-pwd" id="btnTogglePassword" title="Show/Hide Password" aria-label="Toggle password visibility">
               <span class="material-symbols-outlined text-[16px]" id="pwdEyeIcon">visibility</span>
@@ -283,6 +284,7 @@
               id="password" 
               class="form-control" 
               placeholder="Enter your password (min 8 characters)" 
+              data-i18n-placeholder="placeholder_password"
               required 
               autocomplete="current-password"
               minlength="8"
@@ -295,20 +297,20 @@
           <label class="remember-checkbox">
             <input type="checkbox" id="rememberMe" checked>
             <span class="checkbox-custom"></span>
-            <span class="checkbox-label">Keep secure session active for 24 hours</span>
+            <span class="checkbox-label" data-i18n="remember_session">Keep secure session active for 24 hours</span>
           </label>
         </div>
 
         <!-- SUBMIT BUTTON -->
         <button type="submit" id="btnSubmitLogin" class="btn btn-primary btn-block btn-authorize">
           <span class="material-symbols-outlined btn-icon" id="btnIcon">login</span>
-          <span id="btnText">Sign In →</span>
+          <span id="btnText" data-i18n="btn_submit_signin">Sign In →</span>
         </button>
 
         <!-- Instant 1-Tap Evaluation Sign-In Button -->
         <button type="button" id="btnInstantDemo" class="btn btn-outline btn-block btn-demo">
           <span class="material-symbols-outlined text-[18px]">bolt</span>
-          <span id="btnDemoText">Instant 1-Click Demo Login</span>
+          <span id="btnDemoText" data-i18n="btn_demo_login">Instant 1-Click Demo Login</span>
         </button>
       </form>
 
@@ -316,7 +318,7 @@
       <div class="credentials-helper" id="credentialsHelperContainer">
         <button type="button" class="helper-toggle-btn" id="btnToggleHelper">
           <span class="material-symbols-outlined text-[15px]">info</span>
-          <span>View Demo Login Accounts</span>
+          <span data-i18n="helper_title">View Demo Login Accounts</span>
           <span class="material-symbols-outlined helper-chevron" id="helperChevron">expand_more</span>
         </button>
         <div class="helper-drawer hidden" id="helperDrawer">
