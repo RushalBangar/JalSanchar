@@ -770,6 +770,11 @@
       const session = this.getSession();
       if (!session || !session.token) return false;
 
+      // Evaluation / offline demo sessions should stay intact without server verification
+      if (session.isDemoMode || session.token.startsWith("JAL-DEMO-") || session.token.startsWith("JAL-OFFLINE-")) {
+        return true;
+      }
+
       try {
         const apiBase = this.getApiBase();
         const res = await fetch(`${apiBase}/api/auth/verify`, {
@@ -792,8 +797,43 @@
      * Call at top of dashboard.html, driver.html, panchayat.html.
      */
     protectPage(allowedRoles = []) {
-      const session = this.getSession();
+      let session = this.getSession();
       const currentPage = window.location.pathname.split("/").pop() || "index.html";
+      const params = new URLSearchParams(window.location.search);
+
+      // Support 1-tap evaluation bypass if ?demo=true or ?eval=1 is present
+      if (!session && (params.get("demo") === "true" || params.get("eval") === "1")) {
+        let demoRole = allowedRoles[0] || "collector";
+        let email = "collector@sinnar.jalsanjeevani.gov.in";
+        if (demoRole === "driver") email = "driver.mh15@sinnar.jalsanjeevani.gov.in";
+        else if (demoRole === "panchayat") email = "panchayat.khopadi@sinnar.jalsanjeevani.gov.in";
+
+        const persona = this.OFFLINE_PERSONAS[email] || this.OFFLINE_PERSONAS["collector@sinnar.jalsanjeevani.gov.in"];
+        const demoSession = {
+          token: `JAL-DEMO-${demoRole.toUpperCase()}-KEY`,
+          role: demoRole,
+          user: {
+            id: persona.id || `USR-${demoRole.toUpperCase()}-01`,
+            name: persona.name || "Authorized Officer",
+            title: persona.title || "Government Official",
+            email: persona.email || email,
+            role: demoRole,
+            badge_id: persona.badge_id || "MH-GOV-01",
+            jurisdiction: persona.jurisdiction || "Sinnar Division",
+            tanker_id: persona.tanker_id || "TN-SN-02",
+            registration: persona.registration || "MH-15-TK-5512",
+            driver_key: persona.driver_key || "0x9F3B4ED812C4",
+            village: persona.village || "Khopadi (Sinnar)",
+            cistern_key: persona.cistern_key || "0x74CE8A1109B2",
+            permissions: persona.permissions || []
+          },
+          loginAt: Date.now(),
+          expiresAt: Date.now() + SESSION_TTL_MS,
+          isDemoMode: true
+        };
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(demoSession));
+        session = demoSession;
+      }
 
       if (!session) {
         console.warn(`🔐 [JalAuth] Unauthenticated attempt to access ${currentPage}. Redirecting to login.`);

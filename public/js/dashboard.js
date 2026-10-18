@@ -949,7 +949,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
-  function runInteractiveSolver(options = {}) {
+  async function runInteractiveSolver(options = {}) {
     const isExecute = options.execute === true;
     const tankerCount = parseInt(tankerRangeInput?.value || "4", 10);
     const isRoadClosed = toggleRoadClosure?.checked || false;
@@ -1073,6 +1073,44 @@ document.addEventListener("DOMContentLoaded", () => {
           btnAllocate.classList.remove("bg-safe-emerald");
           btnAllocate.classList.add("bg-primary-container");
         }, 4000);
+      }
+
+      // Live Google OR-Tools CVRP backend execution
+      try {
+        const apiBase = (window.JalAuth && typeof window.JalAuth.getApiBase === "function")
+          ? window.JalAuth.getApiBase()
+          : (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://127.0.0.1:8000" : "https://jalsanjeevani.onrender.com");
+        const authHeaders = (window.JalAuth && typeof window.JalAuth.getAuthHeaders === "function")
+          ? window.JalAuth.getAuthHeaders()
+          : {};
+
+        const res = await fetch(`${apiBase}/api/allocate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...authHeaders
+          },
+          body: JSON.stringify({
+            villages: villages.map(v => ({
+              id: v.id,
+              name: v.name,
+              lat: v.coords[0],
+              lng: v.coords[1],
+              population: v.population,
+              cattle: v.cattle,
+              status: v.status
+            })),
+            num_tankers: tankerCount,
+            tanker_capacity: 100000
+          })
+        });
+
+        if (res.ok) {
+          const allocateData = await res.json();
+          console.log("🚚 [OR-Tools Live Engine] Routes optimized:", allocateData);
+        }
+      } catch (allocErr) {
+        console.warn("OR-Tools API dispatch notice:", allocErr.message);
       }
 
       if (window.JalSupabase && generatedRouteData) {

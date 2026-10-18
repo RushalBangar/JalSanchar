@@ -49,8 +49,8 @@ def create_data_model(villages, num_tankers, tanker_capacity, depot_coords=None,
     village_names = [depot_title]
     
     for v in villages:
-        h_pop = int(get_attr(v, 'human_pop', 0))
-        c_pop = int(get_attr(v, 'cattle_pop', 0))
+        h_pop = int(get_attr(v, 'human_pop', get_attr(v, 'population', 0)) or 0)
+        c_pop = int(get_attr(v, 'cattle_pop', get_attr(v, 'cattle', 0)) or 0)
         total_demand = (h_pop * 40) + (c_pop * 70)
         # Single tanker delivery drop capped at tanker capacity to ensure feasible CVRP trip
         demand_liters = min(total_demand, tanker_capacity)

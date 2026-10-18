@@ -66,6 +66,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const CISTERN_GEOKEY = (loggedInUser && loggedInUser.cistern_key) ? loggedInUser.cistern_key : "0x74CE8A1109B2"; // Statutory Cistern Key
   const KHOPADI_COORDS = { lat: 19.9015, lng: 74.1030 };
 
+  const KNOWN_VILLAGE_REGISTRY = {
+    "Khopadi": { lat: 19.9015, lng: 74.1030, key: "0x74CE8A1109B2" },
+    "Pangari": { lat: 19.8512, lng: 73.9540, key: "0x4A1E89B2" },
+    "Wadgaon": { lat: 19.8130, lng: 74.0520, key: "0x5C89F12A" },
+    "Dubere": { lat: 19.8210, lng: 73.9120, key: "0x34AB5678" },
+    "Dapur": { lat: 19.8820, lng: 73.9210, key: "0x9812AC44" },
+    "Nandur": { lat: 19.7820, lng: 73.9010, key: "0x9812AC44" },
+    "Tisgaon": { lat: 19.1415, lng: 75.0512, key: "0x4A1E89B2" },
+    "Supa": { lat: 18.9984, lng: 74.4568, key: "0x5C89F12A" },
+    "Kharki": { lat: 18.7280, lng: 75.3120, key: "0x74CE8A11" },
+    "Rashin": { lat: 18.5526, lng: 75.0064, key: "0x9812AC44" },
+    "Bodhegaon": { lat: 19.3486, lng: 75.2185, key: "0x3B7F1290" },
+    "Ashwi": { lat: 19.5772, lng: 74.2085, key: "0x6A91CD45" },
+    "Vambori": { lat: 19.3905, lng: 74.6514, key: "0x1290EA54" },
+    "Kashti": { lat: 18.6148, lng: 74.6969, key: "0x89AB2341" },
+    "Bhingar": { lat: 19.1120, lng: 74.7710, key: "0x45FC7810" }
+  };
+
+  function resolveVillageCistern(vName) {
+    if (!vName) return { lat: 19.9015, lng: 74.1030, key: CISTERN_GEOKEY };
+    const clean = vName.toLowerCase();
+    for (const [name, info] of Object.entries(KNOWN_VILLAGE_REGISTRY)) {
+      if (clean.includes(name.toLowerCase())) {
+        return { lat: info.lat, lng: info.lng, key: (loggedInUser && loggedInUser.cistern_key) ? loggedInUser.cistern_key : info.key };
+      }
+    }
+    return { lat: 19.9015, lng: 74.1030, key: CISTERN_GEOKEY };
+  }
+
   /**
    * Computes spherical Haversine distance in meters between two GPS coordinates
    */
@@ -578,6 +607,8 @@ document.addEventListener("DOMContentLoaded", () => {
       status: "VERIFIED_DELIVERED"
     };
 
+    const activeCistern = resolveVillageCistern(targetVillage || (loggedInUser && loggedInUser.village));
+
     try {
       const receipts = JSON.parse(localStorage.getItem("jalsanjeevani_receipts") || "[]");
       receipts.unshift(receipt);
@@ -586,49 +617,14 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Local storage write error:", e);
     }
 
-    if (window.JalOfflineQueue) {
-      await window.JalOfflineQueue.savePendingVerification(receipt);
-    }
-
-    // 6. Online-First Sync with Supabase Database & Offline Queue Auto-Flush
-    if (syncStatusNotice) {
-      if (navigator.onLine) {
-        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span><span>Saved to server • Water delivery verified</span>`;
-      } else {
-        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-warning-amber"></span><span>⚡ Saved offline (Will automatically sync when internet connects)</span>`;
-      }
-    }
-
-    if (navigator.onLine && window.JalOfflineQueue) {
-      window.JalOfflineQueue.syncAllPending().catch(() => {});
-    }
-
-    if (window.JalSupabase) {
-      window.JalSupabase.saveDeliveryReceipt(receipt);
-      window.JalSupabase.updateTankerLocation(tankerId, KHOPADI_COORDS.lat, KHOPADI_COORDS.lng, false, "delivered");
-      window.JalSupabase.updateTankerLocation("TN-04", KHOPADI_COORDS.lat, KHOPADI_COORDS.lng, false, "delivered");
-
-      if (window.JalSupabase.client) {
-        window.JalSupabase.client
-          .from("villages")
-          .update({
-            cistern_level: "48%",
-            status: "warning",
-            hours_remaining: 72
-          })
-          .or("id.eq.SN-02,id.eq.3,name.ilike.%Khopadi%")
-          .then(() => console.log("🌊 Village Khopadi cistern status updated in Supabase PostgreSQL."))
-          .catch((err) => console.warn("Supabase village update error:", err));
-      }
-    }
-
-    // 7. Backend Verification Handshake Call
+    // 6. Online-First Sync with Deduplication & Offline Queue
+    let backendSynced = false;
     try {
       const apiBase = window.JalAuth ? window.JalAuth.getApiBase() : "https://jalsanjeevani.onrender.com";
       const backendUrl = `${apiBase}/api/verify-delivery`;
-
       const authHeaders = window.JalAuth ? window.JalAuth.getAuthHeaders() : {};
-      fetch(backendUrl, {
+
+      const res = await fetch(backendUrl, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -637,17 +633,54 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           tanker_id: tankerId,
           target_village: targetVillage,
-          driver_lat: KHOPADI_COORDS.lat,
-          driver_lng: KHOPADI_COORDS.lng,
+          driver_lat: activeCistern.lat,
+          driver_lng: activeCistern.lng,
           driver_key: driverKey,
-          cistern_key: CISTERN_GEOKEY,
+          cistern_key: activeCistern.key,
           volume_liters: volume
         })
-      })
-      .then(res => res.json())
-      .then(res => console.log("🌊 Backend verify-delivery response:", res))
-      .catch(e => console.log("Backend API offline, local Supabase verified:", e));
-    } catch (e) {}
+      });
+
+      if (res.ok) {
+        backendSynced = true;
+        const resJson = await res.json();
+        console.log("🌊 Backend verify-delivery verified and saved:", resJson);
+      }
+    } catch (apiErr) {
+      console.log("Backend offline or unreachable, using offline queue:", apiErr.message);
+    }
+
+    // If backend was not reached or failed, save to offline sync queue for auto-flush upon reconnection
+    if (!backendSynced) {
+      if (window.JalOfflineQueue) {
+        await window.JalOfflineQueue.savePendingVerification(receipt);
+      }
+      if (syncStatusNotice) {
+        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-warning-amber"></span><span>⚡ Saved offline (Will automatically sync when internet connects)</span>`;
+      }
+    } else {
+      if (syncStatusNotice) {
+        syncStatusNotice.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span><span>Saved to server • Water delivery verified</span>`;
+      }
+    }
+
+    // Update village local telemetry state in Supabase if client is accessible
+    if (window.JalSupabase) {
+      window.JalSupabase.updateTankerLocation(tankerId, activeCistern.lat, activeCistern.lng, false, "delivered");
+      window.JalSupabase.updateTankerLocation("TN-04", activeCistern.lat, activeCistern.lng, false, "delivered");
+      if (window.JalSupabase.client) {
+        window.JalSupabase.client
+          .from("villages")
+          .update({
+            cistern_level: "48%",
+            status: "warning",
+            hours_remaining: 72
+          })
+          .or(`id.eq.SN-02,name.ilike.%${targetVillage}%`)
+          .then(() => console.log("🌊 Village cistern status updated in Supabase PostgreSQL."))
+          .catch((err) => console.warn("Supabase village update error:", err));
+      }
+    }
   }
 
   // Camera Toggle Button Handler

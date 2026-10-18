@@ -5,10 +5,18 @@ across Ahilyanagar (Ahmednagar) District and Sinnar Taluka (Nashik), Maharashtra
 """
 
 import os
+from dotenv import load_dotenv
 from supabase import create_client
 
+load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://vzfddxiiptkeeyvrfkhl.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6ZmRkeGlpcHRrZWV5dnJma2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MDM1OTYsImV4cCI6MjEwNzE3OTU5Nn0.8NA30jSO58gV8vbyvWnsUwdgXsMGFeMtda25lQ8EEFQ")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+
+if not SUPABASE_KEY:
+    print("[Error] SUPABASE_KEY not found in environment or backend/.env")
+    exit(1)
 
 client = create_client(SUPABASE_URL, SUPABASE_KEY)
 

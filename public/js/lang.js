@@ -191,7 +191,13 @@ function applyTranslation(lang) {
       if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
         el.placeholder = translations[lang][key];
       } else {
-        el.textContent = translations[lang][key];
+        const icon = el.querySelector(".material-symbols-outlined, svg, img");
+        if (icon) {
+          const iconHtml = icon.outerHTML;
+          el.innerHTML = iconHtml + " " + translations[lang][key];
+        } else {
+          el.textContent = translations[lang][key];
+        }
       }
     }
   });

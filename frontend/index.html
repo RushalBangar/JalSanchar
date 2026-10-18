@@ -8,7 +8,7 @@
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; frame-ancestors 'none';">
   <title>JalSanjeevani | Smart Drought Water Supply Chain</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,13 +149,13 @@
       </button>
       <!-- Primary Action Buttons inside mobile menu -->
       <div class="pt-3 border-t border-surface-container/60 flex flex-col gap-2.5">
-        <a class="w-full py-2.5 px-4 rounded-xl bg-primary-container text-on-primary-container font-headline-sm text-sm font-semibold text-center shadow-[0_0_16px_rgba(0,229,255,0.25)] hover:bg-tertiary-container hover:text-on-tertiary-container transition-all flex items-center justify-center gap-2" data-i18n="nav_dashboard" href="dashboard.html">
+        <a class="w-full py-2.5 px-4 rounded-xl bg-primary-container text-on-primary-container font-headline-sm text-sm font-semibold text-center shadow-[0_0_16px_rgba(0,229,255,0.25)] hover:bg-tertiary-container hover:text-on-tertiary-container transition-all flex items-center justify-center gap-2" href="dashboard.html">
           <span class="material-symbols-outlined text-[18px]">terminal</span>
-          <span>Access Dashboard</span>
+          <span data-i18n="nav_dashboard">Access Dashboard</span>
         </a>
-        <a class="w-full py-2 px-4 rounded-xl bg-surface-container-high border border-surface-glass-border text-on-surface text-center font-label-ui text-sm font-medium hover:bg-surface-bright transition-all flex items-center justify-center gap-2" data-i18n="nav_login" href="login.html">
+        <a class="w-full py-2 px-4 rounded-xl bg-surface-container-high border border-surface-glass-border text-on-surface text-center font-label-ui text-sm font-medium hover:bg-surface-bright transition-all flex items-center justify-center gap-2" href="login.html">
           <span class="material-symbols-outlined text-[18px] text-primary">login</span>
-          <span>Portal Login</span>
+          <span data-i18n="nav_login">Portal Login</span>
         </a>
       </div>
     </div>
@@ -190,13 +190,13 @@
               </p>
               
               <div class="flex flex-wrap items-center gap-space-md pt-space-xs">
-                <a data-i18n="hero_btn_discover" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-on-secondary font-headline-sm text-headline-sm font-semibold tracking-wide shadow-lg hover:opacity-95 transition-all" href="#portals-section">
+                <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-on-secondary font-headline-sm text-headline-sm font-semibold tracking-wide shadow-lg hover:opacity-95 transition-all" href="#portals-section">
                   <span class="material-symbols-outlined text-[20px]">hub</span>
-                  Explore Platform Portals
+                  <span data-i18n="hero_btn_discover">Explore Platform Portals</span>
                 </a>
-                <a data-i18n="hero_btn_access" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-surface-container-high text-primary hover:text-text-primary hover:bg-surface-bright font-headline-sm text-headline-sm font-semibold shadow-md transition-all border border-surface-glass-border" href="dashboard.html">
+                <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-surface-container-high text-primary hover:text-text-primary hover:bg-surface-bright font-headline-sm text-headline-sm font-semibold shadow-md transition-all border border-surface-glass-border" href="dashboard.html">
                   <span class="material-symbols-outlined text-[20px]">terminal</span>
-                  View Water Dashboard
+                  <span data-i18n="hero_btn_access">View Water Dashboard</span>
                 </a>
               </div>
 
