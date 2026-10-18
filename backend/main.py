@@ -1172,3 +1172,11 @@ async def export_manifest(session: dict = Depends(require_auth)):
         "exported_by": session["user"].get("name", "Authorized Officer"),
         "cryptographic_signature": generate_handshake_signature("FLEET", "SINNAR", 455500, timestamp)
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    print(f"[JalSanjeevani] Starting API server on http://0.0.0.0:{port}")
+    uvicorn.run(app, host="0.0.0.0", port=port)
+

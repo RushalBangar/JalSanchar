@@ -68,6 +68,9 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
+  // Only handle standard HTTP/HTTPS requests (ignores chrome-extension://, moz-extension://, etc.)
+  if (!url.protocol.startsWith('http')) return;
+
   // Live APIs and external tile servers bypass SW cache
   if (
     url.hostname.includes('supabase.co') ||
@@ -80,10 +83,12 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        if (networkResponse && (networkResponse.status === 200 || networkResponse.status === 0)) {
+        if (networkResponse && networkResponse.status === 200 && event.request.url.startsWith('http')) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
+            cache.put(event.request, responseToCache).catch((err) => {
+              console.warn('[SW] Cache put ignored:', err.message);
+            });
           });
         }
         return networkResponse;

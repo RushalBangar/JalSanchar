@@ -624,8 +624,6 @@ document.addEventListener("DOMContentLoaded", () => {
       status: "VERIFIED_DELIVERED"
     };
 
-    const activeCistern = resolveVillageCistern(targetVillage || (loggedInUser && loggedInUser.village));
-
     try {
       const receipts = JSON.parse(localStorage.getItem("jalsanjeevani_receipts") || "[]");
       receipts.unshift(receipt);
@@ -650,10 +648,10 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           tanker_id: tankerId,
           target_village: targetVillage,
-          driver_lat: activeCistern.lat,
-          driver_lng: activeCistern.lng,
+          driver_lat: data.lat || activeCistern.lat,
+          driver_lng: data.lng || activeCistern.lng,
           driver_key: driverKey,
-          cistern_key: activeCistern.key,
+          cistern_key: CISTERN_GEOKEY,
           volume_liters: volume
         })
       });
