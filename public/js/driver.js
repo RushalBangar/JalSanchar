@@ -69,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     target_village: (loggedInUser && loggedInUser.village) ? loggedInUser.village : "Khopadi (Sinnar)",
     volume_liters: 10000,
     driver_key: (loggedInUser && loggedInUser.driver_key) ? loggedInUser.driver_key : "0x9F3B4ED812C4",
-    cistern_key: "0x74CE8A1109B2",
     lat: 19.9016,
     lng: 74.1028,
     geofence_status: "WITHIN_CORRIDOR_15M"
@@ -175,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
       target_village: manifest.target_village,
       volume_liters: manifest.volume_liters,
       driver_key: manifest.driver_key,
-      cistern_key: manifest.cistern_key,
       lat: isArrived ? 19.9015 : manifest.lat,
       lng: isArrived ? 74.1030 : manifest.lng,
       geofence_verified: isArrived,

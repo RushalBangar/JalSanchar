@@ -128,7 +128,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app|https://.*\.github\.io)$",
+    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:\d+)?|https://jalsanjeevani[\w\-]*\.vercel\.app|https://rushalbangar\.github\.io)$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
@@ -560,6 +560,15 @@ async def auth_register(req: RegisterRequest, request: Request):
     🔒 Features: Validates all role information, hashes passwords with bcrypt,
     and inserts dynamically into Supabase gov_users database.
     """
+    client_ip = request.client.host if request.client else "unknown"
+    rate_key = f"reg:{client_ip}"
+    if not check_rate_limit(rate_key):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many registration attempts. Please wait a few minutes before retrying."
+        )
+    record_login_attempt(rate_key)
+
     clean_role = req.role.strip().lower()
     if clean_role not in ["collector", "driver", "panchayat"]:
         raise HTTPException(

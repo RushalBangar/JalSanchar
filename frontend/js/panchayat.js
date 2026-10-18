@@ -66,33 +66,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const CISTERN_GEOKEY = (loggedInUser && loggedInUser.cistern_key) ? loggedInUser.cistern_key : "0x74CE8A1109B2"; // Statutory Cistern Key
   const KHOPADI_COORDS = { lat: 19.9015, lng: 74.1030 };
 
-  const KNOWN_VILLAGE_REGISTRY = {
-    "Khopadi": { lat: 19.9015, lng: 74.1030, key: "0x74CE8A1109B2" },
-    "Pangari": { lat: 19.8512, lng: 73.9540, key: "0x4A1E89B2" },
-    "Wadgaon": { lat: 19.8130, lng: 74.0520, key: "0x5C89F12A" },
-    "Dubere": { lat: 19.8210, lng: 73.9120, key: "0x34AB5678" },
-    "Dapur": { lat: 19.8820, lng: 73.9210, key: "0x9812AC44" },
-    "Nandur": { lat: 19.7820, lng: 73.9010, key: "0x9812AC44" },
-    "Tisgaon": { lat: 19.1415, lng: 75.0512, key: "0x4A1E89B2" },
-    "Supa": { lat: 18.9984, lng: 74.4568, key: "0x5C89F12A" },
-    "Kharki": { lat: 18.7280, lng: 75.3120, key: "0x74CE8A11" },
-    "Rashin": { lat: 18.5526, lng: 75.0064, key: "0x9812AC44" },
-    "Bodhegaon": { lat: 19.3486, lng: 75.2185, key: "0x3B7F1290" },
-    "Ashwi": { lat: 19.5772, lng: 74.2085, key: "0x6A91CD45" },
-    "Vambori": { lat: 19.3905, lng: 74.6514, key: "0x1290EA54" },
-    "Kashti": { lat: 18.6148, lng: 74.6969, key: "0x89AB2341" },
-    "Bhingar": { lat: 19.1120, lng: 74.7710, key: "0x45FC7810" }
+  const KNOWN_VILLAGE_COORDS = {
+    "Khopadi": { lat: 19.9015, lng: 74.1030 },
+    "Pangari": { lat: 19.8512, lng: 73.9540 },
+    "Wadgaon": { lat: 19.8130, lng: 74.0520 },
+    "Dubere": { lat: 19.8210, lng: 73.9120 },
+    "Dapur": { lat: 19.8820, lng: 73.9210 },
+    "Nandur": { lat: 19.7820, lng: 73.9010 },
+    "Tisgaon": { lat: 19.1415, lng: 75.0512 },
+    "Supa": { lat: 18.9984, lng: 74.4568 },
+    "Kharki": { lat: 18.7280, lng: 75.3120 },
+    "Rashin": { lat: 18.5526, lng: 75.0064 },
+    "Bodhegaon": { lat: 19.3486, lng: 75.2185 },
+    "Ashwi": { lat: 19.5772, lng: 74.2085 },
+    "Vambori": { lat: 19.3905, lng: 74.6514 },
+    "Kashti": { lat: 18.6148, lng: 74.6969 },
+    "Bhingar": { lat: 19.1120, lng: 74.7710 }
   };
 
   function resolveVillageCistern(vName) {
-    if (!vName) return { lat: 19.9015, lng: 74.1030, key: CISTERN_GEOKEY };
+    if (!vName) return { lat: 19.9015, lng: 74.1030 };
     const clean = vName.toLowerCase();
-    for (const [name, info] of Object.entries(KNOWN_VILLAGE_REGISTRY)) {
+    for (const [name, coords] of Object.entries(KNOWN_VILLAGE_COORDS)) {
       if (clean.includes(name.toLowerCase())) {
-        return { lat: info.lat, lng: info.lng, key: (loggedInUser && loggedInUser.cistern_key) ? loggedInUser.cistern_key : info.key };
+        return { lat: coords.lat, lng: coords.lng };
       }
     }
-    return { lat: 19.9015, lng: 74.1030, key: CISTERN_GEOKEY };
+    return { lat: 19.9015, lng: 74.1030 };
   }
 
   /**
@@ -120,9 +120,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({ success: true, coords: pos.coords }),
+        (pos) => {
+          if (pos && pos.coords) {
+            const { latitude, longitude } = pos.coords;
+            // Anti-mock location / boundary validation (Maharashtra envelope)
+            if (latitude < 15.0 || latitude > 23.0 || longitude < 72.0 || longitude > 82.0) {
+              console.warn("⚠️ Verifier coordinates out of Maharashtra operational sector:", latitude, longitude);
+            }
+          }
+          resolve({ success: true, coords: pos.coords });
+        },
         (err) => resolve({ success: false, reason: err.message || "PERMISSION_DENIED" }),
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 30000 }
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 15000 }
       );
     });
   }
@@ -466,15 +475,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const session = window.JalAuth ? window.JalAuth.getSession() : null;
     const isDemoEnvironment = (session && session.isDemoMode) || 
       window.location.hostname === "localhost" || 
-      window.location.hostname === "127.0.0.1" ||
-      window.location.hostname.includes("vercel.app");
+      window.location.hostname === "127.0.0.1";
+
+    const activeCistern = resolveVillageCistern(targetVillage);
 
     if (verifierGeo.success && verifierGeo.coords) {
       const realVerifierDistance = calculateHaversineDistance(
         verifierGeo.coords.latitude,
         verifierGeo.coords.longitude,
-        KHOPADI_COORDS.lat,
-        KHOPADI_COORDS.lng
+        activeCistern.lat,
+        activeCistern.lng
       );
       if (realVerifierDistance > 100) {
         if (isDemoEnvironment) {
@@ -495,16 +505,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // Tanker telemetry coordinate verification
     let tankerDistance = 12;
     if (data.lat && data.lng) {
+      // Check regional envelope for anti-spoofing
+      if (!isDemoEnvironment && (data.lat < 15.0 || data.lat > 22.5 || data.lng < 72.0 || data.lng > 81.5)) {
+        setFeedback(`❌ <b>GPS Spoofing Detected</b><br>Tanker reported telemetry (${data.lat}, ${data.lng}) outside Maharashtra relief grid. Handshake rejected.`, true);
+        triggerToast("❌ Security Alert: Rogue GPS Telemetry Detected");
+        return;
+      }
+
       tankerDistance = calculateHaversineDistance(
         data.lat,
         data.lng,
-        KHOPADI_COORDS.lat,
-        KHOPADI_COORDS.lng
+        activeCistern.lat,
+        activeCistern.lng
       );
     }
     if (tankerDistance > 200) {
       if (isDemoEnvironment) {
-        console.log(`ℹ️ Demo mode: Tanker (${tankerDistance}m away) calibrated to Khopadi tank.`);
+        console.log(`ℹ️ Demo mode: Tanker (${tankerDistance}m away) calibrated to ${targetVillage} tank.`);
         tankerDistance = 14;
       } else {
         setFeedback(`❌ <b>Tanker Not at Tank</b><br>The tanker is reported to be <b>${tankerDistance}m</b> away from the water tank (Max 200m allowed). The tanker must arrive at the tank first.`, true);

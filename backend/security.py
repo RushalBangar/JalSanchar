@@ -67,9 +67,12 @@ def get_cistern_info(village_name: str) -> Optional[Dict[str, Any]]:
 
     return None
 
+TREASURY_SECRET = os.getenv("TREASURY_SECRET", "jalsanjeevani_treasury_sig_secret_2025")
+_redeemed_signatures = set()
+
 def generate_handshake_signature(tanker_id: str, village_name: str, volume: int, timestamp: str) -> str:
     """Generates deterministic SHA-256 cryptographic signature for delivery receipt."""
-    payload = f"{tanker_id}:{village_name}:{volume}:{timestamp}:sovereign_water_secret"
+    payload = f"{tanker_id}:{village_name}:{volume}:{timestamp}:{TREASURY_SECRET}"
     return "SHA256:" + hashlib.sha256(payload.encode('utf-8')).hexdigest()[:24]
 
 def verify_delivery_handshake(
@@ -96,6 +99,16 @@ def verify_delivery_handshake(
             "message": f"Target village '{target_village}' not registered in Ahilyanagar or Sinnar disaster registries.",
             "is_geofence_valid": False,
             "escrow_status": "WITHHELD"
+        }
+
+    # 0. Anti-Spoofing Geographic Envelope Check (Maharashtra regional coordinates)
+    if not (15.0 <= driver_lat <= 22.5 and 72.0 <= driver_lng <= 81.5):
+        return False, {
+            "status": "VIOLATION_GEO_SPOOFING",
+            "message": f"Suspicious GPS telemetry ({driver_lat}, {driver_lng}) rejected. Coordinates fall outside Maharashtra relief operational sector.",
+            "is_geofence_valid": False,
+            "escrow_status": "FROZEN",
+            "recommended_action": "Flag tanker device for mock location / GPS spoofing audit."
         }
 
     # 1. Geofence Check
@@ -133,6 +146,16 @@ def verify_delivery_handshake(
     # 3. Successful Handshake -> Issue State Treasury Clearance
     timestamp = str(int(time.time()))
     proof_hash = generate_handshake_signature(tanker_id, target_village, volume_liters, timestamp)
+
+    # 4. Anti-Replay Check: Reject duplicate redemptions
+    if proof_hash in _redeemed_signatures:
+        return False, {
+            "status": "REJECTED_REPLAY_ATTACK",
+            "message": "Cryptographic delivery receipt token has already been redeemed. Replay prevented.",
+            "is_geofence_valid": True,
+            "escrow_status": "WITHHELD"
+        }
+    _redeemed_signatures.add(proof_hash)
 
     return True, {
         "status": "VERIFIED_DELIVERED",
