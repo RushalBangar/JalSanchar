@@ -788,9 +788,12 @@
         }
       }
 
-      // Clear all local session data
+      // Clear all local session data across standard and legacy keys
       sessionStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(LEGACY_STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      sessionStorage.clear();
       console.log("🔐 [JalAuth] User logged out securely.");
 
       if (redirect) {
@@ -906,6 +909,10 @@
       
       if (!container) return;
 
+      // Ensure container is visible across all dashboards (Panchayat, Driver, Collector)
+      container.classList.remove("hidden");
+      container.classList.add("flex", "items-center", "gap-1.5");
+
       const session = this.getSession();
       if (!session) {
         container.innerHTML = `
@@ -927,56 +934,62 @@
         .join("") || "GV";
 
       container.innerHTML = `
-        <div class="relative inline-block text-left" id="jalAuthProfileRoot">
+        <div class="relative inline-flex items-center gap-1.5 text-left" id="jalAuthProfileRoot">
           <!-- Profile Pill Button -->
-          <button id="jalAuthProfileBtn" type="button" class="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-full bg-surface-container-high/90 hover:bg-surface-bright border border-white/10 hover:border-primary/40 transition-all cursor-pointer shadow-sm group" aria-haspopup="true" aria-expanded="false">
-            <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] text-black shadow-inner" style="background: ${theme.badgeColor};">
+          <button id="jalAuthProfileBtn" type="button" class="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-md bg-slate-50 hover:bg-slate-100 border border-gray-200 text-gray-800 transition-all cursor-pointer shadow-xs group" aria-haspopup="true" aria-expanded="false" title="Click to view officer details">
+            <div class="w-6 h-6 rounded-md flex items-center justify-center font-bold text-[10px] text-white shadow-xs" style="background: #1A5276;">
               ${initials}
             </div>
             <div class="hidden sm:flex flex-col text-left leading-none">
-              <span class="font-bold text-xs text-on-surface truncate max-w-[110px] md:max-w-[140px]">${(u.name || 'Officer').split(",")[0]}</span>
-              <span class="font-mono text-[9px] uppercase tracking-wider text-primary font-semibold">${theme.roleLabel}</span>
+              <span class="font-bold text-xs text-gray-900 truncate max-w-[100px] md:max-w-[130px]">${(u.name || 'Officer').split(",")[0]}</span>
+              <span class="font-mono text-[9px] uppercase tracking-wider text-[#148F77] font-semibold">${theme.roleLabel}</span>
             </div>
-            <span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-primary transition-colors">expand_more</span>
+            <span class="material-symbols-outlined text-[15px] text-gray-400 group-hover:text-[#1A5276] transition-colors">expand_more</span>
           </button>
 
-          <!-- Dropdown Card (NO SWITCH PORTALS) -->
-          <div id="jalAuthDropdown" class="hidden absolute right-0 mt-2 w-72 rounded-2xl bg-surface-panel/95 backdrop-blur-2xl border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.65)] py-3 px-3 z-50 text-left transition-all transform origin-top-right">
+          <!-- Direct Sign Out Button (Instant 1-Click Logout) -->
+          <button id="jalDirectLogoutBtn" type="button" class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-200 text-xs font-semibold shadow-xs transition-colors cursor-pointer" title="Sign out of JalSanchar">
+            <span class="material-symbols-outlined text-[15px] leading-none text-[#C0392B]">logout</span>
+            <span class="hidden sm:inline">Sign Out</span>
+          </button>
+
+          <!-- Dropdown Card -->
+          <div id="jalAuthDropdown" class="hidden absolute right-0 top-full mt-1.5 w-72 rounded-xl bg-white border border-gray-200 shadow-xl py-3 px-3.5 z-50 text-left transition-all origin-top-right">
             <!-- User Info Header -->
-            <div class="pb-3 border-b border-white/10">
+            <div class="pb-3 border-b border-gray-100">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs text-black shrink-0 shadow-md" style="background: ${theme.badgeColor};">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs" style="background: #1A5276;">
                   ${initials}
                 </div>
                 <div class="flex flex-col min-w-0">
-                  <span class="font-semibold text-sm text-on-surface truncate leading-snug">${u.name || 'Officer'}</span>
-                  <span class="text-[11px] text-on-surface-variant truncate">${u.title || theme.roleLabel}</span>
-                  <span class="font-mono text-[9px] text-primary uppercase font-bold tracking-wider mt-0.5">${u.badge_id || theme.roleBadge}</span>
+                  <span class="font-bold text-sm text-gray-900 truncate leading-snug">${u.name || 'Officer'}</span>
+                  <span class="text-[11px] text-gray-500 truncate">${u.title || theme.roleLabel}</span>
+                  <span class="font-mono text-[9px] text-[#148F77] uppercase font-bold tracking-wider mt-0.5">${u.badge_id || theme.roleBadge}</span>
                 </div>
               </div>
-              <div class="mt-2.5 px-2.5 py-1 rounded-md bg-surface-container text-[11px] font-mono text-on-surface-variant flex items-center gap-1.5 border border-white/5">
-                <span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+              <div class="mt-2.5 px-2.5 py-1 rounded-md bg-emerald-50 text-[11px] font-mono text-emerald-800 flex items-center gap-1.5 border border-emerald-200">
+                <span class="material-symbols-outlined text-[14px] text-emerald-600">verified_user</span>
                 <span class="truncate">Verified Live Operational Session</span>
               </div>
             </div>
 
             <!-- Dynamic Persona Details Card -->
             <div class="py-2.5 flex flex-col gap-2 text-xs">
-              <div class="px-2.5 py-2 rounded-xl bg-surface-container/60 border border-white/5 flex flex-col gap-1">
-                <div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono">
+              <div class="px-2.5 py-2 rounded-lg bg-gray-50 border border-gray-200 flex flex-col gap-1">
+                <div class="flex items-center justify-between text-[11px] text-gray-500 font-mono">
                   <span>ROLE DESIGNATION</span>
-                  <span class="text-primary font-semibold">${theme.roleLabel}</span>
+                  <span class="text-[#1A5276] font-semibold">${theme.roleLabel}</span>
                 </div>
-                <div class="text-[11px] text-on-surface font-medium truncate">
+                <div class="text-[11px] text-gray-800 font-medium truncate">
                   ${u.jurisdiction || u.village || (u.tanker_id ? ('Tanker ' + u.tanker_id) : 'Sinnar Regional Division')}
                 </div>
-                ${u.tanker_id ? `<div class="font-mono text-[10px] text-primary flex items-center justify-between"><span>Tanker ID:</span> <b>${u.tanker_id}</b></div>` : ''}
-                ${u.registration ? `<div class="font-mono text-[10px] text-on-surface-variant flex items-center justify-between"><span>Reg:</span> <b>${u.registration}</b></div>` : ''}
-                ${u.phone ? `<div class="font-mono text-[10px] text-on-surface-variant flex items-center justify-between"><span>Phone:</span> <span>${u.phone}</span></div>` : ''}
+                ${u.tanker_id ? `<div class="font-mono text-[10px] text-[#148F77] flex items-center justify-between"><span>Tanker ID:</span> <b>${u.tanker_id}</b></div>` : ''}
+                ${u.registration ? `<div class="font-mono text-[10px] text-gray-600 flex items-center justify-between"><span>Reg:</span> <b>${u.registration}</b></div>` : ''}
+                ${u.phone ? `<div class="font-mono text-[10px] text-gray-600 flex items-center justify-between"><span>Phone:</span> <span>${u.phone}</span></div>` : ''}
               </div>
 
               <!-- View / Edit Profile Button -->
-              <button id="jalAuthEditProfileBtn" type="button" class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-xs border border-primary/25 transition-all cursor-pointer group">
+              <button id="jalAuthEditProfileBtn" type="button" class="w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#EBF5FB] hover:bg-[#D4E6F1] text-[#1A5276] font-semibold text-xs border border-[#AED6F1] transition-all cursor-pointer group">
                 <span class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-[16px] group-hover:rotate-12 transition-transform">manage_accounts</span>
                   <span>View / Edit Profile</span>
@@ -985,9 +998,9 @@
               </button>
             </div>
 
-            <!-- Sign Out Button -->
-            <div class="pt-2 border-t border-white/10">
-              <button id="jalAuthLogoutBtn" type="button" class="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-alert-crimson/15 hover:bg-alert-crimson/25 text-alert-crimson font-semibold text-xs border border-alert-crimson/30 transition-all cursor-pointer">
+            <!-- Sign Out Button in Dropdown -->
+            <div class="pt-2 border-t border-gray-100">
+              <button id="jalAuthLogoutBtn" type="button" class="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-[#C0392B] font-semibold text-xs border border-red-200 transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-[16px]">logout</span>
                 <span>Sign Out of Portal</span>
               </button>
@@ -1001,6 +1014,7 @@
       const dropdown = document.getElementById("jalAuthDropdown");
       const editProfileBtn = document.getElementById("jalAuthEditProfileBtn");
       const logoutBtn = document.getElementById("jalAuthLogoutBtn");
+      const directLogoutBtn = document.getElementById("jalDirectLogoutBtn");
 
       if (btn && dropdown) {
         btn.addEventListener("click", (e) => {
@@ -1029,6 +1043,12 @@
 
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
+          JalAuth.logout(true);
+        });
+      }
+
+      if (directLogoutBtn) {
+        directLogoutBtn.addEventListener("click", () => {
           JalAuth.logout(true);
         });
       }

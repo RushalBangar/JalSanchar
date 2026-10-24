@@ -55,3 +55,41 @@ Output:
 ```
 Successfully loaded 5 villages, 7 sources, 5 forecasts, and 3 pipelines.
 ```
+
+---
+
+## Step 2: Storage Maths, Sources Portal & Village Water Status
+
+### 1. Backend: `backend/routes/sources.py`
+Registered via a single line in `backend/main.py`:
+- `POST /api/sources`: Panchayat source registration (Wells, Tanks, Lakes) with geometric dimensions JSON.
+- `POST /api/readings`: Field measurement logging (depth to water, height, or gauge reading).
+- `GET /api/village/{id}/status`: Village water balance status with:
+  - **Storage Maths**:
+    - Open well: $V = \pi \times r^2 \times (\text{total\_depth} - \text{depth\_to\_water} - \text{dead\_storage}) \times 1000$ (Liters)
+    - Tank (rectangular): $V = \text{length} \times \text{width} \times \max(0, \text{water\_height} - \text{dead\_storage}) \times 1000$
+    - Tank (round): $V = \pi \times r^2 \times \max(0, \text{water\_height} - \text{dead\_storage}) \times 1000$
+    - Lake/pond: $V = \text{area} \times \max(0, \text{average\_depth} - \text{dead\_storage}) \times 1000$
+    - Daily demand: $\text{demand\_L} = \text{population} \times 40 + \text{cattle} \times 70$
+    - Days left: $\text{days\_left} = \frac{\text{usable\_storage}}{\text{demand} + \text{losses} - \text{inflow}}$
+    - Returns best/expected/worst case range (`days_left_low`, `days_left_expected`, `days_left_high`), widened when inputs are estimates.
+
+### 2. Frontend Modules & Dashboards
+- **Shared Modules**:
+  - `frontend/js/api.js`: Unified fetch client with automatic bearer token and offline awareness.
+  - `frontend/js/badge.js`: Quality badges (`Metered`, `Manual`, `Satellite`, `Estimated`, `Simulated`).
+  - `frontend/js/charts.js`: Chart.js shaded confidence bands for 14-day forecasts.
+  - `frontend/js/offline.js`: Offline storage and queueing for field readings via IndexedDB.
+  - `frontend/js/i18n.js`: Multilingual translations (Marathi default, English, Hindi).
+- **Pages**:
+  - `frontend/sources.html`: Panchayat portal with simplified 1-number reading entry and offline queueing.
+  - `frontend/village.html`: Citizen status with prominent **RANGE** days-of-water-left and source breakdown.
+- **Direct Sign Out Option**:
+  - Updated `frontend/js/auth.js` to ensure the `#userProfileMount` is unhidden across all dashboards (`dashboard.html`, `panchayat.html`, `driver.html`) and displays an immediate, visible **Sign Out** button alongside the officer profile pill.
+
+### 3. How to Test Step 2
+```powershell
+python -m py_compile backend/routes/sources.py
+python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); res = c.get('/api/village/SN-01/status'); print('Status:', res.status_code, res.json()['days_left'])"
+```
+

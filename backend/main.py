@@ -1173,6 +1173,8 @@ async def export_manifest(session: dict = Depends(require_auth)):
         "cryptographic_signature": generate_handshake_signature("FLEET", "SINNAR", 455500, timestamp)
     }
 
+# ─── V2 Subsystems (Registered Routers) ──────────────────────────────────────
+app.include_router(__import__("backend.routes.sources" if os.path.exists("backend") else "routes.sources", fromlist=["router"]).router)
 
 if __name__ == "__main__":
     import uvicorn
