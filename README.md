@@ -1,10 +1,10 @@
 <div align="center">
 
-# 💧 JalSanjeevani (जलसंजीवनी)
+# 💧 JalSanchar (जलसंचार)
 ### Sovereign Smart Drought Logistics & Anti-Diversion Escrow Platform
 **An intelligent platform that predicts 14-day water scarcity via satellite telemetry, stops tanker mafia diversion via dual-key cryptographic validation, and mathematically optimizes relief routes using Google OR-Tools.**
 
-[![Backend Live](https://img.shields.io/badge/Render-Live_API-10b981?style=for-the-badge&logo=render)](https://jalsanjeevani.onrender.com/health)
+[![Backend Live](https://img.shields.io/badge/Render-Live_API-10b981?style=for-the-badge&logo=render)](https://jalsanchar.onrender.com/health)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL_RLS-3ecf8e?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-v2.1.0-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![Google Earth Engine](https://img.shields.io/badge/Google_Earth_Engine-Copernicus_&_SMAP-4285F4?style=for-the-badge&logo=google)](https://earthengine.google.com)
@@ -21,7 +21,7 @@ In the drought-prone regions of Maharashtra—such as **Ahilyanagar (Ahmednagar)
 1. **Reactive Crisis Response**: Administration only acts after complaints are filed, by which time aquifers have dried up and cattle suffer.
 2. **The "Tanker Mafia" & Arbitrary Diversion**: Subsidized municipal tankers are frequently siphoned off mid-transit to private commercial quarries or farms, leading to over **22% estimated leakage**.
 
-**JalSanjeevani** solves this end-to-end with a 3-pillar technological framework connecting satellite observation, mathematical routing, and cryptographic proof-of-delivery tied directly to state treasury disbursements.
+**JalSanchar** solves this end-to-end with a 3-pillar technological framework connecting satellite observation, mathematical routing, and cryptographic proof-of-delivery tied directly to state treasury disbursements.
 
 ---
 
@@ -86,9 +86,9 @@ All operational roles can be accessed via **1-Tap Evaluation Sign-In** on [`logi
 
 | Persona | Email / Service Identifier | Universal Password | Default Landing |
 | :--- | :--- | :--- | :--- |
-| 🏛️ **District Collector** | `collector@sinnar.jalsanjeevani.gov.in` | `sovereign_water_2025` | `dashboard.html` |
-| 🚛 **Tanker Pilot (MH-15)** | `driver.mh15@sinnar.jalsanjeevani.gov.in` | `sovereign_water_2025` | `driver.html` |
-| 🌾 **Gram Panchayat (Khopadi)** | `panchayat.khopadi@sinnar.jalsanjeevani.gov.in` | `sovereign_water_2025` | `panchayat.html` |
+| 🏛️ **District Collector** | `collector@sinnar.jalsanchar.gov.in` | `sovereign_water_2025` | `dashboard.html` |
+| 🚛 **Tanker Pilot (MH-15)** | `driver.mh15@sinnar.jalsanchar.gov.in` | `sovereign_water_2025` | `driver.html` |
+| 🌾 **Gram Panchayat (Khopadi)** | `panchayat.khopadi@sinnar.jalsanchar.gov.in` | `sovereign_water_2025` | `panchayat.html` |
 
 > [!TIP]
 > You can also bypass manual sign-in during evaluation by navigating directly to any console with `?demo=true` (e.g., `dashboard.html?demo=true`).
@@ -104,8 +104,8 @@ All operational roles can be accessed via **1-Tap Evaluation Sign-In** on [`logi
 ### 2. Backend Setup
 ```bash
 # Clone the repository
-git clone https://github.com/RushalBangar/JalSanjeevani.git
-cd JalSanjeevani
+git clone https://github.com/RushalBangar/JalSanchar.git
+cd JalSanchar
 
 # Create virtual environment
 python -m venv .venv
@@ -152,7 +152,7 @@ Navigate to `http://localhost:3000` or `http://localhost:3000/login.html`.
 - **Hardened Content-Security-Policy (CSP)**: Strict headers deployed across all HTML pages and FastAPI responses preventing XSS and data exfiltration. Localhost/socket origins removed in production bundles.
 - **Anti-Replay Dynamic Cryptographic Tokens**: Driver QR codes are time-bounded (strictly $\le 10$ minutes validity window) with dynamic nonces, dynamic timestamps, and HMAC-SHA256 signatures refreshed automatically every 60 seconds. Duplicate nonces are permanently rejected.
 - **Dual-Factor Geofencing Verification**: Gram Panchayat optical scan captures verifier device HTML5 GPS and calculates Haversine proximity ($\le 100\text{m}$ cistern perimeter) alongside tanker telemetry lock.
-- **Offline-First Sovereign IndexedDB Queue & Background Sync**: If 4G connectivity drops in rural hamlets (e.g., Sinnar / Ahilyanagar dry belts), receipts and redeemed nonces are queued into browser IndexedDB (`JalSanjeevaniDB`) and flushed via Service Worker Background Sync upon reconnection.
+- **Offline-First Sovereign IndexedDB Queue & Background Sync**: If 4G connectivity drops in rural hamlets (e.g., Sinnar / Ahilyanagar dry belts), receipts and redeemed nonces are queued into browser IndexedDB (`JalSancharDB`) and flushed via Service Worker Background Sync upon reconnection.
 - **Zero-Cold-Start Health Cron**: Render backend instances are kept warm via automated 10-minute GitHub Actions keep-alive workflows (`.github/workflows/keep_alive.yml`).
 - **Compiled Tailwind CSS Pipeline**: High-performance precompiled minified stylesheet (`frontend/css/tailwind.min.css`, ~46KB) eliminating runtime CDN compiling overhead and preventing Flash of Unstyled Content (FOUC).
 

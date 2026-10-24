@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <meta content="web_dashboard" name="shell-type"/>
   <!-- 🔒 Security Configuration -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://server.arcgisonline.com https://services.arcgisonline.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://unpkg.com https://cdn.jsdelivr.net https://server.arcgisonline.com https://services.arcgisonline.com;">
 
-  <!-- 🔒 Early Blocking Auth Guard: Prevents unauthorized DOM inspection and content flash -->
+  <!-- 🔒 Early Blocking Auth Guard -->
   <script>
     (function() {
       try {
         var params = new URLSearchParams(window.location.search);
-        var raw = sessionStorage.getItem('jalsanjeevani_gov_session') || localStorage.getItem('jalsanjeevani_gov_session');
+        var raw = sessionStorage.getItem('jalsanchar_gov_session') || sessionStorage.getItem('jalsanjeevani_gov_session') || localStorage.getItem('jalsanchar_gov_session') || localStorage.getItem('jalsanjeevani_gov_session');
         if (!raw && (params.get('demo') === 'true' || params.get('eval') === '1')) {
           var demoSession = {
             token: 'JAL-DEMO-EVALUATION-KEY',
@@ -22,7 +22,7 @@
               id: 'USR-COL-01',
               name: 'Shri. Rahul More, IAS',
               title: 'District Collector & Magistrate',
-              email: 'collector@sinnar.jalsanjeevani.gov.in',
+              email: 'collector@sinnar.jalsanchar.gov.in',
               role: 'collector',
               badge_id: 'MH-IAS-0419',
               jurisdiction: 'Ahilyanagar & Sinnar Disaster Division',
@@ -32,6 +32,7 @@
             expiresAt: Date.now() + 86400000,
             isDemoMode: true
           };
+          sessionStorage.setItem('jalsanchar_gov_session', JSON.stringify(demoSession));
           sessionStorage.setItem('jalsanjeevani_gov_session', JSON.stringify(demoSession));
           raw = JSON.stringify(demoSession);
         }
@@ -54,784 +55,320 @@
     })();
   </script>
 
-  <title>JalSanjeevani | Water Control Center • Ahilyanagar & Sinnar</title>
+  <title>JalSanchar | Water Control Center • Ahilyanagar &amp; Sinnar</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="manifest" href="manifest.json">
 
-  <!-- Google Fonts: Inter, JetBrains Mono, Noto Sans Devanagari, Plus Jakarta Sans -->
+  <!-- Fonts: Outfit, Source Sans 3, IBM Plex Mono, Noto Sans Devanagari -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
-  <link rel="stylesheet" href="css/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Leaflet CSS for Photorealistic GIS Map Engine -->
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 
-  <style>
-    @layer base {
-      html, body {
-        margin: 0;
-        padding: 0;
-        -webkit-tap-highlight-color: transparent;
-      }
-      body {
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-      }
-      main > :first-child { margin-top: 0 !important; }
-      main > :last-child { margin-bottom: 0 !important; }
-    }
-    ::-webkit-scrollbar { display: none; }
-
-    /* Custom Leaflet HUD Popup & Controls Styling */
-    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-      background: rgba(17, 26, 46, 0.95) !important;
-      color: #dde2f5 !important;
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(76, 215, 246, 0.3) !important;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
-      border-radius: 8px !important;
-    }
-    .leaflet-container {
-      font-family: 'Inter', sans-serif !important;
-      background: #080e1b !important;
-    }
-    .leaflet-popup-content {
-      margin: 12px 14px !important;
-      line-height: 1.5;
-    }
-    .leaflet-popup-close-button {
-      color: #869397 !important;
-    }
-    .leaflet-popup-close-button:hover {
-      color: #4cd7f6 !important;
-    }
-    .filter-chip.active, .layer-toggle-btn.active, .basemap-btn.active {
-      background-color: #06b6d4 !important;
-      color: #00424f !important;
-      font-weight: 700 !important;
-    }
-
-    /* Mobile Drawer Transition Utility */
-    #tacticalSidebar {
-      will-change: transform;
-    }
-
-    /* Ensure touch devices have adequate tap response */
-    button, a {
-      touch-action: manipulation;
-    }
-  </style>
-
-  <!-- Tailwind CSS Play CDN & Config -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-base": "#0B111E",
-            "surface-panel": "#111A2E",
-            "surface-card": "#17233D",
-            "surface-container": "#1a1f2d",
-            "surface-container-low": "#161b29",
-            "surface-container-high": "#242a38",
-            "surface-container-highest": "#2f3543",
-            "surface-container-lowest": "#080e1b",
-            "primary": "#4cd7f6",
-            "primary-container": "#06b6d4",
-            "on-primary": "#003640",
-            "on-primary-container": "#00424f",
-            "secondary": "#7bd0ff",
-            "secondary-container": "#00a6e0",
-            "tertiary": "#4edea3",
-            "safe-emerald": "#10B981",
-            "safe-emerald-glow": "rgba(16, 185, 129, 0.2)",
-            "warning-amber": "#F59E0B",
-            "warning-amber-glow": "rgba(245, 158, 11, 0.2)",
-            "alert-crimson": "#EF4444",
-            "alert-crimson-glow": "rgba(239, 68, 68, 0.2)",
-            "error": "#ffb4ab",
-            "error-container": "#93000a",
-            "on-error-container": "#ffdad6",
-            "on-surface": "#dde2f5",
-            "on-surface-variant": "#bcc9cd",
-            "outline": "#869397",
-            "border-subtle": "rgba(56, 189, 248, 0.14)",
-            "border-active": "rgba(6, 182, 212, 0.45)",
-            "telemetry-cyan-glow": "rgba(6, 182, 212, 0.2)",
-            "text-muted": "#94A3B8",
-            "muted-foreground": "#94A3B8"
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-            full: "0.75rem"
-          },
-          spacing: {
-            "space-xs": "0.25rem",
-            "space-sm": "0.5rem",
-            "space-md": "0.75rem",
-            "space-lg": "1rem",
-            "space-xl": "1.5rem",
-            "gutter": "0.75rem",
-            "gutter-desktop": "1rem"
-          },
-          fontFamily: {
-            "headline-xl": ["Inter"],
-            "headline-lg": ["Inter"],
-            "headline-md": ["Inter"],
-            "body-lg": ["Inter"],
-            "body-md": ["Inter"],
-            "body-sm": ["Inter"],
-            "label-tactical": ["JetBrains Mono"],
-            "telemetry-code": ["JetBrains Mono"],
-            "telemetry-metric": ["JetBrains Mono"]
-          },
-          fontSize: {
-            "label-tactical": ["10px", { lineHeight: "12px", fontWeight: "600" }],
-            "telemetry-code": ["12px", { lineHeight: "16px", fontWeight: "500" }],
-            "body-sm": ["11px", { lineHeight: "16px", fontWeight: "400" }],
-            "body-md": ["13px", { lineHeight: "18px", fontWeight: "400" }],
-            "body-lg": ["15px", { lineHeight: "22px", fontWeight: "400" }],
-            "headline-md": ["18px", { lineHeight: "24px", fontWeight: "600" }],
-            "headline-lg": ["22px", { lineHeight: "28px", fontWeight: "600" }],
-            "telemetry-metric": ["28px", { lineHeight: "32px", fontWeight: "700" }]
-          }
-        }
-      }
-    };
-  </script>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tailwind.min.css">
 </head>
-<body class="bg-surface-base font-body-md text-on-surface antialiased selection:bg-primary selection:text-on-primary">
+<body class="bg-[#FAFBFC] font-body-md text-[#1C2833] antialiased">
 
-  <!-- TOP COMMAND BAR (MOBILE-RESPONSIVE) -->
-  <header class="fixed top-0 w-full z-50 bg-surface-panel/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)] border-b border-border-subtle">
-    <div class="h-14 w-full px-3 sm:px-gutter-desktop flex items-center justify-between gap-2 sm:gap-space-md">
-      
-      <!-- Brand & Mobile Hamburger Toggle -->
-      <div class="flex items-center gap-2 sm:gap-space-md flex-shrink-0">
-        <!-- Universal Sidebar Toggle Button (Desktop & Mobile) -->
-        <button id="btnSidebarToggle" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface hover:text-primary transition-all flex items-center justify-center cursor-pointer border border-border-subtle" aria-label="Toggle Navigation Menu" title="Toggle Navigation Menu [Ctrl+B]">
-          <span class="material-symbols-outlined text-[22px]" id="sidebarToggleIcon">dock_to_left</span>
-        </button>
+  <!-- 🏛️ Formal Command Header -->
+  <header class="dash-header">
+    <div class="dash-brand-wrap">
+      <button id="btnSidebarToggle" class="p-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 transition-all flex items-center justify-center cursor-pointer" aria-label="Toggle Navigation Menu">
+        <i data-lucide="panel-left-close" class="w-5 h-5" id="sidebarToggleIcon"></i>
+      </button>
 
-        <a href="index.html" class="flex items-center gap-2">
-          <img alt="JalSanjeevani Logo" class="h-7 sm:h-8 w-auto object-contain rounded-md" src="assets/logo.jpg"/>
-          <div class="flex flex-col">
-            <div class="flex items-center gap-1">
-              <span class="font-headline-md text-sm sm:text-headline-md tracking-tight text-primary leading-none">JalSanjeevani</span>
-              <span class="px-1 py-0.5 rounded-DEFAULT bg-primary-container text-on-primary-container font-label-tactical text-[8px] sm:text-label-tactical uppercase tracking-wider">Live</span>
-            </div>
-            <span class="font-telemetry-code text-[9px] sm:text-telemetry-code text-on-surface-variant truncate max-w-[130px] xs:max-w-[190px] sm:max-w-none">Water Control Center • Ahilyanagar &amp; Sinnar</span>
+      <a href="index.html" class="flex items-center gap-2 text-decoration-none">
+        <img alt="JalSanchar Logo" class="h-8 w-auto rounded" src="assets/logo.jpg"/>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="dash-brand-title">JalSanchar</span>
+            <span class="badge badge-success text-[10px]">LIVE GRID</span>
           </div>
-        </a>
+          <span class="dash-brand-sub text-xs">Water Control Center • Ahilyanagar &amp; Sinnar</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Live Telemetry Status Strip -->
+    <div class="hidden xl:flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1 rounded border border-gray-200 bg-gray-50 text-xs" id="satelliteTelemetryBadge">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        <span class="text-gray-500 font-semibold uppercase text-[10px]">Soil Moisture:</span>
+        <span class="font-semibold text-gray-800">Normal</span>
+        <span class="text-[#E67E22] text-[10px]">(NASA SMAP)</span>
       </div>
 
-      <!-- Desktop-Only Telemetry Live Indicators (2XL Screen) -->
-      <div class="hidden 2xl:flex items-center gap-space-xs flex-shrink-0">
-        <!-- Satellite Moisture Status -->
-        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-DEFAULT bg-surface-container-low" id="satelliteTelemetryBadge">
-          <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-          <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Soil Moisture:</span>
-          <span class="font-telemetry-code text-telemetry-code text-on-surface font-semibold">Normal</span>
-          <span class="font-telemetry-code text-telemetry-code text-warning-amber">(Satellite Monitored)</span>
-        </div>
-        <!-- Satellite Radar -->
-        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-DEFAULT bg-surface-container-low">
-          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-          <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Surface Water:</span>
-          <span class="font-telemetry-code text-telemetry-code text-tertiary">Active Monitoring</span>
-        </div>
-        <!-- Clock -->
-        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-DEFAULT bg-surface-container-low">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe-emerald opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-safe-emerald"></span>
-          </span>
-          <span class="font-telemetry-code text-telemetry-code text-on-surface" id="liveClock">14:28:02 UTC</span>
-        </div>
-        <!-- Cloud Status -->
-        <div class="flex items-center gap-space-xs px-space-sm py-1 rounded-DEFAULT bg-surface-container-low" id="supabaseStatusBadge">
-          <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald"></span>
-          <span class="font-label-tactical text-label-tactical text-safe-emerald font-semibold uppercase">Live Synced</span>
-        </div>
+      <div class="flex items-center gap-2 px-3 py-1 rounded border border-gray-200 bg-gray-50 text-xs">
+        <span class="w-2 h-2 rounded-full bg-[#27AE60]"></span>
+        <span class="text-gray-500 font-semibold uppercase text-[10px]">Database:</span>
+        <span class="font-semibold text-green-700" id="supabaseStatusBadge">Connected</span>
       </div>
 
-      <!-- Desktop Middle Section Links -->
-      <nav class="hidden lg:flex items-center gap-space-xs">
-        <a aria-current="page" class="px-space-md py-1.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm text-body-sm" href="#mapSection">Live Map</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#anomaly-section">Route Alerts</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#fleet-section">Tanker Routes</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#cistern-section">Village Tanks</a>
-        <a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="index.html">Home</a>
-      </nav>
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded border border-gray-200 bg-gray-50 text-xs font-mono font-medium text-gray-700" id="liveClock">
+        UTC --:--:--
+      </div>
+    </div>
 
-      <!-- Right Action Controls (Compact Mobile Aware) -->
-      <div class="flex items-center gap-1.5 sm:gap-space-sm flex-shrink-0">
-        <!-- Reset Demo State Button -->
-        <button id="btnResetDemoDashboard" class="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-amber-400 hover:text-amber-300 font-label-tactical text-[10px] sm:text-label-tactical uppercase font-bold border border-amber-400/30 transition-all cursor-pointer" title="Reset Demo Data">
-          <span class="material-symbols-outlined text-[14px]">restart_alt</span>
-          <span class="hidden sm:inline">Reset Demo</span>
-        </button>
+    <!-- Navigation Actions -->
+    <div class="flex items-center gap-3">
+      <select id="langSwitcher" class="text-xs border border-gray-300 rounded px-2 py-1 bg-white outline-none cursor-pointer" aria-label="Language Selector">
+        <option value="en">English (EN)</option>
+        <option value="mr">मराठी (MR)</option>
+        <option value="hi">हिंदी (HI)</option>
+      </select>
 
-        <!-- Language Switcher -->
-        <div class="relative">
-          <select id="langSwitcher" class="bg-surface-container-low text-on-surface font-telemetry-code text-[11px] sm:text-telemetry-code pl-2 pr-6 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer border border-border-subtle" aria-label="Language Selector">
-            <option value="en">English</option>
-            <option value="mr">मराठी</option>
-            <option value="hi">हिंदी</option>
-          </select>
-          <span class="material-symbols-outlined text-[14px] text-on-surface-variant absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
-        </div>
-
-        <!-- Rogue Alert Badge -->
-        <div class="flex items-center gap-1 px-2 py-1 rounded-lg bg-error-container text-on-error-container font-label-tactical text-[10px] sm:text-label-tactical uppercase cursor-pointer" id="alertCounterBadge" onclick="document.getElementById('anomaly-section')?.scrollIntoView({behavior:'smooth'})">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-alert-crimson opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-alert-crimson"></span>
-          </span>
-          <span class="hidden sm:inline">1 Route Alert</span>
-          <span class="sm:hidden">1 Alert</span>
-        </div>
-
-        <!-- User Profile Mount -->
-        <div id="userProfileMount" class="flex-shrink-0"></div>
+      <!-- Profile Mount Point -->
+      <div id="userProfileMount" class="flex items-center gap-2 pl-2 border-l border-gray-200">
+        <span class="text-xs font-semibold text-gray-700 hidden sm:inline">District Collector</span>
       </div>
     </div>
   </header>
 
-  <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
-  <div id="sidebarBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 lg:hidden" style="z-index: 45;"></div>
+  <!-- Main Dashboard Workspace -->
+  <div class="p-4 max-w-[1600px] mx-auto" id="mainContentWrapper">
 
-  <!-- NAVIGATION SIDEBAR (SLIDE-OUT DRAWER ON MOBILE, COLLAPSIBLE ON DESKTOP) -->
-  <aside id="tacticalSidebar" class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-72 max-w-[85vw] bg-surface-panel/98 backdrop-blur-2xl z-50 flex flex-col justify-between py-space-md border-r border-border-subtle transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto" style="z-index: 50;">
-    <div class="flex flex-col gap-space-md">
-      <!-- Drawer Header with Close / Collapse Button -->
-      <div class="px-space-lg flex items-center justify-between">
-        <div class="flex flex-col">
-          <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-outline">Navigation Menu</span>
-          <span class="font-telemetry-code text-telemetry-code text-primary">Live Water Network</span>
+    <!-- 📊 Top Metric Cards Row -->
+    <div class="dash-stat-grid">
+      <!-- 1. Urgent Villages -->
+      <div class="dash-stat-card stat-red">
+        <div class="stat-header">
+          <span class="stat-title">Critical Villages</span>
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-[#E74C3C]"></i>
         </div>
-        <button id="btnCloseSidebar" class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors cursor-pointer border border-border-subtle flex items-center justify-center" aria-label="Collapse Sidebar" title="Collapse Panel">
-          <span class="material-symbols-outlined text-[20px]">first_page</span>
-        </button>
+        <div class="stat-figure text-[#E74C3C]" id="criticalVillageCount">5</div>
+        <div class="stat-meta">
+          <span>Warning Tier:</span>
+          <span class="font-bold text-[#E67E22]" id="warningVillageCount">5 Villages</span>
+        </div>
       </div>
 
-      <!-- Navigation Units -->
-      <nav class="px-space-sm flex flex-col gap-space-xs">
-        <a aria-current="page" class="sidebar-nav-link flex items-center gap-space-sm px-space-md py-2.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg" href="#mapSection">
-          <span class="material-symbols-outlined text-[20px]">radar</span>
-          <span class="font-body-md text-body-md">Live Water &amp; Tanker Map</span>
-        </a>
-        <a class="sidebar-nav-link flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#anomaly-section">
-          <span class="material-symbols-outlined text-[20px]">warning</span>
-          <span class="font-body-md text-body-md">Tanker Route Alerts (1 Diverted)</span>
-        </a>
-        <a class="sidebar-nav-link flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#fleet-section">
-          <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-          <span class="font-body-md text-body-md">Water Tanker Fleet</span>
-        </a>
-        <a class="sidebar-nav-link flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#cistern-section">
-          <span class="material-symbols-outlined text-[20px]">water_voc</span>
-          <span class="font-body-md text-body-md">Village Water Levels</span>
-        </a>
-      </nav>
+      <!-- 2. Relief Fleet -->
+      <div class="dash-stat-card stat-navy">
+        <div class="stat-header">
+          <span class="stat-title">Active Tanker Fleet</span>
+          <i data-lucide="truck" class="w-4 h-4 text-primary"></i>
+        </div>
+        <div class="stat-figure text-primary" id="tankerCountVal">14</div>
+        <div class="stat-meta">
+          <span>Capacity:</span>
+          <span class="font-semibold text-gray-700">10,000L / Tanker</span>
+        </div>
+      </div>
 
-      <!-- Role Portals Switcher in Drawer -->
-      <div class="px-space-md pt-2 border-t border-border-subtle flex flex-col gap-1">
-        <span class="font-label-tactical text-[9px] uppercase tracking-wider text-outline px-space-md pt-1">Other Portals</span>
-        <a href="driver.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all text-body-sm">
-          <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span> Tanker Driver App
-        </a>
-        <a href="panchayat.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-tertiary transition-all text-body-sm">
-          <span class="material-symbols-outlined text-[18px] text-tertiary">how_to_reg</span> Village Panchayat Verifier
-        </a>
-        <a href="index.html" class="flex items-center gap-space-sm px-space-md py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-all text-body-sm">
-          <span class="material-symbols-outlined text-[18px] text-secondary">public</span> Public Home Portal
-        </a>
+      <!-- 3. Real-Time Anomalies -->
+      <div class="dash-stat-card stat-teal">
+        <div class="stat-header">
+          <span class="stat-title">Route Compliance</span>
+          <i data-lucide="shield-alert" class="w-4 h-4 text-[#148F77]"></i>
+        </div>
+        <div class="stat-figure text-[#148F77]" id="alertCounterBadge">1 Alert</div>
+        <div class="stat-meta">
+          <span>Geofence Status:</span>
+          <span class="font-semibold text-red-600">500m Deviation</span>
+        </div>
+      </div>
+
+      <!-- 4. Escrow Protection -->
+      <div class="dash-stat-card stat-gold">
+        <div class="stat-header">
+          <span class="stat-title">Escrow Protection</span>
+          <i data-lucide="banknote" class="w-4 h-4 text-[#D4AC0D]"></i>
+        </div>
+        <div class="stat-figure text-[#B7950B]" id="escrow-status-pill">₹2.1 Lakh</div>
+        <div class="stat-meta">
+          <span>Status:</span>
+          <span class="font-semibold text-gray-700">Locked Pending QR Scan</span>
+        </div>
       </div>
     </div>
 
-    <!-- Sidebar Bottom Status -->
-    <div class="px-space-md flex flex-col gap-space-sm mt-4">
-      <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-space-xs border border-border-subtle">
-        <div class="flex items-center justify-between font-label-tactical text-label-tactical uppercase text-on-surface-variant">
-          <span>Live Update Speed</span>
-          <span class="text-tertiary font-bold">1 sec</span>
-        </div>
-        <div class="flex items-center justify-between font-label-tactical text-label-tactical uppercase text-on-surface-variant">
-          <span>Active Tankers</span>
-          <span class="text-primary font-bold">6 / 6 Live</span>
-        </div>
-        <div class="flex items-center justify-between font-label-tactical text-label-tactical uppercase text-on-surface-variant">
-          <span>Network Status</span>
-          <span class="text-safe-emerald font-bold">Connected</span>
+    <!-- 🗺️ Main GIS Map & Operational Sidebar Split -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      
+      <!-- Left: Interactive Leaflet Map View -->
+      <div class="lg:col-span-8 flex flex-col gap-3" id="mapSection">
+        <div class="bg-white border border-gray-200 rounded-xl p-3 shadow-sm relative">
+          
+          <!-- Map Top Header Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b border-gray-100">
+            <div class="flex items-center gap-2">
+              <i data-lucide="map" class="w-4 h-4 text-primary"></i>
+              <span class="font-bold text-sm text-gray-800">Telemetry &amp; Water Grid GIS Map</span>
+            </div>
+
+            <!-- Layer Toggles -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <button class="filter-chip active" id="toggleVillages">
+                <i data-lucide="home" class="w-3.5 h-3.5 mr-1 inline"></i> Villages
+              </button>
+              <button class="filter-chip active" id="toggleFleet">
+                <i data-lucide="truck" class="w-3.5 h-3.5 mr-1 inline"></i> Fleet
+              </button>
+              <button class="filter-chip active" id="toggleRogue">
+                <i data-lucide="alert-circle" class="w-3.5 h-3.5 mr-1 inline"></i> Alert Puck
+              </button>
+            </div>
+          </div>
+
+          <!-- Leaflet Map Canvas -->
+          <div id="map" class="w-full h-[540px] rounded-lg border border-gray-200 relative z-0"></div>
+
+          <!-- Floating Map HUD Tools -->
+          <div class="absolute bottom-6 right-6 z-[400] flex flex-col gap-2">
+            <div class="bg-white border border-gray-300 rounded-lg shadow-md p-1 flex flex-col gap-1">
+              <button id="btnZoomIn" class="w-8 h-8 rounded hover:bg-gray-100 text-gray-700 flex items-center justify-center font-bold" title="Zoom In" aria-label="Zoom In">+</button>
+              <button id="btnZoomOut" class="w-8 h-8 rounded hover:bg-gray-100 text-gray-700 flex items-center justify-center font-bold" title="Zoom Out" aria-label="Zoom Out">-</button>
+            </div>
+            <!-- Basemap Buttons -->
+            <div class="bg-white border border-gray-300 rounded-lg shadow-md p-1 flex flex-col gap-1 text-[11px] font-semibold">
+              <button id="btnSatellite" class="px-2 py-1 rounded hover:bg-gray-100 text-left" title="Satellite Imagery">Satellite</button>
+              <button id="btnDarkCanvas" class="px-2 py-1 rounded hover:bg-gray-100 text-left" title="Street Canvas">Street</button>
+              <button id="btnTerrain" class="px-2 py-1 rounded hover:bg-gray-100 text-left" title="Topographic Terrain">Terrain</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="px-space-sm text-center font-telemetry-code text-[10px] text-outline">JalSanjeevani • Maharashtra Rural Water Grid</div>
+
+      <!-- Right: Operational Controls & Dispatch Panel -->
+      <div class="lg:col-span-4 flex flex-col gap-4" id="dockSection">
+        
+        <!-- 1. Water Diversion & Escrow Alert Card -->
+        <div class="bg-white border border-red-200 border-l-4 border-l-[#E74C3C] rounded-xl p-4 shadow-sm" id="diversionAlertCard">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="alert-octagon" class="w-5 h-5 text-[#E74C3C]"></i>
+              <span class="font-bold text-sm text-[#78281F]">Diversion Anomaly Detected</span>
+            </div>
+            <span class="badge badge-danger text-[10px]">CRITICAL</span>
+          </div>
+          <p class="text-xs text-gray-600 mb-3">
+            Tanker <strong>TK-SN-889</strong> (MH-15-TK-889) deviated 500m outside authorized Sinnar corridor toward commercial brick kilns.
+          </p>
+          <button id="btnSuspendPayment" class="btn btn-danger btn-sm btn-block">
+            <i data-lucide="lock" class="w-4 h-4 mr-1"></i> Freeze Contractor Escrow Payment
+          </button>
+        </div>
+
+        <!-- 2. OR-Tools Algorithmic Dispatch Optimizer -->
+        <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+            <div class="flex items-center gap-2">
+              <i data-lucide="route" class="w-5 h-5 text-primary"></i>
+              <h3 class="font-bold text-sm text-gray-800">OR-Tools Route Optimizer</h3>
+            </div>
+            <span class="badge badge-info text-[10px]">CVRP v2.4</span>
+          </div>
+
+          <!-- Controls -->
+          <div class="space-y-3 text-xs">
+            <div>
+              <div class="flex justify-between text-gray-600 mb-1">
+                <span>Fleet Availability:</span>
+                <span class="font-mono font-bold text-primary" id="tankerRangeVal">14 Tankers</span>
+              </div>
+              <input type="range" min="4" max="24" value="14" id="tankerRangeInput" class="w-full accent-primary cursor-pointer"/>
+            </div>
+
+            <div>
+              <label for="selectReliefMandate" class="block text-gray-600 mb-1">Relief Mandate:</label>
+              <select id="selectReliefMandate" class="w-full border border-gray-300 rounded p-1.5 bg-white text-xs text-gray-800">
+                <option value="both">40L/Person &amp; 70L/Cattle (Full Relief)</option>
+                <option value="human">40L/Person Emergency (Human Priority)</option>
+                <option value="cattle">70L/Cattle Drought Feedlot</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between p-2 bg-gray-50 border border-gray-200 rounded">
+              <span class="text-gray-700">Simulate Ghat Road Closure:</span>
+              <input type="checkbox" id="toggleRoadClosure" class="accent-primary cursor-pointer"/>
+            </div>
+            <div id="roadClosureBadge" class="hidden text-[11px] text-[#E67E22] font-semibold">
+              ⚠ Sinnar-Ghat Diversion Active (+18km rerouting)
+            </div>
+
+            <!-- Optimizer Output Box -->
+            <div id="solverResultBox" class="p-2.5 rounded bg-blue-50 border border-blue-200 text-xs text-[#1A5276]">
+              <span id="solverResultText">2 Tanker Trips Planned • All Village Needs Met • 28% Fuel Saved</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col gap-2 pt-1">
+              <button id="btnAllocate" class="btn btn-primary btn-sm btn-block">
+                <i data-lucide="truck" class="w-4 h-4 mr-1"></i> Dispatch Water Tankers
+              </button>
+              <div class="grid grid-cols-2 gap-2">
+                <button id="btnExportManifest" class="btn btn-outline btn-sm">
+                  <i data-lucide="download" class="w-3.5 h-3.5 mr-1"></i> Route JSON
+                </button>
+                <button id="btnExportOfficialPdf" class="btn btn-outline btn-sm" title="Generate Signed Relief Order">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1"></i> Relief PDF
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Village Scarcity Matrix (Interactive Filter & Live List) -->
+        <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col gap-3" id="cistern-section">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="droplet" class="w-4 h-4 text-primary"></i>
+              <h3 class="font-bold text-sm text-gray-800">Village Water Levels</h3>
+            </div>
+            <span class="text-xs text-gray-500 font-mono" id="matrixCounter">15 Villages Tracked</span>
+          </div>
+
+          <!-- Search Input -->
+          <div class="relative w-full">
+            <input id="villageSearchInput" type="text" placeholder="Search village (e.g. Khopadi, Supa)..." class="w-full text-xs border border-gray-300 rounded px-3 py-2 pl-8 outline-none"/>
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5"></i>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="flex items-center gap-1.5 text-xs overflow-x-auto pb-1" id="filterPillsContainer">
+            <button class="filter-chip active flex-shrink-0" data-filter="all">All (15)</button>
+            <button class="filter-chip flex-shrink-0" data-filter="critical">Urgent (5)</button>
+            <button class="filter-chip flex-shrink-0" data-filter="warning">Warning (5)</button>
+            <button class="filter-chip flex-shrink-0" data-filter="safe">Safe (5)</button>
+          </div>
+
+          <!-- Dynamic Village List Container -->
+          <div class="flex flex-col gap-2 max-h-[340px] overflow-y-auto pr-1" id="villageListContainer">
+            <!-- Injected dynamically via dashboard.js -->
+          </div>
+
+          <button id="btnResetDemoDashboard" class="btn btn-outline btn-sm btn-block text-gray-600 mt-2">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 mr-1"></i> Reset Evaluation State
+          </button>
+        </div>
+
+      </div>
     </div>
-  </aside>
-
-  <!-- FLOATING SIDEBAR EXPAND BUTTON (VISIBLE WHEN SIDEBAR IS COLLAPSED) -->
-  <button id="btnFloatingOpenSidebar" class="hidden fixed left-3 top-20 z-30 py-1.5 px-2.5 rounded-lg bg-surface-panel/95 backdrop-blur-xl border border-primary/40 text-primary hover:bg-surface-container shadow-2xl transition-all cursor-pointer items-center gap-1.5" title="Open Command Units [Ctrl+B]">
-    <span class="material-symbols-outlined text-[18px]">dock_to_left</span>
-    <span class="font-label-tactical text-[10px] uppercase font-bold pr-0.5">Units</span>
-  </button>
-
-  <!-- MAIN WORKSPACE (RESPONSIVE PADDING & MARGINS) -->
-  <div id="mainContentWrapper" class="pl-0 lg:pl-72 w-full transition-all duration-300">
-    <main class="relative pt-14 w-full bg-surface-base min-h-screen pb-20 lg:pb-8">
-      <div class="flex flex-col w-full">
-        <div class="w-full p-2.5 sm:p-gutter-desktop flex flex-col gap-3 sm:gap-space-lg">
-
-          <!-- 1. TOP TELEMETRY METRIC STRIP (RESPONSIVE 2-COL MOBILE -> 5-COL DESKTOP) -->
-          <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-space-md">
-            
-            <!-- Metric 1: Villages in Need (CRITICAL) -->
-            <div class="relative overflow-hidden rounded-xl bg-surface-panel p-2.5 sm:p-space-md shadow-xl flex flex-col justify-between border border-border-subtle col-span-1">
-              <div class="absolute -right-4 -top-4 w-16 sm:w-24 h-16 sm:h-24 rounded-full bg-alert-crimson-glow blur-xl pointer-events-none"></div>
-              <div class="flex items-center justify-between z-10">
-                <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline truncate">Villages in Need</span>
-                <span class="inline-flex items-center gap-1 px-1 py-0.2 rounded-DEFAULT bg-error-container text-on-error-container font-label-tactical text-[8px] sm:text-[9px] uppercase tracking-wider animate-pulse flex-shrink-0">
-                  <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-alert-crimson"></span>
-                  Urgent
-                </span>
-              </div>
-              <div class="my-1 sm:my-space-xs flex items-baseline gap-1 z-10">
-                <span id="criticalVillageCount" class="font-telemetry-metric text-xl sm:text-telemetry-metric text-alert-crimson tracking-tight font-bold">5</span>
-                <span class="font-telemetry-code text-[10px] sm:text-telemetry-code text-on-surface-variant">/ 15 villages</span>
-              </div>
-              <div class="flex items-center justify-between text-on-surface-variant font-telemetry-code text-[9px] sm:text-telemetry-code z-10">
-                <span class="text-error font-medium truncate">&lt; 24h water left</span>
-                <span class="material-symbols-outlined text-alert-crimson text-[14px] sm:text-[16px]">crisis_alert</span>
-              </div>
-              <div class="w-full bg-surface-container h-1 rounded-full mt-1.5 overflow-hidden">
-                <div class="bg-alert-crimson h-full rounded-full" style="width: 82%"></div>
-              </div>
-            </div>
-
-            <!-- Metric 2: Shortage Risk (AMBER) -->
-            <div class="relative overflow-hidden rounded-xl bg-surface-panel p-2.5 sm:p-space-md shadow-xl flex flex-col justify-between border border-border-subtle col-span-1">
-              <div class="absolute -right-4 -top-4 w-16 sm:w-24 h-16 sm:h-24 rounded-full bg-warning-amber-glow blur-xl pointer-events-none"></div>
-              <div class="flex items-center justify-between z-10">
-                <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline truncate">Shortage Risk</span>
-                <span class="inline-flex items-center gap-1 px-1 py-0.2 rounded-DEFAULT bg-warning-amber/10 text-warning-amber font-label-tactical text-[8px] sm:text-[9px] uppercase tracking-wider flex-shrink-0">
-                  Upcoming
-                </span>
-              </div>
-              <div class="my-1 sm:my-space-xs flex items-baseline gap-1 z-10">
-                <span id="warningVillageCount" class="font-telemetry-metric text-xl sm:text-telemetry-metric text-warning-amber tracking-tight font-bold">5</span>
-                <span class="font-telemetry-code text-[10px] sm:text-telemetry-code text-on-surface-variant truncate">low water</span>
-              </div>
-              <div class="flex items-center justify-between text-on-surface-variant font-telemetry-code text-[9px] sm:text-telemetry-code z-10">
-                <span class="text-warning-amber truncate">drop in 7 days</span>
-                <span class="material-symbols-outlined text-warning-amber text-[14px] sm:text-[16px]">trending_down</span>
-              </div>
-              <div class="w-full bg-surface-container h-1 rounded-full mt-1.5 overflow-hidden">
-                <div class="bg-warning-amber h-full rounded-full" style="width: 48%"></div>
-              </div>
-            </div>
-
-            <!-- Metric 3: Human Need Guaranteed (CYAN) -->
-            <div class="relative overflow-hidden rounded-xl bg-surface-panel p-2.5 sm:p-space-md shadow-xl flex flex-col justify-between border border-border-subtle col-span-1">
-              <div class="absolute -right-4 -top-4 w-16 sm:w-24 h-16 sm:h-24 rounded-full bg-telemetry-cyan-glow blur-xl pointer-events-none"></div>
-              <div class="flex items-center justify-between z-10">
-                <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline truncate">Daily / Person</span>
-                <span class="inline-flex items-center gap-1 px-1 py-0.2 rounded-DEFAULT bg-primary/10 text-primary font-label-tactical text-[8px] sm:text-[9px] uppercase flex-shrink-0">
-                  40L Daily
-                </span>
-              </div>
-              <div class="my-1 sm:my-space-xs flex items-baseline gap-1 z-10">
-                <span class="font-telemetry-metric text-xl sm:text-telemetry-metric text-primary tracking-tight font-bold">40L</span>
-                <span class="font-telemetry-code text-[10px] sm:text-telemetry-code text-on-surface-variant">/ person</span>
-              </div>
-              <div class="flex items-center justify-between text-on-surface-variant font-telemetry-code text-[9px] sm:text-telemetry-code z-10">
-                <span class="text-primary font-medium truncate">Guaranteed Standard</span>
-                <span class="material-symbols-outlined text-primary text-[14px] sm:text-[16px]">verified</span>
-              </div>
-              <div class="w-full bg-surface-container h-1 rounded-full mt-1.5 overflow-hidden">
-                <div class="bg-primary h-full rounded-full" style="width: 100%"></div>
-              </div>
-            </div>
-
-            <!-- Metric 4: Cattle Daily Quota (EMERALD) -->
-            <div class="relative overflow-hidden rounded-xl bg-surface-panel p-2.5 sm:p-space-md shadow-xl flex flex-col justify-between border border-border-subtle col-span-1">
-              <div class="absolute -right-4 -top-4 w-16 sm:w-24 h-16 sm:h-24 rounded-full bg-safe-emerald-glow blur-xl pointer-events-none"></div>
-              <div class="flex items-center justify-between z-10">
-                <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline truncate">Daily / Cattle</span>
-                <span class="inline-flex items-center gap-1 px-1 py-0.2 rounded-DEFAULT bg-safe-emerald/10 text-tertiary font-label-tactical text-[8px] sm:text-[9px] uppercase flex-shrink-0">
-                  70L Daily
-                </span>
-              </div>
-              <div class="my-space-xs flex items-baseline gap-1 z-10">
-                <span class="font-telemetry-metric text-xl sm:text-telemetry-metric text-tertiary tracking-tight font-bold">70L</span>
-                <span class="font-telemetry-code text-[10px] sm:text-telemetry-code text-on-surface-variant">/ animal</span>
-              </div>
-              <div class="flex items-center justify-between text-on-surface-variant font-telemetry-code text-[9px] sm:text-telemetry-code z-10">
-                <span class="text-tertiary truncate">For Farm Animals</span>
-                <span class="material-symbols-outlined text-tertiary text-[14px] sm:text-[16px]">agriculture</span>
-              </div>
-              <div class="w-full bg-surface-container h-1 rounded-full mt-1.5 overflow-hidden">
-                <div class="bg-tertiary h-full rounded-full" style="width: 94%"></div>
-              </div>
-            </div>
-
-            <!-- Metric 5: Active Tankers Fleet Optimization -->
-            <div class="relative overflow-hidden rounded-xl bg-surface-panel p-2.5 sm:p-space-md shadow-xl flex flex-col justify-between border border-border-subtle col-span-2 sm:col-span-2 lg:col-span-1">
-              <div class="flex items-center justify-between z-10">
-                <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline">Tankers on Route</span>
-                <span class="inline-flex items-center gap-1 px-1 py-0.2 rounded-DEFAULT bg-primary-container text-on-primary-container font-label-tactical text-[8px] sm:text-[9px] uppercase">
-                  Smart Routes
-                </span>
-              </div>
-              <div class="my-1 sm:my-space-xs flex items-baseline gap-1 z-10">
-                <span class="font-telemetry-metric text-xl sm:text-telemetry-metric text-on-surface tracking-tight font-bold">6</span>
-                <span class="font-telemetry-code text-[10px] sm:text-telemetry-code text-on-surface-variant">/ 6 Active</span>
-              </div>
-              <div class="flex items-center justify-between text-on-surface-variant font-telemetry-code text-[9px] sm:text-telemetry-code z-10">
-                <span class="text-tertiary font-semibold">28% Fuel Saved</span>
-                <span class="material-symbols-outlined text-tertiary text-[14px] sm:text-[16px]">speed</span>
-              </div>
-              <div class="w-full bg-surface-container h-1 rounded-full mt-1.5 overflow-hidden">
-                <div class="bg-secondary-container h-full rounded-full" style="width: 100%"></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- MOBILE VIEW TOGGLE TABS (VISIBILITY CONTROLLED ON MOBILE / TABLET) -->
-          <div class="flex xl:hidden items-center justify-center p-1 rounded-xl bg-surface-panel border border-border-subtle w-full shadow-lg">
-            <button id="btnMobileViewMap" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg font-headline-md text-xs sm:text-body-md font-bold transition-all bg-primary-container text-on-primary-container shadow-md cursor-pointer">
-              <span class="material-symbols-outlined text-[16px]">map</span>
-              <span>Water Map</span>
-            </button>
-            <button id="btnMobileViewDock" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg font-headline-md text-xs sm:text-body-md font-medium text-on-surface-variant hover:text-on-surface transition-all cursor-pointer">
-              <span class="material-symbols-outlined text-[16px]">dashboard</span>
-              <span>Alerts &amp; Villages</span>
-            </button>
-          </div>
-
-          <!-- 2. CORE WORKSPACE (RESPONSIVE FLEX/GRID) -->
-          <div class="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-space-md items-start">
-
-            <!-- RIGHT GEOSPATIAL COMMAND CANVAS (SHOWN ON TOP ON MOBILE BY DEFAULT) -->
-            <div class="w-full xl:col-span-7 flex flex-col gap-space-sm order-1 xl:order-2" id="mapSection">
-              
-              <!-- GIS Map Outer Container -->
-              <div class="relative w-full h-[460px] xs:h-[500px] sm:h-[580px] xl:h-[760px] rounded-xl overflow-hidden shadow-2xl bg-surface-container-lowest border border-border-subtle" id="mapWrapper">
-                
-                <!-- True Leaflet Photorealistic Satellite Engine Viewport -->
-                <div id="map" class="w-full h-full absolute inset-0 z-0"></div>
-
-                <!-- TOP FLOATING HUD OVERLAY BAR -->
-                <div class="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex flex-col gap-1.5 sm:gap-2 pointer-events-auto">
-                  
-                  <!-- Sector & Node Telemetry Badge -->
-                  <div class="p-2 sm:p-space-sm rounded-lg bg-surface-panel/92 backdrop-blur-md shadow-lg flex flex-wrap items-center justify-between gap-1 sm:gap-space-xs border border-border-subtle">
-                    <div class="flex items-center gap-1.5 sm:gap-space-xs">
-                      <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                      <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline">Area:</span>
-                      <span class="font-body-md text-xs sm:text-body-md font-bold text-on-surface truncate max-w-[180px] xs:max-w-[260px] sm:max-w-none">Ahilyanagar &amp; Sinnar Region</span>
-                    </div>
-                    <div class="flex items-center gap-1 font-telemetry-code text-[9px] sm:text-telemetry-code text-tertiary">
-                      <span class="material-symbols-outlined text-[14px]">satellite</span>
-                      <span class="hidden sm:inline">Satellite Water Tracking Active</span>
-                      <span class="sm:hidden">Satellite Active</span>
-                    </div>
-                  </div>
-
-                  <!-- Layer & Basemap Floating Controls -->
-                  <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
-                    
-                    <!-- Active Layers Switchers -->
-                    <div class="p-1 rounded-lg bg-surface-panel/92 backdrop-blur-md shadow-md flex items-center gap-1 font-label-tactical text-[9px] sm:text-label-tactical uppercase border border-border-subtle overflow-x-auto">
-                      <button id="toggleVillages" class="layer-toggle-btn px-2 sm:px-2.5 py-1 rounded-DEFAULT bg-primary-container text-on-primary-container font-semibold flex items-center gap-1 cursor-pointer transition-all active">
-                        <span>🏘️</span> <span class="hidden xs:inline">Villages</span>
-                      </button>
-                      <button id="toggleFleet" class="layer-toggle-btn px-2 sm:px-2.5 py-1 rounded-DEFAULT bg-primary-container text-on-primary-container font-semibold flex items-center gap-1 cursor-pointer transition-all active">
-                        <span>🚛</span> <span class="hidden xs:inline">Tankers</span>
-                      </button>
-                      <button id="toggleRogue" class="layer-toggle-btn px-2 sm:px-2.5 py-1 rounded-DEFAULT bg-error-container text-on-error-container font-semibold flex items-center gap-1 cursor-pointer transition-all active">
-                        <span>⚠️</span> <span class="hidden xs:inline">Alerts</span>
-                      </button>
-                    </div>
-
-                    <!-- Basemap Selector -->
-                    <div class="p-1 rounded-lg bg-surface-panel/92 backdrop-blur-md shadow-md flex items-center gap-1 font-label-tactical text-[9px] sm:text-label-tactical uppercase border border-border-subtle">
-                      <button id="btnSatellite" class="basemap-btn px-2 sm:px-2.5 py-1 rounded-DEFAULT bg-primary-container text-on-primary-container font-semibold cursor-pointer transition-all flex items-center gap-1 active">
-                        <span>🛰️</span> <span>Sat</span>
-                      </button>
-                      <button id="btnDarkCanvas" class="basemap-btn px-2 sm:px-2.5 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant hover:text-on-surface cursor-pointer transition-all flex items-center gap-1">
-                        <span>🗺️</span> <span>Dark</span>
-                      </button>
-                      <button id="btnTerrain" class="basemap-btn px-2 sm:px-2.5 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant hover:text-on-surface cursor-pointer transition-all flex items-center gap-1">
-                        <span>🏔️</span> <span>Topo</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- MAP ZOOM HUD CONTROLS (Top Right) -->
-                <div class="absolute top-24 sm:top-28 right-2 sm:right-4 z-20 flex flex-col gap-1">
-                  <button id="btnZoomIn" class="w-7 h-7 sm:w-8 sm:h-8 rounded-DEFAULT bg-surface-panel/90 backdrop-blur-md text-on-surface hover:text-primary flex items-center justify-center shadow-lg transition-all cursor-pointer border border-border-subtle">
-                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">add</span>
-                  </button>
-                  <button id="btnZoomOut" class="w-7 h-7 sm:w-8 sm:h-8 rounded-DEFAULT bg-surface-panel/90 backdrop-blur-md text-on-surface hover:text-primary flex items-center justify-center shadow-lg transition-all cursor-pointer border border-border-subtle">
-                    <span class="material-symbols-outlined text-[16px] sm:text-[18px]">remove</span>
-                  </button>
-                </div>
-
-                <!-- FLOATING MAP TELEMETRY LEGEND (COLLAPSIBLE ON MOBILE) -->
-                <div class="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-20 rounded-xl bg-surface-panel/95 backdrop-blur-xl shadow-2xl border border-border-subtle pointer-events-auto max-w-[240px] sm:max-w-none" id="legendContainer">
-                  <!-- Collapsible Header -->
-                  <div class="flex items-center justify-between p-2 sm:p-2.5 cursor-pointer" id="btnToggleLegendMobile">
-                    <div class="flex items-center gap-1">
-                      <span class="material-symbols-outlined text-outline text-[14px]">layers</span>
-                      <span class="font-label-tactical text-[9px] sm:text-label-tactical uppercase tracking-wider text-outline font-bold">Map Legend</span>
-                    </div>
-                    <span class="material-symbols-outlined text-[14px] text-on-surface-variant" id="legendChevron">expand_more</span>
-                  </div>
-
-                  <!-- Legend Items (Expandable) -->
-                  <div class="hidden sm:flex flex-col gap-1.5 p-2.5 pt-0 font-telemetry-code text-[10px] sm:text-body-sm" id="legendBody">
-                    <div class="flex items-center gap-space-xs text-on-surface">
-                      <span class="w-2.5 h-2.5 rounded-full bg-alert-crimson shadow-[0_0_6px_#EF4444]"></span>
-                      <span>Urgent Village (&lt; 24h water left)</span>
-                    </div>
-                    <div class="flex items-center gap-space-xs text-on-surface">
-                      <span class="w-2.5 h-2.5 rounded-full bg-warning-amber shadow-[0_0_6px_#F59E0B]"></span>
-                      <span>Warning Village (&lt; 7 days water left)</span>
-                    </div>
-                    <div class="flex items-center gap-space-xs text-on-surface">
-                      <span class="w-2.5 h-2.5 rounded-full bg-safe-emerald shadow-[0_0_6px_#10B981]"></span>
-                      <span>Sufficient Water Tank</span>
-                    </div>
-                    <div class="flex items-center gap-space-xs text-on-surface">
-                      <span class="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_6px_#4cd7f6]"></span>
-                      <span>Water Tanker on Route (GPS)</span>
-                    </div>
-                    <div class="flex items-center gap-space-xs text-on-surface">
-                      <span class="w-2.5 h-2.5 rounded-full bg-alert-crimson animate-pulse"></span>
-                      <span class="text-error font-medium">Diverted Tanker Alert</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- MAP FOOTER ATTRIBUTION -->
-                <div class="absolute bottom-2 left-2 sm:left-4 z-20 font-telemetry-code text-[9px] sm:text-body-sm text-outline/80 bg-surface-panel/85 px-1.5 sm:px-2 py-0.5 rounded-DEFAULT backdrop-blur-sm pointer-events-none border border-border-subtle max-w-[150px] xs:max-w-none truncate">
-                  🛰️ Satellite Map • Open Data
-                </div>
-
-              </div>
-            </div>
-            
-            <!-- LEFT INVESTIGATION DOCK (col-span-5) -->
-            <div class="w-full xl:col-span-5 flex flex-col gap-3 sm:gap-space-md order-2 xl:order-1" id="dockSection">
-              
-              <!-- 1. Tanker Route Alert Feed -->
-              <div class="rounded-xl bg-surface-panel p-3 sm:p-space-md shadow-xl flex flex-col gap-space-sm relative overflow-hidden border border-border-subtle" id="anomaly-section">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-space-xs">
-                    <span class="material-symbols-outlined text-alert-crimson text-[20px]">gavel</span>
-                    <span class="font-headline-md text-sm sm:text-headline-md text-on-surface">Tanker Route Alert Feed</span>
-                  </div>
-                  <span class="px-space-xs py-0.5 rounded-DEFAULT bg-error-container text-on-error-container font-label-tactical text-[9px] uppercase tracking-wider">
-                    1 Route Alert
-                  </span>
-                </div>
-
-                <!-- Alert Card Rogue -->
-                <div class="p-3 sm:p-space-md rounded-lg bg-surface-card flex flex-col gap-space-sm shadow-md border-l-4 border-alert-crimson" id="diversionAlertCard">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-space-xs">
-                      <span class="px-space-xs py-0.5 rounded-DEFAULT bg-alert-crimson text-surface-panel font-label-tactical text-[9px] uppercase font-bold tracking-wider animate-pulse">
-                        Route Diversion Alert
-                      </span>
-                      <span class="font-telemetry-code text-[10px] text-on-surface-variant">Live</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <span class="font-label-tactical text-[9px] text-error font-semibold">Off Approved Route</span>
-                      <span id="escrow-status-pill" class="font-label-tactical text-[9px] text-warning-amber font-semibold">Payment: Held (₹1,45,000)</span>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-space-xs">
-                      <span class="font-headline-md text-base sm:text-headline-md text-primary">Tanker #TN-ROGUE</span>
-                      <span class="font-telemetry-code text-[11px] text-on-surface-variant">(MH-16-TX-9901)</span>
-                    </div>
-                    <p class="font-body-md text-xs sm:text-body-md text-on-surface alert-desc leading-relaxed">
-                      Tanker went <strong class="text-alert-crimson font-bold">14km off approved route</strong> near Karjat towards private quarry instead of village.
-                    </p>
-                  </div>
-                  <div class="flex flex-wrap items-center gap-2 pt-1">
-                    <button class="flex-1 min-w-[140px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-alert-crimson hover:bg-error text-surface-panel font-label-tactical text-[11px] uppercase tracking-wider font-bold transition-all shadow-lg shadow-alert-crimson/25 cursor-pointer active:scale-95" id="btnSuspendPayment">
-                      <span class="material-symbols-outlined text-[16px]">lock_reset</span>
-                      <span>Hold Contractor Payment</span>
-                    </button>
-                    <button class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-tactical text-[11px] uppercase tracking-wider transition-all cursor-pointer active:scale-95" id="btnDispatchIntercept" onclick="alert('🚨 Local inspection squad alerted to check Tanker MH-16-TX-9901 near Karjat quarry.')">
-                      <span class="material-symbols-outlined text-[16px]">send_to_mobile</span>
-                      <span>Send Inspection Squad</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 2. Smart Route & Tanker Planner -->
-              <div class="rounded-xl bg-surface-panel p-3 sm:p-space-md shadow-xl flex flex-col gap-space-sm border border-border-subtle" id="fleet-section">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-space-xs">
-                    <span class="material-symbols-outlined text-primary text-[20px]">hub</span>
-                    <span class="font-headline-md text-sm sm:text-headline-md text-on-surface">Smart Route &amp; Tanker Planner</span>
-                  </div>
-                  <span class="font-label-tactical text-[9px] text-tertiary">Quickest Routes</span>
-                </div>
-                <p class="font-body-sm text-xs sm:text-body-sm text-on-surface-variant leading-relaxed">
-                  Automatically plan the fastest tanker routes. Ensures at least 40L for each person and 70L for each animal across Ahilyanagar &amp; Sinnar.
-                </p>
-
-                <!-- Interactive Solver Constraint Configuration Controls -->
-                <div class="p-3 rounded-lg bg-surface-container/70 border border-border-subtle flex flex-col gap-2.5">
-                  <div class="flex items-center justify-between font-label-tactical text-[10px] uppercase text-outline">
-                    <span class="flex items-center gap-1 text-primary">
-                      <span class="material-symbols-outlined text-[14px]">tune</span>
-                      <span>Route Planning Settings</span>
-                    </span>
-                    <span id="solverStatusTag" class="text-tertiary font-bold font-mono">Auto-Optimized</span>
-                  </div>
-
-                  <!-- Constraint 1: Available Tanker Fleet Scale -->
-                  <div class="flex flex-col gap-1">
-                    <div class="flex justify-between items-center text-xs">
-                      <span class="text-on-surface-variant font-label-tactical text-[11px]">Available Tankers:</span>
-                      <span class="font-mono font-bold text-primary text-xs"><span id="tankerCountVal">4</span> Tankers (Scaled 2-6)</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                      <input id="tankerRangeInput" type="range" min="2" max="6" value="4" step="1" class="w-full accent-primary h-1.5 bg-surface-base rounded-lg cursor-pointer">
-                      <div class="flex gap-1">
-                        <button type="button" data-count="2" class="btn-tanker-scale px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-panel hover:bg-surface-card border border-border-subtle cursor-pointer">2</button>
-                        <button type="button" data-count="4" class="btn-tanker-scale px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary-container text-on-primary-container font-bold border border-border-subtle cursor-pointer">4</button>
-                        <button type="button" data-count="6" class="btn-tanker-scale px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-panel hover:bg-surface-card border border-border-subtle cursor-pointer">6</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Constraint 2: Road Blockade / Landslide Simulation Toggle -->
-                  <div class="flex items-center justify-between pt-1 border-t border-border-subtle text-xs">
-                    <div class="flex items-center gap-1.5">
-                      <input id="toggleRoadClosure" type="checkbox" class="w-3.5 h-3.5 accent-alert-crimson rounded cursor-pointer">
-                      <label for="toggleRoadClosure" class="font-label-tactical text-[11px] text-on-surface cursor-pointer select-none">
-                        Simulate Highway Road Closure / Blockage
-                      </label>
-                    </div>
-                    <span id="roadClosureBadge" class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container text-outline">Road Clear</span>
-                  </div>
-
-                  <!-- Constraint 3: Livestock Quota Priority Policy -->
-                  <div class="flex items-center justify-between pt-1 border-t border-border-subtle text-xs">
-                    <span class="font-label-tactical text-[11px] text-on-surface-variant">Delivery Priority:</span>
-                    <select id="selectReliefMandate" class="bg-surface-base text-on-surface text-[10px] font-mono py-1 px-2 rounded border border-border-subtle focus:outline-none cursor-pointer">
-                      <option value="statutory">Standard (40L People + 70L Animals)</option>
-                      <option value="critical_only">Urgent Villages First (&lt; 24h Water)</option>
-                      <option value="livestock_heavy">Extra Cattle Water (90L Animals)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- Computed Result Block -->
-                <div class="p-2.5 sm:p-space-md rounded-lg bg-surface-card flex flex-col gap-space-xs border border-border-subtle" id="solverResultBox">
-                  <div class="flex items-center gap-space-xs text-tertiary font-label-tactical text-[10px] uppercase font-bold">
-                    <span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span>
-                    <span>Fastest Route Calculated</span>
-                  </div>
-                  <div class="font-telemetry-code text-[11px] sm:text-telemetry-code text-on-surface" id="solverResultText">
-                    2 Tanker Trips Planned • All Village Needs Met • <span class="text-tertiary font-bold">28% Fuel Saved</span>
-                  </div>
-                </div>
-
-                <!-- Solver Actions -->
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                  <button class="flex-1 min-w-[180px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-primary-container text-on-primary-container font-headline-md text-xs sm:text-body-md font-bold uppercase tracking-wider hover:opacity-90 shadow-lg shadow-primary-container/25 transition-all cursor-pointer active:scale-95" id="btnAllocate">
-                    <span class="material-symbols-outlined text-[18px]">local_shipping</span>
-                    <span>Dispatch Water Tankers</span>
-                  </button>
-                  <button class="flex items-center justify-center gap-1 px-3 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-tactical text-[10px] uppercase tracking-wider transition-all cursor-pointer active:scale-95" id="btnExportManifest">
-                    <span class="material-symbols-outlined text-[16px]">file_download</span>
-                    <span>Route List (.JSON)</span>
-                  </button>
-                  <button class="flex items-center justify-center gap-1 px-3 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-tertiary hover:text-primary font-label-tactical text-[10px] uppercase tracking-wider transition-all cursor-pointer active:scale-95 border border-tertiary/20" id="btnExportOfficialPdf" title="Generate Signed Government Water Relief Order">
-                    <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
-                    <span>Relief Order (.PDF)</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- 3. Village Scarcity Matrix (Interactive Filter & Live List) -->
-              <div class="rounded-xl bg-surface-panel p-3 sm:p-space-md shadow-xl flex flex-col gap-space-sm border border-border-subtle" id="cistern-section">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-space-xs">
-                    <span class="material-symbols-outlined text-secondary text-[20px]">water_drop</span>
-                    <span class="font-headline-md text-sm sm:text-headline-md text-on-surface">Village Water Levels &amp; Status</span>
-                  </div>
-                  <span class="font-telemetry-code text-[10px] sm:text-telemetry-code text-on-surface-variant" id="matrixCounter">15 Villages Tracked</span>
-                </div>
-
-                <!-- Search Input -->
-                <div class="relative w-full">
-                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
-                  <input class="w-full bg-surface-base text-on-surface font-telemetry-code text-xs sm:text-telemetry-code pl-9 pr-space-md py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all placeholder:text-outline border border-border-subtle" id="villageSearchInput" placeholder="Search village (e.g. Tisgaon, Supa, Khopadi)..." type="text"/>
-                </div>
-
-                <!-- Interactive Filter Chips -->
-                <div class="flex items-center gap-1 sm:gap-space-xs font-label-tactical text-[9px] sm:text-label-tactical uppercase overflow-x-auto py-1" id="filterPillsContainer">
-                  <button class="filter-chip px-2.5 py-1 rounded-DEFAULT bg-primary-container text-on-primary-container font-bold cursor-pointer transition-all active flex-shrink-0" data-filter="all">All (15)</button>
-                  <button class="filter-chip px-2.5 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant hover:text-on-surface cursor-pointer transition-all flex-shrink-0" data-filter="critical">Urgent (5)</button>
-                  <button class="filter-chip px-2.5 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant hover:text-on-surface cursor-pointer transition-all flex-shrink-0" data-filter="warning">Warning (5)</button>
-                  <button class="filter-chip px-2.5 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant hover:text-on-surface cursor-pointer transition-all flex-shrink-0" data-filter="safe">Safe (5)</button>
-                </div>
-
-                <!-- Live Dynamic Village List Container -->
-                <div class="flex flex-col gap-1.5 sm:gap-space-xs max-h-[380px] overflow-y-auto pr-1" id="villageListContainer">
-                  <!-- Injected dynamically via dashboard.js from Supabase -->
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-    </main>
   </div>
 
-  <!-- FIXED MOBILE BOTTOM APP SWITCHER NAV (VISIBLE ON PHONES / TABLETS) -->
-  <footer class="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-surface-panel/95 backdrop-blur-2xl border-t border-border-subtle z-40 flex items-center justify-around px-1 shadow-[0_-4px_20px_rgba(0,0,0,0.6)]">
-    <button id="navMobileMap" class="flex flex-col items-center justify-center gap-0.5 text-primary py-1 px-2 flex-1 cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">map</span>
-      <span class="font-label-tactical text-[9px]">Map</span>
+  <!-- Mobile Floating Actions & Navigation -->
+  <footer class="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-200 z-40 flex items-center justify-around px-2 shadow-lg">
+    <button id="btnMobileViewMap" class="flex flex-col items-center justify-center text-primary text-xs py-1">
+      <i data-lucide="map" class="w-5 h-5"></i>
+      <span>Map</span>
     </button>
-    <button id="navMobileAnomaly" class="flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-alert-crimson py-1 px-2 flex-1 cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">warning</span>
-      <span class="font-label-tactical text-[9px]">Alerts</span>
+    <button id="btnMobileViewDock" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary text-xs py-1">
+      <i data-lucide="truck" class="w-5 h-5"></i>
+      <span>Dispatch</span>
     </button>
-    <button id="navMobileDispatch" class="flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-primary py-1 px-2 flex-1 cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-      <span class="font-label-tactical text-[9px]">Dispatch</span>
-    </button>
-    <button id="navMobileHamlets" class="flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-tertiary py-1 px-2 flex-1 cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">water_voc</span>
-      <span class="font-label-tactical text-[9px]">Villages</span>
-    </button>
-    <button id="navMobileMenu" class="flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-on-surface py-1 px-2 flex-1 cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">apps</span>
-      <span class="font-label-tactical text-[9px]">Menu</span>
+    <button id="btnToggleLegendMobile" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary text-xs py-1">
+      <i data-lucide="layers" class="w-5 h-5"></i>
+      <span>Layers</span>
     </button>
   </footer>
 
-  <!-- SCRIPTS & ENGINE BINDINGS -->
+  <!-- Scripts & Engine Bindings -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
@@ -841,6 +378,9 @@
   <script src="js/lang.js"></script>
   <script src="js/dashboard.js"></script>
   <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register note:', err));

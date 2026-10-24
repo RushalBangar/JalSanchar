@@ -1,19 +1,19 @@
 const translations = {
   en: {
-    nav_brand: "JalSanjeevani (जलसंजीवनी)",
+    nav_brand: "JalSanchar (जलसंचार)",
     nav_pillars: "How It Works",
     nav_features: "Features",
     nav_portals: "Portals & Roles",
     nav_panchayat: "Panchayat Portal",
     nav_faq: "FAQ",
     nav_login: "Portal Login",
-    topbar_title: "JalSanjeevani • Rural Drought Water Supply & Tanker Telemetry Grid",
+    topbar_title: "JalSanchar • Rural Drought Water Supply & Tanker Telemetry Grid",
     topbar_sector: "Ahilyanagar & Sinnar Pilot Sector",
     topbar_text_size: "Text:",
     topbar_skip: "Skip to Content",
     hero_title: "Guaranteed Clean Water For Every Drought-Hit Village",
-    hero_desc: "JalSanjeevani tracks rural water tankers using GPS telemetry and dual QR verification to prevent diversion and ensure rural families get their fair share of clean drinking water.",
-    hero_badge: "SMART WATER SUPPLY CHAIN (जलसंजीवनी)",
+    hero_desc: "JalSanchar tracks rural water tankers using GPS telemetry and dual QR verification to prevent diversion and ensure rural families get their fair share of clean drinking water.",
+    hero_badge: "SMART WATER SUPPLY CHAIN (जलसंचार)",
     hero_quota_badge: "Daily Water Relief Quota",
     hero_quota_desc: "Ensuring 40L per person & 70L per livestock daily minimum across drought-hit hamlets.",
     nav_tech: "Technology",
@@ -23,7 +23,7 @@ const translations = {
     nav_dashboard: "Access Dashboard",
     hero_btn_discover: "Explore Platform Portals",
     hero_btn_access: "View Water Dashboard",
-    pillars_title: "How JalSanjeevani Solves the Water Crisis",
+    pillars_title: "How JalSanchar Solves the Water Crisis",
     pillar1_title: "1. Early Water Shortage Warning",
     pillar1_desc: "Using weather and satellite data, we predict which village wells will run dry up to 14 days in advance, so water tankers are sent before taps run completely dry.",
     pillar2_title: "2. Stop Water Theft & Diversion",
@@ -39,7 +39,7 @@ const translations = {
     audit_title: "Water Delivery Audit Records",
     login_back_home: "Back to Home",
     login_badge: "Official Water Supply & Relief Management",
-    login_title: "Sign in to JalSanjeevani",
+    login_title: "Sign in to JalSanchar",
     login_desc: "Select your role to access your dashboard, or sign in below.",
     login_tab_signin: "Sign-In",
     login_tab_register: "Register New Account",
@@ -60,20 +60,20 @@ const translations = {
     helper_title: "View Demo Login Accounts"
   },
   mr: {
-    nav_brand: "जलसंजीवनी (JalSanjeevani)",
+    nav_brand: "जलसंचार (JalSanchar)",
     nav_pillars: "कार्यपद्धती",
     nav_features: "वैशिष्ट्ये",
     nav_portals: "पोर्टल आणि भूमिका",
     nav_panchayat: "ग्रामपंचायत पोर्टल",
     nav_faq: "नेहमी विचारले जाणारे प्रश्न",
     nav_login: "पोर्टल लॉगिन",
-    topbar_title: "जलसंजीवनी • ग्रामीण दुष्काळ पाणी पुरवठा व टँकर ट्रॅकिंग प्रणाली",
+    topbar_title: "जलसंचार • ग्रामीण दुष्काळ पाणी पुरवठा व टँकर ट्रॅकिंग प्रणाली",
     topbar_sector: "अहिल्यानगर व सिन्नर विभाग",
     topbar_text_size: "अक्षर:",
     topbar_skip: "मुख्य भागाकडे जा",
     hero_title: "दुष्काळग्रस्त प्रत्येक गावाला हक्काचे पिण्याचे पाणी",
-    hero_desc: "जलसंजीवनी जीपीएस ट्रॅकिंग आणि क्यूआर कोडद्वारे टँकरच्या पाण्याची चोरी रोखते आणि प्रत्येक दुष्काळग्रस्त गावाला वेळेवर पाणी मिळण्याची खात्री करते.",
-    hero_badge: "स्मार्ट पाणी पुरवठा साखळी (जलसंजीवनी)",
+    hero_desc: "जलसंचार जीपीएस ट्रॅकिंग आणि क्यूआर कोडद्वारे टँकरच्या पाण्याची चोरी रोखते आणि प्रत्येक दुष्काळग्रस्त गावाला वेळेवर पाणी मिळण्याची खात्री करते.",
+    hero_badge: "स्मार्ट पाणी पुरवठा साखळी (जलसंचार)",
     hero_quota_badge: "दैनिक हक्काचे पाणी प्रमाण",
     hero_quota_desc: "दुष्काळग्रस्त गावांसाठी दररोज प्रति व्यक्ती किमान ४० लिटर आणि जनावरांसाठी ७० लिटर पाण्याचे वाटप.",
     nav_tech: "तंत्रज्ञान",
@@ -83,7 +83,7 @@ const translations = {
     nav_dashboard: "अधिकारी डॅशबोर्ड उघडा",
     hero_btn_discover: "सर्व पोर्टल पहा",
     hero_btn_access: "पाणी डॅशबोर्ड उघडा",
-    pillars_title: "पाणीटंचाईवर जलसंजीवनीचे ३ सोपे उपाय",
+    pillars_title: "पाणीटंचाईवर जलसंचारचे ३ सोपे उपाय",
     pillar1_title: "१. दुष्काळाची आगाऊ पूर्वसूचना",
     pillar1_desc: "हवामान आणि सॅटेलाइट डेटावरून गावातील विहिरी पुढील १४ दिवसांत कोरड्या पडण्याचा अंदाज येतो, ज्यामुळे नळांना पाणी येणे बंद होण्यापूर्वीच टँकर पाठवले जातात.",
     pillar2_title: "२. टँकर पाणी चोरीला पूर्ण आळा",
@@ -99,7 +99,7 @@ const translations = {
     audit_title: "पाणीवाटप तपासणी नोंदी",
     login_back_home: "मुख्य पानावर परत",
     login_badge: "अधिकृत पाणी पुरवठा व दुष्काळ निवारण व्यवस्थापन",
-    login_title: "जलसंजीवनी पोर्टल लॉगिन",
+    login_title: "जलसंचार पोर्टल लॉगिन",
     login_desc: "आपल्या डॅशबोर्डवर जाण्यासाठी आपली भूमिका निवडा किंवा लॉगिन करा.",
     login_tab_signin: "लॉगिन",
     login_tab_register: "नवीन खाते नोंदणी",
@@ -120,20 +120,20 @@ const translations = {
     helper_title: "चाचणी लॉगिन खाती पहा"
   },
   hi: {
-    nav_brand: "जलसंजीवनी (JalSanjeevani)",
+    nav_brand: "जलसंचार (JalSanchar)",
     nav_pillars: "कार्यप्रणाली",
     nav_features: "विशेषताएं",
     nav_portals: "पोर्टल और भूमिकाएं",
     nav_panchayat: "पंचायत पोर्टल",
     nav_faq: "सामान्य प्रश्न",
     nav_login: "पोर्टल लॉगिन",
-    topbar_title: "जलसंजीवनी • ग्रामीण सूखा जल आपूर्ति एवं टैंकर टेलीमेट्री प्रणाली",
+    topbar_title: "जलसंचार • ग्रामीण सूखा जल आपूर्ति एवं टैंकर टेलीमेट्री प्रणाली",
     topbar_sector: "अहिल्यानगर व सिन्नर संभाग",
     topbar_text_size: "फ़ॉन्ट:",
     topbar_skip: "मुख्य सामग्री पर जाएं",
     hero_title: "सूखाग्रस्त हर गाँव तक पहुँचेगा साफ और सुरक्षित पानी",
-    hero_desc: "जलसंजीवनी जीपीएस और क्यूआर कोड द्वारा पानी के टैंकरों की चोरी रोकती है और सूखाग्रस्त गाँवों तक स्वच्छ पेयजल की सही समय पर डिलीवरी सुनिश्चित करती है।",
-    hero_badge: "स्मार्ट जल आपूर्ति श्रृंखला (जलसंजीवनी)",
+    hero_desc: "जलसंचार जीपीएस और क्यूआर कोड द्वारा पानी के टैंकरों की चोरी रोकती है और सूखाग्रस्त गाँवों तक स्वच्छ पेयजल की सही समय पर डिलीवरी सुनिश्चित करती है।",
+    hero_badge: "स्मार्ट जल आपूर्ति श्रृंखला (जलसंचार)",
     hero_quota_badge: "दैनिक जल वितरण मानक",
     hero_quota_desc: "सूखा प्रभावित गाँवों के लिए प्रति व्यक्ति 40 लीटर और प्रति मवेशी 70 लीटर पानी का दैनिक न्यूनतम आवंटन।",
     nav_tech: "तकनीक",
@@ -143,7 +143,7 @@ const translations = {
     nav_dashboard: "अधिकारी डैशबोर्ड खोलें",
     hero_btn_discover: "सभी पोर्टल देखें",
     hero_btn_access: "पानी डैशबोर्ड खोलें",
-    pillars_title: "जल संकट पर जलसंजीवनी के 3 आसान समाधान",
+    pillars_title: "जल संकट पर जलसंचार के 3 आसान समाधान",
     pillar1_title: "1. पानी की कमी की पूर्व चेतावनी",
     pillar1_desc: "मौसम और सैटेलाइट डेटा से 14 दिन पहले ही पता चल जाता है कि किस गाँव के कुएं सूखने वाले हैं, ताकि पानी खत्म होने से पहले ही टैंकर भेजे जा सकें।",
     pillar2_title: "2. टैंकर पानी की चोरी पर रोक",
@@ -159,7 +159,7 @@ const translations = {
     audit_title: "जल वितरण सत्यापन रिकॉर्ड",
     login_back_home: "मुख्य पृष्ठ पर वापस",
     login_badge: "आधिकारिक जल आपूर्ति एवं सूखा राहत प्रबंधन",
-    login_title: "जलसंजीवनी पोर्टल लॉगिन",
+    login_title: "जलसंचार पोर्टल लॉगिन",
     login_desc: "अपने डैशबोर्ड पर जाने के लिए अपनी भूमिका चुनें या लॉगिन करें।",
     login_tab_signin: "साइन-इन",
     login_tab_register: "नया खाता पंजीकरण",
@@ -211,12 +211,13 @@ function applyTranslation(lang) {
 }
 
 function initLanguage() {
-  const currentLang = localStorage.getItem("jalsanjeevani_lang") || "en";
+  const currentLang = localStorage.getItem("jalsanchar_lang") || localStorage.getItem("jalsanjeevani_lang") || "en";
   const switchers = document.querySelectorAll("#langSwitcher, .lang-switcher, select[aria-label='Language Selector']");
   switchers.forEach((select) => {
     select.value = currentLang;
     select.addEventListener("change", (e) => {
       const selected = e.target.value;
+      localStorage.setItem("jalsanchar_lang", selected);
       localStorage.setItem("jalsanjeevani_lang", selected);
       switchers.forEach((s) => (s.value = selected));
       applyTranslation(selected);

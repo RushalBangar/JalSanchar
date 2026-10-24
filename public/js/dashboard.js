@@ -481,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const bounds = L.latLngBounds(Object.values(markersMap).map(m => m.coords));
           map.fitBounds(bounds, { padding: [30, 30], maxZoom: 12 });
         }
-        console.log("🌊 [JalSanjeevani] Loaded villages from Supabase PostgreSQL:", villages.length);
+        console.log("🌊 [JalSanchar] Loaded villages from Supabase PostgreSQL:", villages.length);
       }
 
       // 2. Fetch tankers from Supabase
@@ -503,7 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tankerMarkers[t.id] = marker;
           }
         });
-        console.log("🌊 [JalSanjeevani] Loaded tankers from Supabase PostgreSQL:", dbTankers.length);
+        console.log("🌊 [JalSanchar] Loaded tankers from Supabase PostgreSQL:", dbTankers.length);
       }
 
       // 3. Realtime listener: Tanker telemetry updates
@@ -594,7 +594,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const badge = document.getElementById("satelliteTelemetryBadge");
     const apiBase = (window.JalAuth && typeof window.JalAuth.getApiBase === "function")
       ? window.JalAuth.getApiBase()
-      : (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://127.0.0.1:8000" : "https://jalsanjeevani.onrender.com");
+      : (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://127.0.0.1:8000" : "https://jalsanchar.onrender.com");
     try {
       const res = await fetch(`${apiBase}/api/satellite/live?district=Ahilyanagar`);
       if (res.ok) {
@@ -605,7 +605,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? ` | Aquifer: <span style="color:#ef4444; font-weight:700;">${t.aquifer_storage_anomaly_cm}cm</span>` 
             : '';
           badge.innerHTML = `NASA SMAP: <span style="color:#f59e0b; font-weight:700;">${t.root_zone_soil_moisture_m3_m3} m³/m³</span>${aquiferText} | Stress: <span style="color:${t.status === 'CRITICAL_DEFICIT' ? '#ef4444' : '#10b981'}; font-weight:700;">${t.drought_stress_index}/100</span>`;
-          console.log("🛰️ [JalSanjeevani] Live Satellite & Soil Moisture Telemetry Connected:", data);
+          console.log("🛰️ [JalSanchar] Live Satellite & Soil Moisture Telemetry Connected:", data);
           return;
         }
       }
@@ -1079,7 +1079,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const apiBase = (window.JalAuth && typeof window.JalAuth.getApiBase === "function")
           ? window.JalAuth.getApiBase()
-          : (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://127.0.0.1:8000" : "https://jalsanjeevani.onrender.com");
+          : (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://127.0.0.1:8000" : "https://jalsanchar.onrender.com");
         const authHeaders = (window.JalAuth && typeof window.JalAuth.getAuthHeaders === "function")
           ? window.JalAuth.getAuthHeaders()
           : {};
@@ -1160,7 +1160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `jalsanjeevani_manifest_${new Date().toISOString().slice(0,10)}.json`;
+    a.download = `jalsanchar_manifest_${new Date().toISOString().slice(0,10)}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
@@ -1301,14 +1301,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const mainContentWrapper = document.getElementById("mainContentWrapper");
 
   let isSidebarOpen = window.innerWidth >= 1024;
-  const savedSidebarPref = localStorage.getItem("jalsanjeevani_sidebar_open");
+  const savedSidebarPref = localStorage.getItem("jalsanchar_sidebar_open") || localStorage.getItem("jalsanjeevani_sidebar_open");
   if (savedSidebarPref !== null) {
     isSidebarOpen = savedSidebarPref === "true";
   }
 
   function applySidebarState(open, animate = true) {
     isSidebarOpen = open;
-    localStorage.setItem("jalsanjeevani_sidebar_open", String(open));
+    localStorage.setItem("jalsanchar_sidebar_open", String(open));
 
     if (!tacticalSidebar) return;
 

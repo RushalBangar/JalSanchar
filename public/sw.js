@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani (RouteGuard) Service Worker
+ * JalSanchar (RouteGuard) Service Worker
  * Architecture: Offline-First PWA with Background Sync & Cache-First Fallback.
  *
  * 1. Pre-caches core app shell for zero-connectivity field operations.
@@ -7,7 +7,7 @@
  * 3. Supports Background Sync API to flush offline delivery receipts when connectivity returns.
  */
 
-const CACHE_NAME = 'jalsanjeevani-offline-pwa-v9';
+const CACHE_NAME = 'jalsanchar-offline-pwa-v10';
 const PRECACHE_ASSETS = [
   './',
   './manifest.json',

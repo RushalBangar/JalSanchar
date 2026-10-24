@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani - 3D Holographic Regional Telemetry Canvas (Three.js)
+ * JalSanchar - 3D Holographic Regional Telemetry Canvas (Three.js)
  * 
  * Features:
  * 1. Deccan Trap 3D Holographic Topographical Mesh with animated wave currents.

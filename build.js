@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani - Production Static Asset Bundler & Vercel Output Generator
+ * JalSanchar - Production Static Asset Bundler & Vercel Output Generator
  * Generates the `public/` directory ensuring zero-dependency cross-platform builds.
  */
 

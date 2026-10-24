@@ -1,5 +1,5 @@
 """
-JalSanjeevani / HydroPulse - Supabase Operational Users Seeder
+JalSanchar - Supabase Operational Users Seeder
 🔒 SECURED: Passwords are hashed with bcrypt before storing in Supabase.
 Seeds the 3 authorized government roles (Collector, Driver, Panchayat)
 into the public.gov_users table in Supabase PostgreSQL.
@@ -35,7 +35,7 @@ def hash_password(plain_password: str) -> str:
 GOV_USERS = [
     {
         "id": "USR-COL-01",
-        "email": "collector@sinnar.jalsanjeevani.gov.in",
+        "email": "collector@sinnar.jalsanchar.gov.in",
         "password_hash": hash_password("sovereign_water_2025"),
         "role": "collector",
         "name": "Shri. Rahul More, IAS",
@@ -53,7 +53,7 @@ GOV_USERS = [
     },
     {
         "id": "USR-DRV-15",
-        "email": "driver.mh15@sinnar.jalsanjeevani.gov.in",
+        "email": "driver.mh15@sinnar.jalsanchar.gov.in",
         "password_hash": hash_password("sovereign_water_2025"),
         "role": "driver",
         "name": "Ramesh V. Patil",
@@ -71,7 +71,7 @@ GOV_USERS = [
     },
     {
         "id": "USR-GP-104",
-        "email": "panchayat.khopadi@sinnar.jalsanjeevani.gov.in",
+        "email": "panchayat.khopadi@sinnar.jalsanchar.gov.in",
         "password_hash": hash_password("sovereign_water_2025"),
         "role": "panchayat",
         "name": "Sunita G. Deshmukh",

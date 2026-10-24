@@ -10,12 +10,12 @@ const SUPABASE_CONFIG = {
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6ZmRkeGlpcHRrZWV5dnJma2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MDM1OTYsImV4cCI6MjEwNzE3OTU5Nn0.8NA30jSO58gV8vbyvWnsUwdgXsMGFeMtda25lQ8EEFQ"
 };
 
-class JalSanjeevaniSupabase {
+class JalSancharSupabase {
   constructor() {
     this.client = null;
     this.isConnected = false;
     this.subscriptions = [];
-    this.offlineQueueKey = "jalsanjeevani_offline_sync_queue";
+    this.offlineQueueKey = "jalsanchar_offline_sync_queue";
     this.init();
     this.setupOnlineSyncListener();
   }
@@ -25,12 +25,12 @@ class JalSanjeevaniSupabase {
       try {
         this.client = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
         this.isConnected = true;
-        console.log("🌊 [JalSanjeevani] Online Supabase client initialized successfully.");
+        console.log("🌊 [JalSanchar] Online Supabase client initialized successfully.");
       } catch (err) {
-        console.error("🌊 [JalSanjeevani] Supabase init failed:", err);
+        console.error("🌊 [JalSanchar] Supabase init failed:", err);
       }
     } else {
-      console.warn("🌊 [JalSanjeevani] Supabase SDK script not found on page.");
+      console.warn("🌊 [JalSanchar] Supabase SDK script not found on page.");
     }
   }
 
@@ -39,7 +39,7 @@ class JalSanjeevaniSupabase {
    */
   setupOnlineSyncListener() {
     window.addEventListener("online", () => {
-      console.log("📶 [JalSanjeevani] Internet reconnected! Auto-syncing pending offline queue...");
+      console.log("📶 [JalSanchar] Internet reconnected! Auto-syncing pending offline queue...");
       this.flushOfflineQueue();
     });
 
@@ -135,7 +135,10 @@ class JalSanjeevaniSupabase {
           .order('id', { ascending: true });
         if (!error && data) {
           // Cache locally for offline fallback
-          try { localStorage.setItem('jalsanjeevani_villages_cache', JSON.stringify(data)); } catch (e) {}
+          try {
+            localStorage.setItem('jalsanchar_villages_cache', JSON.stringify(data));
+            localStorage.setItem('jalsanjeevani_villages_cache', JSON.stringify(data));
+          } catch (e) {}
           return data;
         }
       } catch (e) {
@@ -145,7 +148,7 @@ class JalSanjeevaniSupabase {
 
     // Offline fallback from local storage cache
     try {
-      const cached = localStorage.getItem('jalsanjeevani_villages_cache');
+      const cached = localStorage.getItem('jalsanchar_villages_cache') || localStorage.getItem('jalsanjeevani_villages_cache');
       if (cached) return JSON.parse(cached);
     } catch (e) {}
     return null;
@@ -162,7 +165,10 @@ class JalSanjeevaniSupabase {
           .select('*')
           .order('id', { ascending: true });
         if (!error && data) {
-          try { localStorage.setItem('jalsanjeevani_tankers_cache', JSON.stringify(data)); } catch (e) {}
+          try {
+            localStorage.setItem('jalsanchar_tankers_cache', JSON.stringify(data));
+            localStorage.setItem('jalsanjeevani_tankers_cache', JSON.stringify(data));
+          } catch (e) {}
           return data;
         }
       } catch (e) {
@@ -172,7 +178,7 @@ class JalSanjeevaniSupabase {
 
     // Offline fallback
     try {
-      const cached = localStorage.getItem('jalsanjeevani_tankers_cache');
+      const cached = localStorage.getItem('jalsanchar_tankers_cache') || localStorage.getItem('jalsanjeevani_tankers_cache');
       if (cached) return JSON.parse(cached);
     } catch (e) {}
     return null;
@@ -310,7 +316,7 @@ class JalSanjeevaniSupabase {
       if (this.broadcastChannel) {
         this.broadcastChannel.postMessage(event);
       } else if (typeof BroadcastChannel !== "undefined") {
-        this.broadcastChannel = new BroadcastChannel("jalsanjeevani_demo_sync");
+        this.broadcastChannel = new BroadcastChannel("jalsanchar_demo_sync");
         this.broadcastChannel.postMessage(event);
       }
     } catch (e) {
@@ -318,6 +324,7 @@ class JalSanjeevaniSupabase {
     }
 
     try {
+      localStorage.setItem("jalsanchar_last_broadcast", JSON.stringify(event));
       localStorage.setItem("jalsanjeevani_last_broadcast", JSON.stringify(event));
     } catch (e) {}
   }
@@ -328,7 +335,7 @@ class JalSanjeevaniSupabase {
   onStateBroadcast(callback) {
     try {
       if (!this.broadcastChannel && typeof BroadcastChannel !== "undefined") {
-        this.broadcastChannel = new BroadcastChannel("jalsanjeevani_demo_sync");
+        this.broadcastChannel = new BroadcastChannel("jalsanchar_demo_sync");
       }
       if (this.broadcastChannel) {
         this.broadcastChannel.addEventListener("message", (msg) => {
@@ -341,7 +348,7 @@ class JalSanjeevaniSupabase {
 
     // Fallback: Storage event listener for older browser sessions
     window.addEventListener("storage", (e) => {
-      if (e.key === "jalsanjeevani_last_broadcast" && e.newValue) {
+      if ((e.key === "jalsanchar_last_broadcast" || e.key === "jalsanjeevani_last_broadcast") && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
           if (callback) callback(parsed);
@@ -354,10 +361,14 @@ class JalSanjeevaniSupabase {
    * Resets demo state back to baseline for live evaluators
    */
   async resetDemoState() {
-    console.log("🔄 Resetting JalSanjeevani demo state to baseline...");
+    console.log("🔄 Resetting JalSanchar demo state to baseline...");
 
     // 1. Reset local storage demo flags
     try {
+      localStorage.removeItem("jalsanchar_driver_arrived");
+      localStorage.removeItem("jalsanchar_panchayat_receipt");
+      localStorage.removeItem("jalsanchar_rogue_frozen");
+      localStorage.removeItem("jalsanchar_offline_sync_queue");
       localStorage.removeItem("jalsanjeevani_driver_arrived");
       localStorage.removeItem("jalsanjeevani_panchayat_receipt");
       localStorage.removeItem("jalsanjeevani_rogue_frozen");
@@ -458,4 +469,6 @@ class JalSanjeevaniSupabase {
 }
 
 // Global instance
-window.JalSupabase = new JalSanjeevaniSupabase();
+window.JalSupabase = new JalSancharSupabase();
+window.JalSanjeevaniSupabase = JalSancharSupabase;
+window.JalSancharSupabase = JalSancharSupabase;

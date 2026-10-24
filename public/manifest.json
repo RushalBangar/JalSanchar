@@ -1,6 +1,6 @@
 {
-  "name": "JalSanjeevani Field PWA",
-  "short_name": "JalSanjeevani",
+  "name": "JalSanchar Field PWA",
+  "short_name": "JalSanchar",
   "description": "Offline-first sovereign drought water logistics, routing, and cryptographic verification system.",
   "start_url": "./index.html",
   "scope": "./",

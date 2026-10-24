@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani (RouteGuard) - Driver PWA Tactical Cockpit Engine
+ * JalSanchar (RouteGuard) - Driver PWA Tactical Cockpit Engine
  * Handles live cryptographic QR token generation, geofence arrival lock,
  * and online-first Supabase telemetry synchronization.
  */
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Active delivery manifest parameters
   let loggedInUser = window.JalAuth ? window.JalAuth.getUser() : null;
   const manifest = {
-    protocol: "JALSANJEEVANI_POD_V2",
+    protocol: "JALSANCHAR_POD_V2",
     tanker_id: (loggedInUser && loggedInUser.tanker_id) ? loggedInUser.tanker_id : "TN-SN-02",
     registration: (loggedInUser && loggedInUser.registration) ? loggedInUser.registration : "MH-15-TK-5512",
     target_village: (loggedInUser && loggedInUser.village) ? loggedInUser.village : "Khopadi (Sinnar)",
@@ -442,7 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (dataUrl) {
         const link = document.createElement("a");
-        link.download = `JalSanjeevani_QR_Tanker_TK04_${Date.now()}.png`;
+        link.download = `JalSanchar_QR_Tanker_TK04_${Date.now()}.png`;
         link.href = dataUrl;
         link.click();
 
@@ -535,7 +535,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const savedTheme = localStorage.getItem("jalsanjeevani_theme");
+  const savedTheme = localStorage.getItem("jalsanchar_theme") || localStorage.getItem("jalsanjeevani_theme");
   if (savedTheme === "sunlight") {
     applySunlightTheme(true);
   }
@@ -548,7 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 9. Reset Demo State Action & Cross-Tab Realtime Synchronization
   const btnResetDemoDriver = document.getElementById("btnResetDemoDriver");
   btnResetDemoDriver?.addEventListener("click", async () => {
-    if (confirm("Reset JalSanjeevani demo state across all tabs back to initial baseline?")) {
+    if (confirm("Reset JalSanchar demo state across all tabs back to initial baseline?")) {
       if (window.JalSupabase) {
         await window.JalSupabase.resetDemoState();
       }

@@ -1,5 +1,5 @@
 """
-JalSanjeevani / HydroPulse - Layer 2: Anti-Diversion & Cryptographic Proof-of-Delivery Engine
+JalSanchar - Layer 2: Anti-Diversion & Cryptographic Proof-of-Delivery Engine
 Enforces 'No Cryptographic Proof, No Bill Payment' policy linked to the state treasury escrow.
 Validates Geofencing, Asymmetric QR Tokens, and Digital Signatures.
 """

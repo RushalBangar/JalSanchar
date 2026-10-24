@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani (RouteGuard) - Sovereign Government Authentication & Session Guard
+ * JalSanchar (RouteGuard) - Sovereign Government Authentication & Session Guard
  * 🔒 SECURED: All authentication goes through backend API only.
  * Frontend NEVER queries gov_users table directly.
  *
@@ -14,7 +14,8 @@
 (function (window) {
   "use strict";
 
-  const STORAGE_KEY = "jalsanjeevani_gov_session";
+  const STORAGE_KEY = "jalsanchar_gov_session";
+  const LEGACY_STORAGE_KEY = "jalsanjeevani_gov_session";
   const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 Hours
 
   // Visual Theme Tokens mapped by role
@@ -58,7 +59,7 @@
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
         return "http://127.0.0.1:8000";
       }
-      return "https://jalsanjeevani.onrender.com";
+      return "https://jalsanchar.onrender.com";
     },
 
     /**
@@ -115,13 +116,14 @@
     getSession() {
       try {
         // Try sessionStorage first (more secure), then localStorage for migration
-        let raw = sessionStorage.getItem(STORAGE_KEY);
+        let raw = sessionStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(LEGACY_STORAGE_KEY);
         if (!raw) {
-          raw = localStorage.getItem(STORAGE_KEY);
+          raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
           if (raw) {
             // Migrate to sessionStorage and remove from localStorage
             sessionStorage.setItem(STORAGE_KEY, raw);
             localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(LEGACY_STORAGE_KEY);
           }
         }
         if (!raw) return null;
@@ -182,6 +184,37 @@
      * Known authorized personas for resilient offline demonstration fallback
      */
     OFFLINE_PERSONAS: {
+      "collector@sinnar.jalsanchar.gov.in": {
+        id: "USR-COL-01",
+        name: "Shri. Rahul More, IAS",
+        title: "District Collector & Magistrate",
+        role: "collector",
+        badge_id: "MH-IAS-0419",
+        jurisdiction: "Ahilyanagar & Sinnar Disaster Division",
+        redirect_url: "dashboard.html",
+        permissions: ["dispatch_approval", "escrow_freeze", "satellite_radar_view", "cvrp_optimization"]
+      },
+      "driver.mh15@sinnar.jalsanchar.gov.in": {
+        id: "USR-DRV-15",
+        name: "Ramesh V. Patil",
+        title: "Water Tanker Driver",
+        role: "driver",
+        badge_id: "RTO-MH15-WT-881",
+        jurisdiction: "Tanker TN-SN-02 (MH-15-TK-5512)",
+        redirect_url: "driver.html",
+        permissions: ["gps_telemetry_broadcast", "qr_token_generation", "sos_beacon"]
+      },
+      "panchayat.khopadi@sinnar.jalsanchar.gov.in": {
+        id: "USR-GP-104",
+        name: "Sunita G. Deshmukh",
+        title: "Sarpanch & Water Vigilance Officer",
+        role: "panchayat",
+        badge_id: "GP-SN-104",
+        jurisdiction: "Khopadi Gram Panchayat (Sinnar)",
+        redirect_url: "panchayat.html",
+        permissions: ["optical_qr_scan", "cistern_level_attestation", "escrow_payment_release"]
+      },
+      // Backward-compatible aliases
       "collector@sinnar.jalsanjeevani.gov.in": {
         id: "USR-COL-01",
         name: "Shri. Rahul More, IAS",
@@ -231,17 +264,17 @@
 
       // ─── Resolve Aliases and Short Codes ───
       const ALIAS_MAP = {
-        "collector": "collector@sinnar.jalsanjeevani.gov.in",
-        "admin": "collector@sinnar.jalsanjeevani.gov.in",
-        "ias": "collector@sinnar.jalsanjeevani.gov.in",
-        "rahul": "collector@sinnar.jalsanjeevani.gov.in",
-        "driver": "driver.mh15@sinnar.jalsanjeevani.gov.in",
-        "pilot": "driver.mh15@sinnar.jalsanjeevani.gov.in",
-        "mh15": "driver.mh15@sinnar.jalsanjeevani.gov.in",
-        "patil": "driver.mh15@sinnar.jalsanjeevani.gov.in",
-        "panchayat": "panchayat.khopadi@sinnar.jalsanjeevani.gov.in",
-        "sarpanch": "panchayat.khopadi@sinnar.jalsanjeevani.gov.in",
-        "khopadi": "panchayat.khopadi@sinnar.jalsanjeevani.gov.in"
+        "collector": "collector@sinnar.jalsanchar.gov.in",
+        "admin": "collector@sinnar.jalsanchar.gov.in",
+        "ias": "collector@sinnar.jalsanchar.gov.in",
+        "rahul": "collector@sinnar.jalsanchar.gov.in",
+        "driver": "driver.mh15@sinnar.jalsanchar.gov.in",
+        "pilot": "driver.mh15@sinnar.jalsanchar.gov.in",
+        "mh15": "driver.mh15@sinnar.jalsanchar.gov.in",
+        "patil": "driver.mh15@sinnar.jalsanchar.gov.in",
+        "panchayat": "panchayat.khopadi@sinnar.jalsanchar.gov.in",
+        "sarpanch": "panchayat.khopadi@sinnar.jalsanchar.gov.in",
+        "khopadi": "panchayat.khopadi@sinnar.jalsanchar.gov.in"
       };
       const cleanEmail = ALIAS_MAP[rawEmail] || rawEmail;
 
@@ -251,6 +284,7 @@
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
         candidateBases.push("http://127.0.0.1:8000");
       }
+      candidateBases.push("https://jalsanchar.onrender.com");
       candidateBases.push("https://jalsanjeevani.onrender.com");
 
       let lastError = null;
@@ -314,7 +348,7 @@
       // Check dynamically registered local users
       if (!persona) {
         try {
-          const localUsers = JSON.parse(localStorage.getItem("jalsanjeevani_local_users") || "{}");
+          const localUsers = JSON.parse(localStorage.getItem("jalsanchar_local_users") || localStorage.getItem("jalsanjeevani_local_users") || "{}");
           if (localUsers[cleanEmail]) {
             persona = localUsers[cleanEmail];
           }
@@ -367,7 +401,7 @@
       console.error("🔐 [JalAuth] Authentication error:", lastError);
       return {
         success: false,
-        message: "Invalid credentials. Use a verified test account (e.g. collector@sinnar.jalsanjeevani.gov.in / sovereign_water_2025) or click 1-Tap Evaluation Sign-In."
+        message: "Invalid credentials. Use a verified test account (e.g. collector@sinnar.jalsanchar.gov.in / sovereign_water_2025) or click 1-Tap Evaluation Sign-In."
       };
     },
 
@@ -381,6 +415,7 @@
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
         candidateBases.push("http://127.0.0.1:8000");
       }
+      candidateBases.push("https://jalsanchar.onrender.com");
       candidateBases.push("https://jalsanjeevani.onrender.com");
 
       let lastError = null;
@@ -457,9 +492,9 @@
 
       // Persist to local users store
       try {
-        const localUsers = JSON.parse(localStorage.getItem("jalsanjeevani_local_users") || "{}");
+        const localUsers = JSON.parse(localStorage.getItem("jalsanchar_local_users") || localStorage.getItem("jalsanjeevani_local_users") || "{}");
         localUsers[newUser.email] = newUser;
-        localStorage.setItem("jalsanjeevani_local_users", JSON.stringify(localUsers));
+        localStorage.setItem("jalsanchar_local_users", JSON.stringify(localUsers));
       } catch (e) {}
 
       const session = {
@@ -497,6 +532,7 @@
       if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
         candidateBases.push("http://127.0.0.1:8000");
       }
+      candidateBases.push("https://jalsanchar.onrender.com");
       candidateBases.push("https://jalsanjeevani.onrender.com");
 
       for (const apiBase of candidateBases) {
@@ -804,11 +840,11 @@
       // Support 1-tap evaluation bypass if ?demo=true or ?eval=1 is present
       if (!session && (params.get("demo") === "true" || params.get("eval") === "1")) {
         let demoRole = allowedRoles[0] || "collector";
-        let email = "collector@sinnar.jalsanjeevani.gov.in";
-        if (demoRole === "driver") email = "driver.mh15@sinnar.jalsanjeevani.gov.in";
-        else if (demoRole === "panchayat") email = "panchayat.khopadi@sinnar.jalsanjeevani.gov.in";
+        let email = "collector@sinnar.jalsanchar.gov.in";
+        if (demoRole === "driver") email = "driver.mh15@sinnar.jalsanchar.gov.in";
+        else if (demoRole === "panchayat") email = "panchayat.khopadi@sinnar.jalsanchar.gov.in";
 
-        const persona = this.OFFLINE_PERSONAS[email] || this.OFFLINE_PERSONAS["collector@sinnar.jalsanjeevani.gov.in"];
+        const persona = this.OFFLINE_PERSONAS[email] || this.OFFLINE_PERSONAS["collector@sinnar.jalsanchar.gov.in"];
         const demoSession = {
           token: `JAL-DEMO-${demoRole.toUpperCase()}-KEY`,
           role: demoRole,

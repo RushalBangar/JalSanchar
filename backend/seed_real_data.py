@@ -1,5 +1,5 @@
 """
-JalSanjeevani / HydroPulse - Real Geospatial & Supply Chain Seeder
+JalSanchar - Real Geospatial & Supply Chain Seeder
 Populates authentic Gram Panchayat villages and water tanker fleets
 across Ahilyanagar (Ahmednagar) District and Sinnar Taluka (Nashik), Maharashtra.
 """
@@ -297,24 +297,24 @@ REAL_TANKERS = [
 ]
 
 def seed():
-    print("[JalSanjeevani] Connecting to Supabase...")
+    print("[JalSanchar] Connecting to Supabase...")
     
     # 1. Clean existing mock data
-    print("[JalSanjeevani] Clearing legacy mock rows...")
+    print("[JalSanchar] Clearing legacy mock rows...")
     client.table("villages").delete().neq("id", "KEEP_NOTHING").execute()
     client.table("tankers").delete().neq("id", "KEEP_NOTHING").execute()
     
     # 2. Insert Real Villages
-    print(f"[JalSanjeevani] Seeding {len(REAL_VILLAGES)} authentic hamlets across Ahilyanagar & Sinnar...")
+    print(f"[JalSanchar] Seeding {len(REAL_VILLAGES)} authentic hamlets across Ahilyanagar & Sinnar...")
     res_v = client.table("villages").upsert(REAL_VILLAGES).execute()
-    print(f"[JalSanjeevani] Villages seeded: {len(res_v.data)} records.")
+    print(f"[JalSanchar] Villages seeded: {len(res_v.data)} records.")
 
     # 3. Insert Real Tankers
-    print(f"[JalSanjeevani] Seeding {len(REAL_TANKERS)} registered Maharashtra water tankers (MH-16 & MH-15)...")
+    print(f"[JalSanchar] Seeding {len(REAL_TANKERS)} registered Maharashtra water tankers (MH-16 & MH-15)...")
     res_t = client.table("tankers").upsert(REAL_TANKERS).execute()
-    print(f"[JalSanjeevani] Tankers seeded: {len(res_t.data)} records.")
+    print(f"[JalSanchar] Tankers seeded: {len(res_t.data)} records.")
 
-    print("\n[JalSanjeevani] Supabase database successfully updated with 100% authentic regional data!")
+    print("\n[JalSanchar] Supabase database successfully updated with 100% authentic regional data!")
 
 if __name__ == "__main__":
     seed()

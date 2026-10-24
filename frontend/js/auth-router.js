@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani - Centralized Sovereign Auth Router
+ * JalSanchar - Centralized Sovereign Auth Router
  * Handles dynamic role-based routing for authenticated government personas.
  */
 

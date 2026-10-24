@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani (RouteGuard) - Panchayat Verifier PWA Tactical Console
+ * JalSanchar (RouteGuard) - Panchayat Verifier PWA Tactical Console
  * Layer 2: Anti-Diversion & Cryptographic Proof-of-Delivery Engine
  * Uses WebRTC camera scanning, image upload decoding, circular gauge animation,
  * and dual-key cryptographic validation with online-first Supabase sync.
@@ -625,9 +625,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const receipts = JSON.parse(localStorage.getItem("jalsanjeevani_receipts") || "[]");
+      const receipts = JSON.parse(localStorage.getItem("jalsanchar_receipts") || localStorage.getItem("jalsanjeevani_receipts") || "[]");
       receipts.unshift(receipt);
-      localStorage.setItem("jalsanjeevani_receipts", JSON.stringify(receipts.slice(0, 50)));
+      localStorage.setItem("jalsanchar_receipts", JSON.stringify(receipts.slice(0, 50)));
     } catch (e) {
       console.warn("Local storage write error:", e);
     }
@@ -635,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 6. Online-First Sync with Deduplication & Offline Queue
     let backendSynced = false;
     try {
-      const apiBase = window.JalAuth ? window.JalAuth.getApiBase() : "https://jalsanjeevani.onrender.com";
+      const apiBase = window.JalAuth ? window.JalAuth.getApiBase() : "https://jalsanchar.onrender.com";
       const backendUrl = `${apiBase}/api/verify-delivery`;
       const authHeaders = window.JalAuth ? window.JalAuth.getAuthHeaders() : {};
 
@@ -780,7 +780,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnInstantDemo.addEventListener("click", () => {
       const demoNonce = "DEMO-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
       const demoPayload = {
-        protocol: "JALSANJEEVANI_POD_V2",
+        protocol: "JALSANCHAR_POD_V2",
         tanker_id: "TN-SN-02",
         trip_id: "TRIP-TN-SN-02-" + Math.floor(Date.now() / 3600000),
         panchayat_id: "GP-SN-104",
@@ -805,6 +805,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Background Sync completion feedback
+  window.addEventListener("jalsanchar-queue-synced", (e) => {
+    const count = e.detail && e.detail.count ? e.detail.count : 1;
+    triggerToast(`✅ Uploaded ${count} offline deliveries to server`);
+  });
   window.addEventListener("jalsanjeevani-queue-synced", (e) => {
     const count = e.detail && e.detail.count ? e.detail.count : 1;
     triggerToast(`✅ Uploaded ${count} offline deliveries to server`);
@@ -892,7 +896,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const savedTheme = localStorage.getItem("jalsanjeevani_theme");
+  const savedTheme = localStorage.getItem("jalsanchar_theme") || localStorage.getItem("jalsanjeevani_theme");
   if (savedTheme === "sunlight") {
     applySunlightTheme(true);
   }
@@ -905,7 +909,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Reset Demo State Action & Cross-Tab Broadcast Synchronization
   const btnResetDemoPanchayat = document.getElementById("btnResetDemoPanchayat");
   btnResetDemoPanchayat?.addEventListener("click", async () => {
-    if (confirm("Reset JalSanjeevani demo state across all tabs back to initial baseline?")) {
+    if (confirm("Reset JalSanchar demo state across all tabs back to initial baseline?")) {
       if (window.JalSupabase) {
         await window.JalSupabase.resetDemoState();
       }

@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani - Offline-First Sovereign IndexedDB Queue & Sync Manager
+ * JalSanchar - Offline-First Sovereign IndexedDB Queue & Sync Manager
  * Layer 4: Field Resilience for Intermittent Rural 4G Connectivity
  *
  * Provides:
@@ -11,7 +11,7 @@
 (function (window) {
   "use strict";
 
-  const DB_NAME = "JalSanjeevaniDB";
+  const DB_NAME = "JalSancharDB";
   const DB_VERSION = 1;
   const STORE_VERIFICATIONS = "verifications";
   const STORE_NONCES = "redeemed_nonces";
@@ -267,6 +267,7 @@
 
       if (syncedCount > 0) {
         console.log(`✅ [OfflineQueue] Flushed ${syncedCount} queued receipts.`);
+        window.dispatchEvent(new CustomEvent("jalsanchar-queue-synced", { detail: { count: syncedCount } }));
         window.dispatchEvent(new CustomEvent("jalsanjeevani-queue-synced", { detail: { count: syncedCount } }));
       }
 

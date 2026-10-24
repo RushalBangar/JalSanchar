@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani - Frontend Build Script (when Vercel Root Directory is set to 'frontend')
+ * JalSanchar - Frontend Build Script (when Vercel Root Directory is set to 'frontend')
  */
 
 const fs = require('fs');

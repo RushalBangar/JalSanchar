@@ -1,5 +1,5 @@
 /**
- * JalSanjeevani - Sovereign Portal Login Controller
+ * JalSanchar - Sovereign Portal Login Controller
  * 🔒 SECURED: No hardcoded passwords. All auth via backend API with bcrypt.
  *
  * Manages role switching, dynamic user loading,
@@ -98,19 +98,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Role display info
   const ROLE_DISPLAY = {
     collector: {
-      email: "collector@sinnar.jalsanjeevani.gov.in",
+      email: "collector@sinnar.jalsanchar.gov.in",
       name: "Shri. Rahul More, IAS",
       badgeId: "Govt ID: MH-IAS-0419",
       jurisdiction: "Ahilyanagar & Sinnar Disaster Division"
     },
     driver: {
-      email: "driver.mh15@sinnar.jalsanjeevani.gov.in",
+      email: "driver.mh15@sinnar.jalsanchar.gov.in",
       name: "Ramesh V. Patil",
       badgeId: "RTO: MH15-WT-881",
       jurisdiction: "Tanker TN-SN-02 (MH-15-TK-5512)"
     },
     panchayat: {
-      email: "panchayat.khopadi@sinnar.jalsanjeevani.gov.in",
+      email: "panchayat.khopadi@sinnar.jalsanchar.gov.in",
       name: "Sunita G. Deshmukh",
       badgeId: "Panchayat Reg: GP-SN-104",
       jurisdiction: "Khopadi Gram Panchayat (Sinnar)"
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Update Headings
     if (portalTitle) {
-      portalTitle.textContent = isRegister ? "Create New Account" : "Sign in to JalSanjeevani";
+      portalTitle.textContent = isRegister ? "Create New Account" : "Sign in to JalSanchar";
     }
     if (portalDesc) {
       portalDesc.textContent = isRegister 
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // If switching to register, clear pre-filled email so user inputs real credentials
     if (isRegister) {
-      if (emailInput && emailInput.value.includes("@sinnar.jalsanjeevani.gov.in")) {
+      if (emailInput && (emailInput.value.includes("@sinnar.jalsanchar.gov.in") || emailInput.value.includes("@sinnar.jalsanjeevani.gov.in"))) {
         emailInput.value = "";
       }
     }

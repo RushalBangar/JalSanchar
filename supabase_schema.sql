@@ -1,5 +1,5 @@
 -- ==============================================================================
--- JalSanjeevani (RouteGuard) Supabase Database Schema
+-- JalSanchar (RouteGuard) Supabase Database Schema
 -- Run this in your Supabase Project: SQL Editor -> New Query -> Run
 -- ==============================================================================
 
@@ -231,7 +231,7 @@ INSERT INTO public.gov_users (
 ) VALUES
     (
         'USR-COL-01',
-        'collector@sinnar.jalsanjeevani.gov.in',
+        'collector@sinnar.jalsanchar.gov.in',
         '$2b$12$lkCVe9vlQ/7nmEvmFlIwc.HrrLrsX9BFjTmSyXVxpCBJxBnVls5gO',
         'collector',
         'Shri. Rahul More, IAS',
@@ -248,7 +248,7 @@ INSERT INTO public.gov_users (
     ),
     (
         'USR-DRV-15',
-        'driver.mh15@sinnar.jalsanjeevani.gov.in',
+        'driver.mh15@sinnar.jalsanchar.gov.in',
         '$2b$12$lkCVe9vlQ/7nmEvmFlIwc.HrrLrsX9BFjTmSyXVxpCBJxBnVls5gO',
         'driver',
         'Ramesh V. Patil',
@@ -265,7 +265,7 @@ INSERT INTO public.gov_users (
     ),
     (
         'USR-GP-104',
-        'panchayat.khopadi@sinnar.jalsanjeevani.gov.in',
+        'panchayat.khopadi@sinnar.jalsanchar.gov.in',
         '$2b$12$lkCVe9vlQ/7nmEvmFlIwc.HrrLrsX9BFjTmSyXVxpCBJxBnVls5gO',
         'panchayat',
         'Sunita G. Deshmukh',

@@ -1,8 +1,8 @@
 {
-  "name": "jalsanjeevani",
+  "name": "jalsanchar",
   "version": "2.4.0",
   "private": true,
-  "description": "Sovereign Water Resource Governance & Anti-Diversion Logistics PWA",
+  "description": "JalSanchar - Sovereign Water Resource Governance & Anti-Diversion Logistics PWA",
   "scripts": {
     "build": "node build.js",
     "build:css": "npx -y tailwindcss@3 -i ./frontend/css/tailwind-input.css -o ./frontend/css/tailwind.min.css --minify",

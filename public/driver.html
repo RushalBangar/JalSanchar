@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
   <meta content="mobile_tab" name="shell-type"/>
   <!-- 🔒 Security Configuration -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://cdn.jsdelivr.net https://unpkg.com;">
 
-  <!-- 🔒 Early Blocking Auth Guard: Prevents unauthorized DOM inspection and content flash -->
+  <!-- 🔒 Early Blocking Auth Guard -->
   <script>
     (function() {
       try {
         var params = new URLSearchParams(window.location.search);
-        var raw = sessionStorage.getItem('jalsanjeevani_gov_session') || localStorage.getItem('jalsanjeevani_gov_session');
+        var raw = sessionStorage.getItem('jalsanchar_gov_session') || sessionStorage.getItem('jalsanjeevani_gov_session') || localStorage.getItem('jalsanchar_gov_session') || localStorage.getItem('jalsanjeevani_gov_session');
         if (!raw && (params.get('demo') === 'true' || params.get('eval') === '1')) {
           var demoSession = {
             token: 'JAL-DEMO-DRIVER-KEY',
@@ -22,7 +22,7 @@
               id: 'USR-DRV-15',
               name: 'Ramesh V. Patil',
               title: 'Municipal Tanker Pilot',
-              email: 'driver.mh15@sinnar.jalsanjeevani.gov.in',
+              email: 'driver.mh15@sinnar.jalsanchar.gov.in',
               role: 'driver',
               badge_id: 'RTO-MH15-WT-881',
               jurisdiction: 'Tanker TN-SN-02 (MH-15-TK-5512)',
@@ -32,6 +32,7 @@
             expiresAt: Date.now() + 86400000,
             isDemoMode: true
           };
+          sessionStorage.setItem('jalsanchar_gov_session', JSON.stringify(demoSession));
           sessionStorage.setItem('jalsanjeevani_gov_session', JSON.stringify(demoSession));
           raw = JSON.stringify(demoSession);
         }
@@ -54,506 +55,235 @@
     })();
   </script>
 
-  <title>Tanker Driver Portal | JalSanjeevani</title>
+  <title>Tanker Driver Portal | JalSanchar</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="manifest" href="manifest.json">
-  <!-- Google Fonts: Inter, JetBrains Mono, Noto Sans Devanagari, Plus Jakarta Sans -->
+
+  <!-- Fonts: Outfit, Source Sans 3, IBM Plex Mono, Noto Sans Devanagari -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
-  <link rel="stylesheet" href="css/tailwind.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "safe-emerald": "#10B981",
-            "on-error": "#690005",
-            "warning-amber": "#F59E0B",
-            "warning-amber-glow": "rgba(245, 158, 11, 0.2)",
-            "on-primary-fixed-variant": "#004e5c",
-            "surface-variant": "#2f3543",
-            "telemetry-cyan-glow": "rgba(6, 182, 212, 0.2)",
-            "inverse-primary": "#00687a",
-            "tertiary-fixed": "#6ffbbe",
-            "on-tertiary-fixed-variant": "#005236",
-            "outline": "#869397",
-            "primary": "#4cd7f6",
-            "border-active": "rgba(6, 182, 212, 0.45)",
-            "surface": "#0d1320",
-            "on-tertiary-fixed": "#002113",
-            "primary-container": "#06b6d4",
-            "surface-container-low": "#161b29",
-            "outline-variant": "#3d494c",
-            "secondary-fixed-dim": "#7bd0ff",
-            "surface-bright": "#333948",
-            "tertiary": "#4edea3",
-            "inverse-surface": "#dde2f5",
-            "surface-overlay": "#1E2C4A",
-            "alert-crimson": "#EF4444",
-            "safe-emerald-glow": "rgba(16, 185, 129, 0.2)",
-            "secondary": "#7bd0ff",
-            "surface-tint": "#4cd7f6",
-            "error-container": "#93000a",
-            "surface-panel": "#111A2E",
-            "on-secondary": "#00354a",
-            "on-surface-variant": "#bcc9cd",
-            "on-primary": "#003640",
-            "tertiary-container": "#1bbd85",
-            "on-primary-container": "#00424f",
-            "primary-fixed-dim": "#4cd7f6",
-            "on-error-container": "#ffdad6",
-            "tertiary-fixed-dim": "#4edea3",
-            "surface-dim": "#0d1320",
-            "surface-container": "#1a1f2d",
-            "alert-crimson-glow": "rgba(239, 68, 68, 0.2)",
-            "surface-base": "#0B111E",
-            "surface-container-highest": "#2f3543",
-            "on-secondary-fixed": "#001e2c",
-            "on-tertiary-container": "#00452e",
-            "on-primary-fixed": "#001f26",
-            "on-surface": "#dde2f5",
-            "inverse-on-surface": "#2a303f",
-            "on-secondary-container": "#00374d",
-            "secondary-container": "#00a6e0",
-            "on-background": "#dde2f5",
-            "surface-card": "#17233D",
-            "primary-fixed": "#acedff",
-            "background": "#0d1320",
-            "on-tertiary": "#003824",
-            "error": "#ffb4ab",
-            "surface-container-high": "#242a38",
-            "secondary-fixed": "#c4e7ff",
-            "surface-container-lowest": "#080e1b",
-            "on-secondary-fixed-variant": "#004c69",
-            "border-subtle": "rgba(56, 189, 248, 0.14)",
-            "text-muted": "#94A3B8",
-            "muted-foreground": "#94A3B8"
-          },
-          fontFamily: {
-            "body-sm": ["Inter", "sans-serif"],
-            "headline-md": ["Inter", "sans-serif"],
-            "label-tactical": ["JetBrains Mono", "monospace"],
-            "telemetry-metric": ["JetBrains Mono", "monospace"],
-            "headline-xl": ["Inter", "sans-serif"],
-            "headline-lg": ["Inter", "sans-serif"],
-            "body-md": ["Inter", "sans-serif"],
-            "body-lg": ["Inter", "sans-serif"],
-            "telemetry-code": ["JetBrains Mono", "monospace"]
-          },
-          fontSize: {
-            "body-sm": ["11px", { lineHeight: "16px", fontWeight: "400" }],
-            "headline-md": ["18px", { lineHeight: "24px", fontWeight: "600" }],
-            "label-tactical": ["10px", { lineHeight: "12px", fontWeight: "600" }],
-            "telemetry-metric": ["28px", { lineHeight: "32px", fontWeight: "700" }],
-            "headline-xl": ["32px", { lineHeight: "38px", fontWeight: "700" }],
-            "headline-lg": ["22px", { lineHeight: "28px", fontWeight: "600" }],
-            "body-md": ["13px", { lineHeight: "18px", fontWeight: "400" }],
-            "body-lg": ["15px", { lineHeight: "22px", fontWeight: "400" }],
-            "telemetry-code": ["12px", { lineHeight: "16px", fontWeight: "500" }]
-          }
-        }
-      }
-    };
-  </script>
-  <style>
-    @layer base {
-      html, body { width: 100vw; margin: 0; padding: 0; }
-      body { overscroll-behavior: none; min-height: max(884px, 100dvh); }
-      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
-      main > :first-child { margin-top: 0 !important; }
-      main > :last-child { margin-bottom: 0 !important; }
-    }
-    ::-webkit-scrollbar { display: none; }
-    #qrcode img, #qrcode canvas {
-      max-width: 190px !important;
-      height: auto !important;
-      margin: 0 auto;
-    }
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-    /* High-Contrast Outdoor Daylight / Sunlight Mode */
-    html.sunlight-theme, html.sunlight-theme body {
-      background-color: #ffffff !important;
-      color: #0f172a !important;
-    }
-    html.sunlight-theme .bg-surface,
-    html.sunlight-theme .bg-surface-base,
-    html.sunlight-theme .bg-surface-panel,
-    html.sunlight-theme .bg-surface-card,
-    html.sunlight-theme .bg-surface-container,
-    html.sunlight-theme .bg-surface-container-low,
-    html.sunlight-theme .bg-surface-container-high,
-    html.sunlight-theme .bg-surface-container-lowest {
-      background-color: #f8fafc !important;
-      border: 1.5px solid #0f172a !important;
-      color: #0f172a !important;
-    }
-    html.sunlight-theme header,
-    html.sunlight-theme nav {
-      background-color: #ffffff !important;
-      border-bottom: 2px solid #0f172a !important;
-    }
-    html.sunlight-theme .text-on-surface,
-    html.sunlight-theme .text-on-surface-variant,
-    html.sunlight-theme .text-secondary {
-      color: #0f172a !important;
-      font-weight: 600 !important;
-    }
-    html.sunlight-theme .text-primary {
-      color: #0284c7 !important;
-      font-weight: 700 !important;
-    }
-    html.sunlight-theme .shadow-xl,
-    html.sunlight-theme .shadow-lg {
-      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15) !important;
-      border: 2px solid #0f172a !important;
-    }
-  </style>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/tailwind.min.css">
+
   <script src="js/qrcode.min.js"></script>
   <script>if (typeof QRCode === 'undefined') { document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>'); }</script>
 </head>
-<body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen">
+<body class="bg-[#FAFBFC] font-body-md text-[#1C2833] antialiased flex flex-col min-h-screen">
 
-  <!-- Header -->
-  <header class="fixed top-0 w-full z-50 pt-safe bg-surface-panel/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.35)] border-b border-white/5">
-    <div class="h-20 px-4 flex flex-col justify-between py-2">
-      <div class="flex items-center justify-between gap-2">
-        <a href="index.html" class="flex items-center gap-2">
-          <img alt="JalSanjeevani Logo" class="h-8 w-auto object-contain rounded" src="assets/logo.jpg"/>
-          <div class="flex flex-col">
-            <span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight leading-none">JalSanjeevani</span>
-            <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Driver App</span>
-          </div>
-        </a>
-
-        <div class="flex items-center gap-2">
-          <!-- Sunlight Mode Toggle Button -->
-          <button id="btnSunlightToggle" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-amber-400 px-2 py-1 rounded border border-white/10 font-label-tactical text-[11px] font-semibold transition-all cursor-pointer" title="Toggle Outdoor Daylight Theme">
-            <span class="material-symbols-outlined text-[15px] text-amber-400">wb_sunny</span>
-            <span class="hidden xs:inline">Sunlight</span>
-          </button>
-
-          <!-- Reset Demo State Button -->
-          <button id="btnResetDemoDriver" class="flex items-center gap-1 bg-surface-container-high hover:bg-surface-bright text-amber-400 hover:text-amber-300 px-2 py-1 rounded border border-amber-400/30 font-label-tactical text-[11px] font-bold transition-all cursor-pointer" title="Reset Demo Data">
-            <span class="material-symbols-outlined text-[15px]">restart_alt</span>
-            <span class="hidden sm:inline">Reset</span>
-          </button>
-
-          <!-- Online/Offline Live Network Indicator -->
-          <div id="networkStatusBadge" class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full border border-safe-emerald/30">
-            <span id="networkStatusDot" class="w-2 h-2 rounded-full bg-safe-emerald animate-pulse"></span>
-            <span id="networkStatusText" class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-tight">Online</span>
-          </div>
-
-          <!-- Tanker Identifier Badge -->
-          <div class="bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-            <span id="headerTankerBadge" class="font-label-tactical text-label-tactical text-primary font-bold">TK-04</span>
-          </div>
-
-          <!-- Language Selector -->
-          <div class="relative flex items-center">
-            <select id="langSwitcher" class="appearance-none bg-surface-container-high text-on-surface-variant font-label-tactical text-label-tactical py-1 pl-2 pr-5 rounded border border-white/10 focus:outline-none" aria-label="Language Selector">
-              <option value="en">English</option>
-              <option value="mr">मराठी</option>
-              <option value="hi">हिंदी</option>
-            </select>
-            <span class="material-symbols-outlined absolute right-0.5 pointer-events-none text-on-surface-variant text-[14px]">expand_more</span>
-          </div>
-
-          <!-- User Profile Mount -->
-          <div id="userProfileMount" class="shrink-0"></div>
+  <!-- Top Sticky Formal Navigation Header -->
+  <header class="sticky top-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2 text-decoration-none">
+        <img alt="JalSanchar Logo" class="h-8 w-auto rounded" src="assets/logo.jpg"/>
+        <div>
+          <span class="font-display font-bold text-sm sm:text-base text-primary leading-tight block">JalSanchar</span>
+          <span class="text-[10px] text-gray-500 font-semibold tracking-wider uppercase block">Driver Field App</span>
         </div>
-      </div>
+      </a>
 
-      <!-- Sector & Role Sub-strip -->
-      <div class="flex items-center justify-between px-1 pb-0.5">
-        <div class="flex items-center gap-2">
-          <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-wider">Delivery Area:</span>
-          <span class="font-label-tactical text-label-tactical text-secondary font-semibold uppercase">Ahilyanagar &amp; Sinnar</span>
+      <div class="flex items-center gap-2">
+        <!-- Online/Offline Network Badge -->
+        <div id="networkStatusBadge" class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200">
+          <span id="networkStatusDot" class="w-2 h-2 rounded-full bg-[#27AE60]"></span>
+          <span id="networkStatusText" class="font-bold text-[10px] text-green-800 uppercase">Online</span>
         </div>
-        <div class="flex items-center">
-          <span class="font-label-tactical text-label-tactical text-on-surface font-semibold uppercase tracking-wider">Driver Portal</span>
+
+        <!-- Tanker Badge -->
+        <div class="px-2 py-0.5 rounded bg-blue-50 border border-blue-200">
+          <span id="headerTankerBadge" class="font-mono text-xs font-bold text-primary">TK-04</span>
         </div>
+
+        <!-- Reset Button -->
+        <button id="btnResetDemoDriver" class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-gray-600 cursor-pointer" title="Reset Demo Data">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Sunlight Mode Button -->
+        <button id="btnSunlightToggle" class="p-1 rounded border border-gray-200 hover:bg-gray-100 text-amber-600 cursor-pointer" title="Sunlight Contrast">
+          <i data-lucide="sun" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Language Selector -->
+        <select id="langSwitcher" class="text-xs border border-gray-200 rounded px-1.5 py-1 bg-white outline-none cursor-pointer" aria-label="Language Selector">
+          <option value="en">EN</option>
+          <option value="mr">मरा</option>
+          <option value="hi">हिं</option>
+        </select>
+        
+        <div id="userProfileMount" class="hidden"></div>
       </div>
     </div>
   </header>
 
-  <!-- Main Cockpit Viewport -->
-  <main class="flex flex-col relative w-full pt-24 pb-28 bg-surface min-h-screen">
-    <div class="flex flex-col w-full px-4 py-2 space-y-3 max-w-lg mx-auto">
+  <!-- Driver Cockpit Card Stack -->
+  <main class="flex-1 w-full max-w-xl mx-auto px-4 py-4 space-y-4">
 
-      <!-- Mission Alert Banner -->
-      <div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-xl shadow-sm border border-white/5">
-        <div class="flex items-center space-x-2">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe-emerald opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-safe-emerald"></span>
-          </span>
-          <span id="missionActiveBannerText" class="font-label-tactical text-label-tactical text-safe-emerald uppercase font-bold tracking-wider">Trip in Progress</span>
-        </div>
-        <div class="flex items-center space-x-1.5 text-on-surface-variant font-label-tactical text-label-tactical">
-          <span class="material-symbols-outlined text-[14px] text-primary">satellite_alt</span>
-          <span>GPS Connected</span>
-          <span class="text-surface-variant">•</span>
-          <span class="text-secondary font-semibold">Route Clear</span>
-        </div>
+    <!-- 1. Mission Status Banner -->
+    <div class="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#27AE60]"></span>
+        <span id="missionActiveBannerText" class="font-bold text-xs text-green-900 uppercase tracking-wide">
+          Trip in Progress • Ahilyanagar Sector
+        </span>
       </div>
-
-      <!-- Primary Target Mission Card -->
-      <div class="bg-surface-card rounded-xl p-4 shadow-xl flex flex-col space-y-3 relative overflow-hidden border border-white/5">
-        <!-- Ambient cyan corner glow -->
-        <div class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-primary/10 blur-2xl pointer-events-none"></div>
-
-        <!-- Target Title & Transit Pill -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex flex-col">
-            <span class="font-label-tactical text-label-tactical text-primary uppercase tracking-widest">Water Delivery Destination</span>
-            <h1 id="targetVillageTitle" class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight mt-0.5">
-              Destination: Khopadi Village Tank
-            </h1>
-          </div>
-          <div class="inline-flex items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-full shrink-0 border border-primary/20">
-            <span id="transitDot" class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span id="transitBadge" class="font-label-tactical text-label-tactical font-bold text-primary uppercase tracking-wider">ON THE WAY</span>
-          </div>
-        </div>
-
-        <!-- Primary Volume Highlight -->
-        <div class="flex items-baseline justify-between bg-surface-container-lowest/80 p-3 rounded-lg border border-white/5">
-          <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined text-[18px]">water_drop</span>
-            </div>
-            <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Water Quantity</span>
-          </div>
-          <div class="text-right">
-            <span class="font-telemetry-metric text-telemetry-metric text-primary tracking-tight font-bold">10,000</span>
-            <span class="font-label-tactical text-label-tactical text-secondary ml-1 font-bold">Liters</span>
-          </div>
-        </div>
-
-        <!-- Mission Specifications Grid -->
-        <div class="grid grid-cols-1 gap-2 text-on-surface">
-          <!-- Statutory Allocation -->
-          <div class="flex items-center justify-between bg-surface-container/60 px-3 py-2 rounded">
-            <div class="flex items-center space-x-2">
-              <span class="material-symbols-outlined text-[16px] text-safe-emerald">verified_user</span>
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Daily Quota</span>
-            </div>
-            <span class="font-body-md text-body-md font-semibold text-safe-emerald">40L / Person • 70L / Animal</span>
-          </div>
-
-          <!-- Designated Cistern -->
-          <div class="flex items-center justify-between bg-surface-container/60 px-3 py-2 rounded">
-            <div class="flex items-center space-x-2">
-              <span class="material-symbols-outlined text-[16px] text-secondary">warehouse</span>
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Delivery Tank</span>
-            </div>
-            <span class="font-body-md text-body-md font-semibold text-on-surface">Village Water Tank #02</span>
-          </div>
-
-          <!-- Required Handshake -->
-          <div class="flex items-center justify-between bg-surface-container/60 px-3 py-2 rounded">
-            <div class="flex items-center space-x-2">
-              <span class="material-symbols-outlined text-[16px] text-warning-amber">badge</span>
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase">Verified By</span>
-            </div>
-            <span class="font-body-md text-body-md font-semibold text-warning-amber">Gram Panchayat Official</span>
-          </div>
-        </div>
+      <div class="flex items-center gap-1 text-xs text-gray-600 font-medium">
+        <i data-lucide="navigation" class="w-3.5 h-3.5 text-primary"></i>
+        <span>GPS Locked</span>
       </div>
-
-      <!-- Arrival Coordinates & Proximity Trigger Card -->
-      <div class="bg-surface-panel rounded-xl p-4 shadow-lg flex flex-col space-y-2.5 border border-white/5">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span id="geofenceRadarIcon" class="material-symbols-outlined text-[20px] text-primary animate-pulse">radar</span>
-            <div class="flex flex-col">
-              <span class="font-label-tactical text-label-tactical text-on-surface-variant uppercase tracking-wider">Tanker Distance</span>
-              <span id="geofenceStatusText" class="font-body-lg text-body-lg font-bold text-on-surface">Distance: 180m to Village Tank</span>
-            </div>
-          </div>
-          <span id="geofenceRangeBadge" class="bg-warning-amber/15 text-warning-amber px-2 py-0.5 rounded font-label-tactical text-label-tactical uppercase font-bold">On Route</span>
-        </div>
-
-        <!-- Tactile Push Trigger Button -->
-        <button id="btnLogArrival" class="w-full min-h-[50px] bg-primary-container text-on-primary-container hover:bg-primary font-headline-md text-headline-md font-bold rounded-xl shadow-lg flex items-center justify-center space-x-2 active:scale-[0.98] transition-all cursor-pointer">
-          <span class="material-symbols-outlined text-[22px]">where_to_vote</span>
-          <span id="btnLogArrivalText">Confirm Arrival at Tank</span>
-        </button>
-
-        <div id="arrivalSuccessBanner" class="hidden flex items-center space-x-1.5 justify-center py-1.5 bg-safe-emerald/10 rounded-lg text-safe-emerald border border-safe-emerald/20">
-          <span class="material-symbols-outlined text-[16px]">check_circle</span>
-          <span class="font-label-tactical text-label-tactical uppercase font-semibold">Arrival Confirmed • Tanker at Village Tank</span>
-        </div>
-      </div>
-
-      <!-- Water Delivery QR Code Container -->
-      <div class="bg-surface-card rounded-xl p-4 shadow-xl flex flex-col items-center space-y-3 text-center border border-white/5">
-        <div class="flex flex-col space-y-1">
-          <div class="flex items-center justify-center space-x-1.5 text-primary">
-            <span class="material-symbols-outlined text-[18px]">lock</span>
-            <span class="font-label-tactical text-label-tactical uppercase tracking-wider font-bold">Water Delivery Proof (QR Code)</span>
-          </div>
-          <p class="font-body-md text-body-md text-on-surface-variant max-w-xs px-2">
-            Show this QR code to the village official at the water tank to confirm delivery and approve payment.
-          </p>
-          <!-- Dynamic Token Freshness Badge -->
-          <div id="tokenDynamicBadge" class="flex items-center justify-center gap-1.5 text-[11px] font-label-tactical text-safe-emerald bg-safe-emerald/10 px-2.5 py-1 rounded-full border border-safe-emerald/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-safe-emerald animate-pulse"></span>
-            <span>Secure QR Code • Valid for 10 min</span>
-          </div>
-        </div>
-
-        <!-- High-Contrast Scannable White Pod -->
-        <div class="w-full max-w-[280px] bg-white p-3 rounded-xl shadow-2xl flex flex-col items-center justify-center space-y-2">
-          <!-- Live Scannable High-Density QR Code -->
-          <div id="qrcode" class="w-56 h-56 flex items-center justify-center relative p-1 bg-white"></div>
-
-          <!-- Token Identification Strip -->
-          <div class="bg-slate-100 text-slate-800 px-3 py-1.5 rounded w-full flex items-center justify-center space-x-1.5">
-            <span class="material-symbols-outlined text-[13px] text-slate-600">vpn_key</span>
-            <span id="driverCryptoKey" class="font-label-tactical text-label-tactical tracking-wider font-bold">DELIVERY CODE: 0x9F3B4E • TANK LOCATION MATCHED</span>
-          </div>
-
-          <!-- 30s Auto-Refresh Progress Bar -->
-          <div class="w-full bg-slate-50 p-2 rounded-lg border border-slate-200 flex flex-col gap-1 text-left">
-            <div class="flex items-center justify-between font-mono text-[10px] font-bold text-slate-700">
-              <span class="flex items-center gap-1 text-cyan-700">
-                <span class="material-symbols-outlined text-[13px]">timer</span>
-                <span>QR CODE AUTO-REFRESH</span>
-              </span>
-              <span id="totpCountdownText" class="text-cyan-800 font-bold font-mono">30s</span>
-            </div>
-            <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-              <div id="totpProgressBar" class="h-full bg-cyan-600 transition-all duration-1000 ease-linear rounded-full" style="width: 100%;"></div>
-            </div>
-            <div class="flex items-center justify-between text-[9px] font-mono text-slate-600 pt-0.5">
-              <span>CODE: <strong id="liveNonceHash" class="text-slate-900 font-bold">0x8F4C2E1B</strong></span>
-              <span class="text-emerald-700 font-bold flex items-center gap-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Refreshes every 30s
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Toolbar Row -->
-        <div class="grid grid-cols-4 gap-1.5 w-full max-w-sm pt-1">
-          <!-- Copy Token -->
-          <button id="copyTokenBtn" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer">
-            <span class="material-symbols-outlined text-[15px] text-primary">content_copy</span>
-            <span class="font-label-tactical text-[10px] font-semibold">Copy</span>
-          </button>
-          <!-- Refresh Dynamic Token -->
-          <button id="btnRefreshQR" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer" title="Generate fresh dynamic nonce">
-            <span class="material-symbols-outlined text-[15px] text-safe-emerald">sync</span>
-            <span class="font-label-tactical text-[10px] font-semibold">Refresh</span>
-          </button>
-          <!-- Save Image -->
-          <button id="saveImageBtn" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer">
-            <span class="material-symbols-outlined text-[15px] text-secondary">download</span>
-            <span class="font-label-tactical text-[10px] font-semibold">Image</span>
-          </button>
-          <!-- View JSON Proof -->
-          <button id="toggleJsonBtn" class="bg-surface-container hover:bg-surface-container-high py-2.5 px-1 rounded-lg flex items-center justify-center space-x-1 text-on-surface transition-all active:scale-95 shadow-sm border border-white/5 cursor-pointer">
-            <span class="material-symbols-outlined text-[15px] text-tertiary">code</span>
-            <span class="font-label-tactical text-[10px] font-semibold">JSON</span>
-          </button>
-        </div>
-
-        <!-- Expandable JSON Proof Inspector -->
-        <div id="jsonProofDrawer" class="hidden w-full text-left bg-surface-container-lowest p-3 rounded-lg font-telemetry-code text-telemetry-code text-primary space-y-1 border border-white/10">
-          <div class="flex justify-between items-center text-on-surface-variant font-label-tactical text-label-tactical">
-            <span>DELIVERY_RECEIPT_DETAILS.JSON</span>
-            <button id="closeJsonProofBtn" class="text-on-surface hover:text-alert-crimson font-bold text-sm">✕</button>
-          </div>
-          <pre id="payloadJsonView" class="overflow-x-auto text-[10px] leading-4 text-secondary bg-surface-base p-2 rounded max-h-48 whitespace-pre-wrap word-break-all"></pre>
-        </div>
-      </div>
-
-      <!-- Operational Diagnostics Strip -->
-      <div class="bg-surface-panel rounded-xl p-3 flex items-center justify-between text-on-surface-variant border border-white/5">
-        <div class="flex items-center space-x-2">
-          <span class="material-symbols-outlined text-[16px] text-primary">local_gas_station</span>
-          <div class="flex flex-col">
-            <span class="font-label-tactical text-label-tactical">Fuel Level</span>
-            <span class="font-telemetry-code text-telemetry-code text-on-surface font-semibold">76% (~140km)</span>
-          </div>
-        </div>
-        <div class="h-6 w-[1px] bg-surface-variant"></div>
-        <div class="flex items-center space-x-2">
-          <span class="material-symbols-outlined text-[16px] text-safe-emerald">shield</span>
-          <div class="flex flex-col">
-            <span class="font-label-tactical text-label-tactical">Water Valve Seal</span>
-            <span class="font-telemetry-code text-telemetry-code text-safe-emerald font-semibold">Intact &amp; Sealed</span>
-          </div>
-        </div>
-        <div class="h-6 w-[1px] bg-surface-variant"></div>
-        <button id="sosBeaconBtn" class="flex items-center space-x-1 bg-alert-crimson/15 hover:bg-alert-crimson/25 text-alert-crimson px-2.5 py-1.5 rounded transition-all cursor-pointer">
-          <span class="material-symbols-outlined text-[16px]">sos</span>
-          <span class="font-label-tactical text-label-tactical font-bold uppercase">Emergency SOS</span>
-        </button>
-      </div>
-
-      <!-- Driver Operational Actions -->
-      <div class="grid grid-cols-2 gap-2 pt-1">
-        <button type="button" onclick="window.JalAuth && window.JalAuth.openProfileModal()" class="flex items-center justify-center space-x-1 py-2.5 px-2 bg-surface-container-high/60 hover:bg-surface-container-high rounded-xl text-primary text-center shadow-sm border border-primary/20 transition-all cursor-pointer">
-          <span class="material-symbols-outlined text-[16px]">manage_accounts</span>
-          <span class="font-label-tactical text-label-tactical font-semibold uppercase">Edit Profile</span>
-        </button>
-        <button type="button" onclick="window.JalAuth && window.JalAuth.logout(true)" class="flex items-center justify-center space-x-1 py-2.5 px-2 bg-surface-container-high/60 hover:bg-alert-crimson/20 rounded-xl text-alert-crimson text-center shadow-sm border border-white/5 transition-all cursor-pointer">
-          <span class="material-symbols-outlined text-[16px]">logout</span>
-          <span class="font-label-tactical text-label-tactical font-semibold uppercase">Sign Out</span>
-        </button>
-      </div>
-
     </div>
 
-    <!-- Floating Toast Notification -->
-    <div id="driverToast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-safe-emerald text-surface-base px-4 py-2 rounded-xl text-body-sm font-semibold shadow-2xl z-50"></div>
+    <!-- 2. Target Delivery Village Card -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <div class="flex items-start justify-between mb-2">
+        <div>
+          <span class="text-[11px] font-bold text-primary uppercase tracking-wider block">Assigned Destination</span>
+          <h2 id="targetVillageTitle" class="font-display font-bold text-xl text-gray-900">Khopadi Cistern #02</h2>
+          <span class="text-xs text-gray-500">Taluka Sinnar • 10,000 Liters Capacity</span>
+        </div>
+        <div class="p-2 rounded-lg bg-blue-50 text-primary">
+          <i data-lucide="droplet" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Quota Strip -->
+      <div class="grid grid-cols-2 gap-2 my-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200 text-xs">
+        <div>
+          <span class="text-gray-500 block">Relief Quota</span>
+          <span class="font-bold text-gray-800">40L/Person &amp; 70L/Cattle</span>
+        </div>
+        <div>
+          <span class="text-gray-500 block">Village Shortage</span>
+          <span class="font-bold text-[#E74C3C]">Well Level: 7% (Urgent)</span>
+        </div>
+      </div>
+
+      <!-- Geofence Radar Status -->
+      <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg border border-gray-200 mb-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span id="geofenceRadarIcon"><i data-lucide="map-pin" class="w-4 h-4 text-green-600"></i></span>
+          <span id="geofenceStatusText" class="font-medium text-gray-800">Within 150m of Cistern</span>
+        </div>
+        <span id="geofenceRangeBadge" class="badge badge-success text-[10px]">IN GEOFENCE</span>
+      </div>
+
+      <!-- Action: Log Arrival -->
+      <button id="btnLogArrival" class="btn btn-primary btn-block py-3 text-sm font-bold">
+        <i data-lucide="map-pin-check" class="w-4 h-4 mr-1"></i>
+        <span id="btnLogArrivalText">Log Arrival at Cistern</span>
+      </button>
+
+      <!-- Arrival Banner -->
+      <div id="arrivalSuccessBanner" class="hidden mt-2 p-2 bg-green-100 border border-green-300 rounded text-xs text-green-900 font-semibold text-center">
+        ✓ Arrival Logged! Present QR Code Below to Gram Panchayat
+      </div>
+    </div>
+
+    <!-- 3. Dynamic QR Delivery Attestation Card -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-center">
+      <div class="flex items-center justify-between mb-3 text-left">
+        <div>
+          <h3 class="font-display font-bold text-base text-gray-900">Delivery Attestation QR</h3>
+          <span class="text-xs text-gray-500">Scan via Panchayat Camera to Confirm Discharge</span>
+        </div>
+        <span id="transitBadge" class="badge badge-info text-[10px]">
+          <span id="transitDot" class="w-1.5 h-1.5 rounded-full bg-primary inline-block mr-1"></span>
+          READY TO SCAN
+        </span>
+      </div>
+
+      <!-- QR Box Frame -->
+      <div class="inline-block p-4 bg-white border-2 border-primary rounded-xl shadow-md my-2">
+        <div id="qrcode" class="flex justify-center items-center min-w-[200px] min-h-[200px]"></div>
+      </div>
+
+      <!-- TOTP Countdown Strip -->
+      <div class="my-3 space-y-1">
+        <div class="flex justify-between text-xs font-mono text-gray-600">
+          <span>Security Token Refreshes:</span>
+          <span id="totpCountdownText" class="font-bold text-primary">02:00</span>
+        </div>
+        <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+          <div id="totpProgressBar" class="bg-primary h-full transition-all" style="width: 100%;"></div>
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-gray-500 font-mono pt-1">
+          <span>HMAC Nonce: <code id="liveNonceHash">0x9F3B4ED8</code></span>
+          <span id="tokenDynamicBadge" class="text-green-700 font-bold">SHA-256 Valid</span>
+        </div>
+      </div>
+
+      <div class="text-[11px] text-gray-500 font-mono mb-3">
+        Driver Secret Key: <span id="driverCryptoKey" class="text-gray-800 font-bold">DRV-SN-PATIL-0822</span>
+      </div>
+
+      <!-- QR Action Toolbar -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <button id="btnRefreshQR" class="btn btn-outline btn-sm">
+          <i data-lucide="rotate-cw" class="w-3.5 h-3.5 mr-1"></i> Refresh Token
+        </button>
+        <button id="copyTokenBtn" class="btn btn-outline btn-sm">
+          <i data-lucide="copy" class="w-3.5 h-3.5 mr-1"></i> Copy Payload
+        </button>
+        <button id="saveImageBtn" class="btn btn-outline btn-sm">
+          <i data-lucide="download" class="w-3.5 h-3.5 mr-1"></i> Save QR Image
+        </button>
+        <button id="toggleJsonBtn" class="btn btn-outline btn-sm">
+          <i data-lucide="code" class="w-3.5 h-3.5 mr-1"></i> View JSON Proof
+        </button>
+      </div>
+    </div>
+
+    <!-- 4. Emergency SOS Beacon -->
+    <div class="bg-white border border-red-200 rounded-xl p-3 shadow-sm flex items-center justify-between">
+      <div>
+        <span class="font-bold text-sm text-red-700 block">Emergency SOS Assistance</span>
+        <span class="text-xs text-gray-500">Breakdown, fuel shortage, or medical emergency</span>
+      </div>
+      <button id="sosBeaconBtn" class="btn btn-danger btn-sm">
+        <i data-lucide="alert-triangle" class="w-4 h-4 mr-1"></i> Send SOS
+      </button>
+    </div>
+
   </main>
 
-  <!-- Sticky Bottom Tactical Navigation (Driver Console Only - No Cross Portal Switching) -->
-  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-panel/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)] border-t border-white/5">
-    <div class="flex justify-around items-center h-16 px-2">
-      <a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl transition-all gap-0.5 text-primary font-bold bg-primary/10" href="driver.html">
-        <span class="material-symbols-outlined text-[20px]">navigation</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Cockpit</span>
-      </a>
-      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-0.5" href="#btnLogArrival">
-        <span class="material-symbols-outlined text-[20px]">where_to_vote</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Arrival</span>
-      </a>
-      <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-0.5" href="#qrcode">
-        <span class="material-symbols-outlined text-[20px]">qr_code_2</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">QR Token</span>
-      </a>
-      <button type="button" onclick="window.JalAuth && window.JalAuth.openProfileModal()" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-primary transition-all gap-0.5 cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">person</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Profile</span>
-      </button>
-      <button type="button" onclick="window.JalAuth && window.JalAuth.logout(true)" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 rounded-xl text-on-surface-variant hover:text-alert-crimson transition-all gap-0.5 cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">logout</span>
-        <span class="font-label-tactical text-label-tactical uppercase tracking-wider text-center">Exit</span>
-      </button>
+  <!-- JSON Proof Drawer -->
+  <div id="jsonProofDrawer" class="hidden fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-4">
+    <div class="bg-white border border-gray-200 rounded-xl max-w-lg w-full p-4 shadow-xl">
+      <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
+        <h4 class="font-bold text-sm text-gray-800">Verifiable Trip Cryptographic Payload</h4>
+        <button id="closeJsonProofBtn" class="text-gray-500 hover:text-gray-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <pre id="payloadJsonView" class="p-3 bg-gray-100 rounded text-xs font-mono overflow-x-auto max-h-60 text-gray-800"></pre>
     </div>
-  </nav>
+  </div>
 
+  <!-- Toast Notification -->
+  <div id="driverToast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-2 px-4 rounded-full shadow-lg z-50">
+    Notification
+  </div>
+
+  <!-- Core Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/auth-router.js"></script>
   <script src="js/offline-queue.js"></script>
   <script src="js/lang.js"></script>
-  <script src="js/qrcode.min.js"></script>
   <script src="js/driver.js"></script>
   <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register note:', err));
+      });
     }
   </script>
 </body>

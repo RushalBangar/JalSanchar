@@ -56,23 +56,23 @@ except ImportError:
 # ─── Secure Configuration (secrets from .env ONLY, with deterministic fallback) ────
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
-JWT_SECRET = os.getenv("JWT_SECRET", "jalsanjeevani_sovereign_water_secret_key_2025")
+JWT_SECRET = os.getenv("JWT_SECRET", "jalsanchar_sovereign_water_secret_key_2025")
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000,http://localhost:5173,http://127.0.0.1:5173,https://jalsanjeevani.onrender.com,https://rushalbangar.github.io"
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000,http://localhost:5173,http://127.0.0.1:5173,https://jalsanchar.onrender.com,https://jalsanjeevani.onrender.com,https://rushalbangar.github.io"
 ).split(",")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    print("[JalSanjeevani API] [WARNING] SUPABASE_URL or SUPABASE_KEY not set in .env file!")
+    print("[JalSanchar API] [WARNING] SUPABASE_URL or SUPABASE_KEY not set in .env file!")
 
 supabase_client = None
 if SUPABASE_KEY:
     try:
         from supabase import create_client
         supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
-        print("[JalSanjeevani API] [OK] Supabase client initialized securely.")
+        print("[JalSanchar API] [OK] Supabase client initialized securely.")
     except Exception as e:
-        print(f"[JalSanjeevani API] Supabase client init note: {e}")
+        print(f"[JalSanchar API] Supabase client init note: {e}")
 
 # ─── Active Session Store (in-memory; use Redis in production) ────────────────
 _active_sessions: Dict[str, dict] = {}
@@ -107,14 +107,14 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; "
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://server.arcgisonline.com https://services.arcgisonline.com; "
+            "connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net https://server.arcgisonline.com https://services.arcgisonline.com; "
             "frame-ancestors 'none';"
         )
         return response
 
 
 app = FastAPI(
-    title="JalSanjeevani / HydroPulse Smart Drought Supply Chain Engine",
+    title="JalSanchar Smart Drought Supply Chain Engine",
     description="End-to-end intelligent platform predicting 14-day water scarcity via satellite telemetry, preventing tanker diversion with cryptographic QR proofs, and optimizing emergency logistics using Google OR-Tools.",
     version="2.1.0",
     docs_url=None if os.getenv("ENVIRONMENT") == "production" else "/docs",
@@ -128,7 +128,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:\d+)?|https://jalsanjeevani[\w\-]*\.vercel\.app|https://rushalbangar\.github\.io)$",
+    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:\d+)?|https://jalsanchar[\w\-]*\.vercel\.app|https://jalsanjeevani[\w\-]*\.vercel\.app|https://rushalbangar\.github\.io)$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
@@ -237,7 +237,7 @@ async def require_auth(request: Request) -> dict:
         return {
             "user": {
                 "name": "Evaluation Officer",
-                "email": f"{role}@sinnar.jalsanjeevani.gov.in",
+                "email": f"{role}@sinnar.jalsanchar.gov.in",
                 "role": role,
                 "badge_id": "MH-EVAL-01"
             },
@@ -376,7 +376,7 @@ async def root_keepalive():
     """
     return {
         "status": "online",
-        "service": "JalSanjeevani Telemetry Core",
+        "service": "JalSanchar Telemetry Core",
         "version": "2.1.0",
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
@@ -663,7 +663,7 @@ async def auth_register(req: RegisterRequest, request: Request):
     if supabase_client:
         try:
             supabase_client.table("gov_users").insert(new_user_record).execute()
-            print(f"[JalSanjeevani API] [OK] Registered new user dynamically in Supabase: {clean_email} ({user_id})")
+            print(f"[JalSanchar API] [OK] Registered new user dynamically in Supabase: {clean_email} ({user_id})")
 
             # If driver, register or update the tanker telemetry record as well
             if clean_role == "driver" and tanker_id:
@@ -769,7 +769,7 @@ async def auth_update_profile(req: ProfileUpdateRequest, session: dict = Depends
         try:
             update_fields["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
             supabase_client.table("gov_users").update(update_fields).eq("id", user_id).execute()
-            print(f"[JalSanjeevani API] [OK] Profile updated in Supabase for user {user_id}")
+            print(f"[JalSanchar API] [OK] Profile updated in Supabase for user {user_id}")
 
             # If driver updated their tanker details, also synchronize tankers table
             if curr_user.get("role") == "driver" and curr_user.get("tanker_id"):
@@ -816,7 +816,7 @@ def health_check():
     init_earth_engine()
     return {
         "status": "online",
-        "service": "JalSanjeevani Logistics & Anti-Diversion Engine",
+        "service": "JalSanchar Logistics & Anti-Diversion Engine",
         "version": "2.1.0",
         "supabase_connected": supabase_client is not None,
         "google_earth_engine_connected": _EE_INITIALIZED,
@@ -1177,6 +1177,6 @@ async def export_manifest(session: dict = Depends(require_auth)):
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
-    print(f"[JalSanjeevani] Starting API server on http://0.0.0.0:{port}")
+    print(f"[JalSanchar] Starting API server on http://0.0.0.0:{port}")
     uvicorn.run(app, host="0.0.0.0", port=port)
 

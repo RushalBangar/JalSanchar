@@ -1,4 +1,4 @@
-name: JalSanjeevani CI/CD Pipeline
+name: JalSanchar CI/CD Pipeline
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
 
     - name: Validate Backend API Endpoints & Cryptographic Security
       env:
-        JWT_SECRET: "ci_testing_secret_key_jalsanjeevani_2026"
+        JWT_SECRET: "ci_testing_secret_key_jalsanchar_2026"
         ENVIRONMENT: "test"
       run: |
         python -c "
@@ -50,7 +50,7 @@ jobs:
 
         # 2. Authentication check
         res_login = client.post('/api/auth/login', json={
-            'email': 'collector@sinnar.jalsanjeevani.gov.in',
+            'email': 'collector@sinnar.jalsanchar.gov.in',
             'password': 'sovereign_water_2025',
             'role': 'collector'
         })

@@ -1,5 +1,5 @@
 """
-JalSanjeevani / HydroPulse - Layer 1: Geospatial Telemetry & 14-Day Scarcity Engine
+JalSanchar - Layer 1: Geospatial Telemetry & 14-Day Scarcity Engine
 Tracks satellite indices (Copernicus Sentinel-2 NDWI, NASA SMAP soil moisture,
 GRACE-FO groundwater anomalies) combined with Central Ground Water Board (CGWB) telemetry.
 """
@@ -167,7 +167,7 @@ def init_earth_engine() -> bool:
                         import ast
                         sa_info = ast.literal_eval(sa_json_str)
                     except Exception as parse_err:
-                        print(f"[JalSanjeevani] GCP_SERVICE_ACCOUNT_JSON parse note: {parse_err}")
+                        print(f"[JalSanchar] GCP_SERVICE_ACCOUNT_JSON parse note: {parse_err}")
 
             if sa_info and isinstance(sa_info, dict):
                 try:
@@ -176,7 +176,7 @@ def init_earth_engine() -> bool:
                         scopes=["https://www.googleapis.com/auth/earthengine", "https://www.googleapis.com/auth/cloud-platform"]
                     )
                 except Exception as c_err:
-                    print(f"[JalSanjeevani] Service account info credentials note: {c_err}")
+                    print(f"[JalSanchar] Service account info credentials note: {c_err}")
 
         # Fallback to credentials file if environment variable was missing or malformed
         if not creds:
@@ -195,7 +195,7 @@ def init_earth_engine() -> bool:
                         )
                         break
                     except Exception as f_err:
-                        print(f"[JalSanjeevani] Credentials file note at {p}: {f_err}")
+                        print(f"[JalSanchar] Credentials file note at {p}: {f_err}")
 
         if not creds:
             _EE_INIT_ERROR = "No service account credentials found. Set GCP_SERVICE_ACCOUNT_JSON on Render or place service_account.json in backend."
@@ -204,11 +204,11 @@ def init_earth_engine() -> bool:
         ee.Initialize(creds, project=project_id)
         _EE_INITIALIZED = True
         _EE_INIT_ERROR = None
-        print(f"[JalSanjeevani] Google Earth Engine initialized successfully on project '{project_id}'.")
+        print(f"[JalSanchar] Google Earth Engine initialized successfully on project '{project_id}'.")
         return True
     except Exception as e:
         _EE_INIT_ERROR = str(e)
-        print(f"[JalSanjeevani] Google Earth Engine initialization notice: {e}")
+        print(f"[JalSanchar] Google Earth Engine initialization notice: {e}")
         return False
 
 def fetch_earth_engine_telemetry(lat: float, lng: float, district_name: str = "Ahilyanagar") -> Optional[Dict[str, Any]]:
@@ -263,7 +263,7 @@ def fetch_earth_engine_telemetry(lat: float, lng: float, district_name: str = "A
             }
         }
     except Exception as e:
-        print(f"[JalSanjeevani] Earth Engine query error: {e}")
+        print(f"[JalSanchar] Earth Engine query error: {e}")
         return None
 
 def fetch_live_satellite_data(lat: float = 19.0952, lng: float = 74.7496, district_name: str = "Ahilyanagar") -> Dict[str, Any]:
@@ -279,7 +279,7 @@ def fetch_live_satellite_data(lat: float = 19.0952, lng: float = 74.7496, distri
     # Copernicus open telemetry fallback
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&hourly=soil_moisture_0_to_1cm,soil_moisture_9_to_27cm&daily=et0_fao_evapotranspiration,precipitation_sum&timezone=Asia%2FKolkata&forecast_days=3"
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'JalSanjeevani-Satellite/1.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'JalSanchar-Satellite/1.0'})
         with urllib.request.urlopen(req, timeout=5) as response:
             raw = json.loads(response.read().decode('utf-8'))
             
