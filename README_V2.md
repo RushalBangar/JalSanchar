@@ -202,4 +202,42 @@ python -m py_compile backend/routes/forecast.py
 python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r1 = c.get('/api/forecasts'); assert r1.status_code == 200; assert len(r1.json()['forecasts']) == 5; r2 = c.get('/api/forecast/SN-01'); assert r2.status_code == 200; assert r2.json()['risk'] == 'High'; print('Step 5 verified successfully!')"
 ```
 
+---
+
+## Step 6: Landing Page Showcase, Navigation & Tri-Party Closed Loop
+
+### 1. Landing Page Showcase & Navbar
+- **Navbar Links**: Added direct links to `Track Tanker` (`tracker.html`) and `Village Water` (`village.html`) across both desktop navigation bar and mobile drawer.
+- **Top Video Showcase**: Formal, high-definition operational demonstration video embedded with field briefing metadata.
+- **V2 Feature Section BELOW Existing Content**:
+  - Highlights Track 3-01 Climate-Resilient Water Intelligence.
+  - 4 Interactive Cards:
+    1. 14-Day Drought Risk Map (`forecast.html`)
+    2. Village Usable Water Balance (`village.html`)
+    3. Public Tanker Tracker (`tracker.html`)
+    4. Pipeline Loss Monitor (`pipelines.html`)
+
+### 2. Tri-Party Relationship Closed Loop
+Connects the three operational personas through a live state machine:
+1. **Gram Panchayat (`panchayat.html`)**:
+   - Logs emergency demand ticket `#TKT-SN-02` when village cistern level is critical (7%).
+   - Live step tracker reflects: `Demand Logged` $\rightarrow$ `Collector Dispatched` $\rightarrow$ `En Route` $\rightarrow$ `Handshake Verified`.
+2. **District Collector (`dashboard.html`)**:
+   - In Tab 2 (*3-Tier Rationing / Allocation*), incoming distress requests appear in real time.
+   - 1-Click authorization triggers Google OR-Tools CVRP routing and assigns Tanker `TN-SN-02`.
+3. **Tanker Driver (`driver.html`)**:
+   - Cockpit dynamically updates destination: *Khopadi Public Cistern #02*.
+   - Geofence radar confirms on-site perimeter ($< 150\text{m}$) and generates dynamic TOTP QR code.
+4. **Physical Handshake & Settlement**:
+   - Panchayat scans driver QR code $\rightarrow$ calls `/api/missions/complete-handshake`.
+   - Village cistern reserve increases by $+10,000\text{L}$ (to 29%).
+   - Treasury payment token (`JAL-TREASURY-AUTH-...`) is issued and contractor escrow milestone is released.
+
+### 3. How to Test Step 6 & Tri-Party Relations
+```powershell
+python -m py_compile backend/routes/missions.py
+python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r1 = c.get('/api/missions'); assert r1.status_code == 200; r2 = c.post('/api/missions/request-tanker', json={'village_code': 'SN-02', 'village_name': 'Khopadi', 'demanded_liters': 10000}); assert r2.status_code == 200; tkt = r2.json()['mission']['ticket_id']; r3 = c.post('/api/missions/authorize-dispatch', json={'mission_id': tkt, 'tanker_id': 'TN-SN-02'}); assert r3.status_code == 200; r4 = c.post('/api/missions/complete-handshake', json={'mission_id': tkt, 'tanker_id': 'TN-SN-02', 'village_code': 'SN-02', 'driver_token': '0xTESTTOKEN', 'volume_liters': 10000}); assert r4.status_code == 200; assert 'payment_token' in r4.json()['verified_delivery']; print('Step 6 & Tri-Party loop verified successfully!')"
+```
+
+
 

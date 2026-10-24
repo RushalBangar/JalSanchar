@@ -271,6 +271,7 @@ app.include_router(__import__("backend.routes.sources" if os.path.exists("backen
 app.include_router(__import__("backend.routes.public" if os.path.exists("backend") else "routes.public", fromlist=["router"]).router)
 app.include_router(__import__("backend.routes.pipelines" if os.path.exists("backend") else "routes.pipelines", fromlist=["router"]).router)
 app.include_router(__import__("backend.routes.forecast" if os.path.exists("backend") else "routes.forecast", fromlist=["router"]).router)
+app.include_router(__import__("backend.routes.missions" if os.path.exists("backend") else "routes.missions", fromlist=["router"]).router)
 
 # =============================================================================
 # Pydantic Request & Response Models

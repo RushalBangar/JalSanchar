@@ -89,11 +89,18 @@
         </a>
 
         <!-- Desktop Navigation Links -->
-        <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+        <div class="hidden md:flex items-center gap-5 text-sm font-medium text-slate-600">
           <a href="#how-it-works" class="hover:text-brand-900 transition-colors">How It Works</a>
           <a href="#portals" class="hover:text-brand-900 transition-colors">Portals</a>
+          <a href="tracker.html" class="hover:text-brand-900 font-semibold text-[#1A5276] transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+            <span>Track Tanker</span>
+          </a>
+          <a href="village.html" class="hover:text-brand-900 font-semibold text-[#148F77] transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">water_drop</span>
+            <span>Village Water</span>
+          </a>
           <a href="#audit" class="hover:text-brand-900 transition-colors">Audit Ledger</a>
-          <a href="https://github.com/RushalBangar/JalSanchar" target="_blank" rel="noopener" class="hover:text-brand-900 transition-colors">GitHub</a>
         </div>
 
         <!-- Action Buttons -->
@@ -126,6 +133,20 @@
         </a>
         <a href="#portals" class="mobile-nav-link px-3 py-2 rounded-md hover:bg-slate-100 flex items-center justify-between">
           <span>Operational Portals</span>
+          <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+        </a>
+        <a href="tracker.html" class="mobile-nav-link px-3 py-2 rounded-md hover:bg-slate-100 flex items-center justify-between text-[#1A5276] font-semibold">
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+            <span>Track Tanker</span>
+          </span>
+          <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
+        </a>
+        <a href="village.html" class="mobile-nav-link px-3 py-2 rounded-md hover:bg-slate-100 flex items-center justify-between text-[#148F77] font-semibold">
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">water_drop</span>
+            <span>Village Water Status</span>
+          </span>
           <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
         </a>
         <a href="#audit" class="mobile-nav-link px-3 py-2 rounded-md hover:bg-slate-100 flex items-center justify-between">
@@ -503,6 +524,130 @@
         </div>
 
       </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 5.1 CLIMATE-RESILIENT WATER INTELLIGENCE (V2 INTEGRATED CAPABILITIES)     -->
+  <!-- ========================================================================= -->
+  <section class="py-14 sm:py-20 bg-slate-100 border-b border-slate-200" id="v2-intelligence">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold mb-3">
+          <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+          <span>TRACK 3-01: CLIMATE-RESILIENT WATER INTELLIGENCE</span>
+        </div>
+        <h2 class="font-display text-2xl sm:text-4xl font-extrabold text-brand-900 tracking-tight">
+          Scientific Drought Forecasting &amp; Public Transparency
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+          Advanced hydrological capabilities designed specifically for drought-vulnerable talukas (Sinnar and Ahilyanagar, Maharashtra).
+        </p>
+      </div>
+
+      <!-- 4 Core V2 Feature Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Card 1: 14-Day Drought Risk Map -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-[24px]">crisis_alert</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full inline-block mb-2">
+              Proactive Early Warning
+            </span>
+            <h3 class="font-display font-bold text-lg text-slate-900">
+              14-Day Drought Risk Map
+            </h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              Ingests NASA SMAP soil moisture, Open-Meteo precipitation forecasts, and CGWB groundwater levels to predict reservoir depletion 2 weeks before crisis.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <a href="forecast.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#1A5276] hover:text-[#154360] group">
+              <span>Launch Drought Risk Map</span>
+              <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2: Village Usable Water Balance -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-[24px]">water_bottle</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full inline-block mb-2">
+              Storage Maths &amp; Balance
+            </span>
+            <h3 class="font-display font-bold text-lg text-slate-900">
+              Village Water Balance
+            </h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              Live mathematical reserves across open wells, overhead storage tanks, and percolation lakes with low/expected/high confidence bands.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <a href="village.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#148F77] hover:text-[#117A65] group">
+              <span>Check Village Water Balance</span>
+              <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: Citizen Public Tanker Tracker -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full inline-block mb-2">
+              Citizen Transparency
+            </span>
+            <h3 class="font-display font-bold text-lg text-slate-900">
+              Public Tanker Tracker
+            </h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              District, Taluka, and Village level live tracking with incoming tanker ETA and verified delivery audit proofs. Strictly protects driver privacy.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <a href="tracker.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#1A5276] hover:text-[#154360] group">
+              <span>Track Tankers In Real Time</span>
+              <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 4: Pipeline Conveyance Loss Detection -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+              <span class="material-symbols-outlined text-[24px]">troubleshoot</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full inline-block mb-2">
+              Conveyance Audit
+            </span>
+            <h3 class="font-display font-bold text-lg text-slate-900">
+              Pipeline Loss Monitor
+            </h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              Continuous 24-hour totalizer balancing across bulk transmission lines with meter calibration error margins (±2.5%) to audit physical conveyance.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <a href="pipelines.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 group">
+              <span>Audit Pipeline Transmission</span>
+              <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </section>
 

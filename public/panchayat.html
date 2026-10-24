@@ -177,6 +177,67 @@
       </div>
     </div>
 
+    <!-- 1.1 Tri-Party Mission Coordination Card -->
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3" id="missionCoordinationCard">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-[#EBF5FB] text-[#1A5276] flex items-center justify-center">
+            <i data-lucide="bell-ring" class="w-4 h-4 text-primary"></i>
+          </span>
+          <div>
+            <h3 class="font-display font-bold text-sm text-gray-900 leading-tight">Emergency Water Request Status</h3>
+            <span class="text-[11px] text-gray-500 font-mono" id="missionTicketLabel">Ticket #TKT-SN-02</span>
+          </div>
+        </div>
+        <span id="missionLifecycleBadge" class="badge badge-info text-[10px] font-bold">
+          DISPATCHED
+        </span>
+      </div>
+
+      <!-- Lifecycle Progress Step Tracker -->
+      <div class="grid grid-cols-4 gap-1 text-center text-[10px] pt-1">
+        <div class="p-1 rounded bg-green-50 text-green-800 border border-green-200 font-bold" id="step1Demand">
+          1. Demand
+        </div>
+        <div class="p-1 rounded bg-blue-50 text-blue-800 border border-blue-200 font-bold" id="step2Dispatch">
+          2. Dispatched
+        </div>
+        <div class="p-1 rounded bg-amber-50 text-amber-800 border border-amber-200 font-bold animate-pulse" id="step3Arrival">
+          3. En Route
+        </div>
+        <div class="p-1 rounded bg-gray-100 text-gray-500 border border-gray-200 font-bold" id="step4Verified">
+          4. Verified
+        </div>
+      </div>
+
+      <!-- Mission Detail Summary Box -->
+      <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200 text-xs space-y-1">
+        <div class="flex justify-between">
+          <span class="text-gray-500">Allocated Tanker:</span>
+          <strong class="font-mono text-gray-900" id="missionTankerText">TN-SN-02 (MH-15-TK-5512)</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Pilot / Driver:</span>
+          <strong class="text-gray-800" id="missionDriverText">Ramesh Patil (GPS Locked)</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Estimated Arrival:</span>
+          <span class="font-bold text-blue-700" id="missionEtaText">~15 Minutes (Inside Sector)</span>
+        </div>
+      </div>
+
+      <!-- Action: Raise Demand or Refresh -->
+      <div class="flex gap-2">
+        <button id="btnRaiseEmergencyDemand" class="btn btn-outline btn-sm flex-1 text-xs">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5 mr-1 text-red-600"></i>
+          <span>Raise New Demand Ticket</span>
+        </button>
+        <button id="btnRefreshMissionStatus" class="btn btn-outline btn-sm px-3 text-xs" title="Sync with Collector Command Center">
+          <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+
     <!-- 2. QR Camera Scanner Card -->
     <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm" id="reader-card">
       <div class="flex items-center justify-between mb-3">
@@ -340,6 +401,7 @@
   <script src="js/offline-queue.js"></script>
   <script src="js/lang.js"></script>
   <script src="js/panchayat.js"></script>
+  <script src="js/missions.js"></script>
   <script>
     if (window.lucide) {
       lucide.createIcons();
