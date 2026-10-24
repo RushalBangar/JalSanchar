@@ -1,813 +1,1323 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="scroll-smooth" lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <meta content="web_standard" name="shell-type"/>
-  <!-- 🔒 Security Configuration -->
+  
+  <!-- Security Headers -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://cdn.jsdelivr.net https://unpkg.com;">
-  
-  <title>JalSanchar | Smart Drought Water Supply Chain</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com;">
+
+  <title>JalSanchar — Sovereign Rural Water Supply &amp; Anti-Diversion Telemetry System</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  
-  <!-- Typography: Outfit, Source Sans 3, IBM Plex Mono, Noto Sans Devanagari -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- Design System CSS -->
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/landing.css">
-  <link rel="stylesheet" href="css/tailwind.min.css">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "outline": "#74777f",
+            "border-subtle": "#D5DEE7",
+            "surface-dim": "#dbd9dd",
+            "inverse-surface": "#303033",
+            "on-error-container": "#93000a",
+            "telemetry-emerald": "#00A896",
+            "critical-crimson": "#D9383A",
+            "surface-tint": "#495f82",
+            "secondary-fixed-dim": "#94ccff",
+            "primary-fixed-dim": "#b1c7f0",
+            "on-primary-fixed": "#001c3b",
+            "secondary-container": "#67bafd",
+            "surface-variant": "#e3e2e5",
+            "background": "#faf9fc",
+            "inverse-primary": "#b1c7f0",
+            "on-tertiary": "#ffffff",
+            "ocean-signal": "#0077B6",
+            "on-secondary-container": "#004972",
+            "inverse-on-surface": "#f2f0f3",
+            "on-primary-container": "#778db2",
+            "surface-card": "#FFFFFF",
+            "navy-deep": "#0B2545",
+            "on-surface": "#1b1b1e",
+            "tertiary-fixed": "#ffdcc2",
+            "surface-container": "#efedf0",
+            "alert-amber": "#E67E22",
+            "on-primary-fixed-variant": "#314769",
+            "on-tertiary-container": "#b38259",
+            "surface": "#faf9fc",
+            "on-primary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "primary-container": "#0b2545",
+            "secondary-fixed": "#cde5ff",
+            "primary": "#001026",
+            "canvas-slate": "#F4F7FA",
+            "on-surface-variant": "#44474e",
+            "text-muted": "#4A5D73",
+            "tertiary-container": "#3c1d00",
+            "secondary": "#006399",
+            "navy-slate": "#134074",
+            "on-tertiary-fixed-variant": "#643e1b",
+            "surface-container-low": "#f5f3f6",
+            "tertiary": "#1d0b00",
+            "primary-fixed": "#d5e3ff",
+            "on-tertiary-fixed": "#2e1500",
+            "tertiary-fixed-dim": "#f3bb8e",
+            "on-secondary-fixed": "#001d32",
+            "surface-bright": "#faf9fc",
+            "text-sovereign": "#08182B",
+            "outline-variant": "#c4c6cf",
+            "surface-container-high": "#e9e7eb",
+            "border-strong": "#8FA3BF",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-background": "#1b1b1e",
+            "surface-container-highest": "#e3e2e5",
+            "on-secondary-fixed-variant": "#004b74",
+            "error": "#ba1a1a"
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          spacing: {
+            "space-xl": "2rem",
+            "space-lg": "1.5rem",
+            "gutter-desktop": "1.5rem",
+            "gutter": "1.25rem",
+            "margin-tablet": "1.5rem",
+            "margin": "1rem",
+            "space-3xl": "4.5rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem",
+            "margin-desktop": "2.5rem"
+          },
+          fontFamily: {
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "display-hero": ["Plus Jakarta Sans", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "title-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "telemetry-badge": ["Inter", "sans-serif"],
+            "display-hero-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "label-caps": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "metric-numeral": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          fontSize: {
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "telemetry-badge": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "metric-numeral": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-
-  <!-- 🌐 Formal Government Accessibility & Status Top Strip -->
-  <aside class="w-full bg-[#154360] text-white text-xs py-1.5 px-4" aria-label="System Notice">
-    <div class="max-w-[1200px] mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <span class="inline-block w-2 h-2 rounded-full bg-[#27AE60]"></span>
-        <span class="font-medium text-[11px] sm:text-xs" data-i18n="topbar_title">JalSanchar • Rural Drought Water Supply &amp; Tanker Telemetry Grid</span>
-        <span class="hidden md:inline text-white/50">|</span>
-        <span class="hidden md:inline text-white/80 text-[11px]" data-i18n="topbar_sector">Ahilyanagar &amp; Sinnar Pilot Sector</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <!-- Accessibility Font Scaler -->
-        <div class="flex items-center gap-1 font-mono text-[11px]" title="Adjust Text Size">
-          <span class="text-white/70 text-[10px] hidden sm:inline" data-i18n="topbar_text_size">Text:</span>
-          <button id="btnFontDec" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors" aria-label="Decrease font size">A-</button>
-          <button id="btnFontReset" class="px-1.5 py-0.5 rounded bg-white/20 font-bold" aria-label="Default font size">A</button>
-          <button id="btnFontInc" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors" aria-label="Increase font size">A+</button>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+  
+  <!-- Top Sovereign Strip / Geo Indicator Banner -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="bg-surface-container-low px-4 md:px-margin-desktop">
+      <div class="max-w-[1440px] mx-auto h-8 flex items-center justify-between font-label-caps text-label-caps text-on-surface-variant">
+        <div class="flex items-center gap-space-sm">
+          <span class="w-2 h-2 rounded-full bg-telemetry-emerald inline-block"></span>
+          <span class="uppercase tracking-wider">Ministry of Jal Shakti • National Water Informatics Command</span>
         </div>
-        <!-- Language Select -->
-        <select id="langSwitcher" class="lang-switcher bg-[#1A5276] text-white border border-white/20 rounded text-xs py-0.5 px-2 outline-none cursor-pointer" aria-label="Language Selector">
-          <option value="en">English (EN)</option>
-          <option value="mr">मराठी (MR)</option>
-          <option value="hi">हिन्दी (HI)</option>
-        </select>
-      </div>
-    </div>
-  </aside>
-
-  <!-- 🏛️ Main Clean Navigation Bar -->
-  <header class="main-nav">
-    <div class="nav-container">
-      <a href="index.html" class="brand-wrapper" aria-label="JalSanchar Home">
-        <img src="assets/logo.jpg" alt="JalSanchar Emblem" class="brand-logo-img">
-        <div class="brand-text-block">
-          <span class="brand-title" data-i18n="nav_brand">JalSanchar</span>
-          <span class="brand-sub">जलसंचार • Water Logistics</span>
+        <div class="flex items-center gap-space-lg">
+          <div class="flex items-center gap-space-xs">
+            <span class="text-on-surface-variant mr-1">Text:</span>
+            <button id="btnFontDec" aria-label="Decrease text size" class="px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors" type="button">A-</button>
+            <button id="btnFontReset" aria-label="Default text size" class="px-1.5 py-0.5 rounded bg-surface-container-high font-bold text-on-surface" type="button">A</button>
+            <button id="btnFontInc" aria-label="Increase text size" class="px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors" type="button">A+</button>
+          </div>
+          <div class="flex items-center gap-1 font-mono text-[11px]">
+            <span class="text-on-surface-variant mr-1">Lang:</span>
+            <button id="btnLangEN" onclick="changeLang('en')" class="px-1.5 py-0.5 rounded bg-surface-container-high font-bold text-on-surface transition-colors" type="button">EN</button>
+            <span class="text-outline-variant">•</span>
+            <button id="btnLangMR" onclick="changeLang('mr')" class="px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors" type="button">MR</button>
+            <span class="text-outline-variant">•</span>
+            <button id="btnLangHI" onclick="changeLang('hi')" class="px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors" type="button">HI</button>
+          </div>
         </div>
-      </a>
-
-      <nav aria-label="Main Navigation">
-        <ul class="nav-menu">
-          <li><a href="#challenge" class="nav-link" data-i18n="nav_features">The Problem</a></li>
-          <li><a href="#how-it-works" class="nav-link" data-i18n="nav_pillars">How It Works</a></li>
-          <li><a href="#portals" class="nav-link" data-i18n="nav_portals">Portals</a></li>
-          <li><a href="#technology" class="nav-link" data-i18n="nav_tech">Technology</a></li>
-          <li><a href="javascript:void(0)" id="btnNavAudit" class="nav-link" data-i18n="nav_audit">Delivery Records</a></li>
-        </ul>
-      </nav>
-
-      <div class="nav-actions">
-        <a href="dashboard.html" class="btn btn-outline btn-sm hidden sm:inline-flex" data-i18n="nav_dashboard">
-          <i data-lucide="layout-dashboard" class="w-4 h-4 mr-1"></i> Dashboard
-        </a>
-        <a href="login.html" class="btn btn-primary btn-sm" data-i18n="nav_login">
-          Sign In <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-        </a>
-        <button id="mobileMenuBtn" class="mobile-nav-toggle" aria-label="Toggle Navigation Menu">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
       </div>
     </div>
 
-    <!-- Mobile Dropdown Menu -->
-    <div id="mobileMenu" class="hidden sm:hidden border-t border-gray-200 bg-white px-4 py-3 space-y-2">
-      <a href="#challenge" class="block py-2 text-sm font-semibold text-gray-700 hover:text-primary">The Problem</a>
-      <a href="#how-it-works" class="block py-2 text-sm font-semibold text-gray-700 hover:text-primary">How It Works</a>
-      <a href="#portals" class="block py-2 text-sm font-semibold text-gray-700 hover:text-primary">Portals</a>
-      <a href="#technology" class="block py-2 text-sm font-semibold text-gray-700 hover:text-primary">Technology</a>
-      <a href="javascript:void(0)" id="btnMobileNavAudit" class="block py-2 text-sm font-semibold text-gray-700 hover:text-primary">Delivery Records</a>
-      <div class="pt-2 border-t border-gray-100 flex flex-col gap-2">
-        <a href="dashboard.html" class="btn btn-outline btn-sm btn-block">Access Dashboard</a>
-        <a href="login.html" class="btn btn-primary btn-sm btn-block">Portal Login</a>
+    <!-- Main Navigation Bar -->
+    <div class="max-w-[1440px] mx-auto px-4 md:px-margin-desktop">
+      <div class="h-20 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-space-md group">
+          <img alt="JalSanchar Emblem" class="h-9 w-auto object-contain rounded" src="assets/logo.jpg" onerror="this.src='assets/logo.svg'"/>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-headline-md text-title-sm text-text-sovereign font-bold group-hover:text-ocean-signal transition-colors">JalSanchar</span>
+              <span class="font-telemetry-badge text-telemetry-badge bg-surface-container-high text-on-surface px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Gov-Telemetry</span>
+            </div>
+            <span class="font-body-sm text-body-sm text-on-surface-variant hidden sm:inline">Sovereign Rural Water &amp; Anti-Diversion Telemetry</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden xl:flex items-center gap-space-md font-body-md text-body-md">
+          <a class="text-on-surface-variant hover:text-navy-deep px-3 py-1.5 transition-colors font-medium" href="#the-problem">The Problem</a>
+          <a class="text-on-surface-variant hover:text-navy-deep px-3 py-1.5 transition-colors font-medium" href="#how-it-works">How It Works</a>
+          <a class="text-on-surface-variant hover:text-navy-deep px-3 py-1.5 transition-colors font-medium" href="#operational-portals">Portals</a>
+          <a class="text-on-surface-variant hover:text-navy-deep px-3 py-1.5 transition-colors font-medium" href="#architecture">Architecture</a>
+          <a class="text-on-surface-variant hover:text-navy-deep px-3 py-1.5 transition-colors font-medium" href="#delivery-ledger-section">Delivery Records</a>
+        </nav>
+
+        <!-- Header Actions -->
+        <div class="flex items-center gap-space-sm">
+          <a class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-lg bg-surface-card text-on-surface hover:bg-surface-container-low border border-border-subtle transition-colors font-body-md text-body-md font-semibold" href="login.html">
+            Portal Login
+          </a>
+          <a class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-navy-deep text-on-primary hover:bg-navy-slate transition-colors font-body-md text-body-md font-semibold shadow-sm" href="dashboard.html">
+            <span class="material-symbols-outlined text-[18px] mr-1.5">monitoring</span>Command Center
+          </a>
+          <a href="login.html" title="Sign In" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1 text-on-primary hover:bg-navy-slate transition-colors">
+            <span class="material-symbols-outlined text-[18px]">person</span>
+          </a>
+        </div>
       </div>
     </div>
   </header>
 
-  <main id="mainContent">
-    <!-- 🌊 1. Hero Section -->
-    <section class="hero-section">
-      <div class="hero-inner">
-        <div class="hero-grid">
-          <div>
-            <div class="hero-kicker">
-              <i data-lucide="shield-check" class="w-4 h-4"></i>
-              <span data-i18n="hero_badge">SMART WATER SUPPLY CHAIN (जलसंचार)</span>
+  <main class="w-full pt-28 bg-surface min-h-[calc(100vh-28rem)]">
+    <div class="flex flex-col w-full">
+
+      <!-- Live Geo Grid Ribbon -->
+      <section class="w-full bg-canvas-slate py-space-sm px-margin md:px-margin-desktop border-b border-border-subtle/50">
+        <div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-space-xs text-on-surface-variant">
+          <div class="flex items-center gap-space-xs font-label-caps text-label-caps">
+            <span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-telemetry-emerald animate-pulse"></span>
+            <span class="text-navy-deep font-bold tracking-wider uppercase">AHILYANAGAR &amp; SINNAR PILOT TELEMETRY GRID</span>
+            <span class="hidden sm:inline text-text-muted">• LIVE FLEET BUFFER ACTIVE [500M STRICT GEOFENCE]</span>
+          </div>
+          <div class="flex items-center gap-space-md font-body-sm text-body-sm text-text-muted">
+            <span class="flex items-center gap-1 font-mono text-[11px] bg-surface-card px-2 py-0.5 rounded shadow-sm border border-border-subtle/50">
+              <span class="material-symbols-outlined text-telemetry-emerald text-[14px]">satellite_alt</span>
+              SMAP/Copernicus Sentinel-2: Nominal
+            </span>
+            <span class="hidden lg:flex items-center gap-1 text-[11px] font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald"></span>
+              Escrow Engine v2.4.0
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hero Section -->
+      <section class="w-full bg-canvas-slate py-space-xl md:py-space-2xl px-margin md:px-margin-desktop relative overflow-hidden">
+        <div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center relative z-10">
+          
+          <!-- Hero Copy -->
+          <div class="lg:col-span-7 flex flex-col gap-space-md">
+            <div class="inline-flex items-center gap-space-xs w-fit bg-surface-card shadow-sm px-3 py-1.5 rounded-full border border-border-subtle/60">
+              <span class="material-symbols-outlined text-ocean-signal text-[18px]">verified</span>
+              <span class="font-label-caps text-label-caps text-navy-deep uppercase tracking-wider font-bold">
+                SMART WATER SUPPLY CHAIN (जलसंचार)
+              </span>
+              <span class="bg-surface-container-high text-navy-deep text-[10px] font-bold px-2 py-0.5 rounded-full">
+                STATE VALIDATED
+              </span>
             </div>
-            <h1 class="hero-headline" data-i18n="hero_title">
+
+            <h1 class="font-display-hero text-display-hero-mobile md:text-display-hero text-navy-deep tracking-tight">
               Guaranteed Clean Water For Every Drought-Hit Village
             </h1>
-            <p class="hero-lead" data-i18n="hero_desc">
+
+            <p class="font-body-lg text-body-lg text-text-muted max-w-2xl">
               JalSanchar tracks rural water tankers using GPS telemetry and dual QR verification to prevent diversion and ensure rural families get their fair share of clean drinking water.
             </p>
 
-            <div class="hero-actions">
-              <a href="#portals" class="btn btn-primary btn-lg" data-i18n="hero_btn_discover">
-                Explore Platform Portals <i data-lucide="arrow-down" class="w-4 h-4 ml-1"></i>
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+              <a class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-navy-deep text-on-primary hover:bg-navy-slate font-title-sm text-title-sm shadow-md transition-all duration-200" href="#operational-portals">
+                <span>Explore Platform Portals</span>
+                <span class="material-symbols-outlined text-[18px] ml-2">arrow_downward</span>
               </a>
-              <a href="javascript:void(0)" id="btnOpenAuditModal" class="btn btn-outline btn-lg" data-i18n="audit_title">
-                <i data-lucide="file-check-2" class="w-4 h-4 mr-1"></i> Delivery Records
-              </a>
+              <button class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-surface-card text-navy-deep hover:bg-surface-container-low font-title-sm text-title-sm shadow-sm border border-border-subtle transition-all duration-200 cursor-pointer" onclick="openAuditModal()" type="button">
+                <span class="material-symbols-outlined text-ocean-signal text-[20px] mr-2">receipt_long</span>
+                <span>Water Delivery Audit Records</span>
+              </button>
             </div>
 
-            <div class="hero-meta-strip">
-              <div class="hero-meta-item">
-                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                <span class="font-medium text-gray-800">40L/Person &amp; 70L/Cattle Daily</span>
+            <!-- Guarantees Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-space-md">
+              <div class="flex items-center gap-space-xs text-navy-deep font-body-sm text-body-sm bg-surface-card/90 backdrop-blur-sm p-2.5 rounded shadow-sm border border-border-subtle/40">
+                <span class="material-symbols-outlined text-telemetry-emerald text-[20px]">water_drop</span>
+                <span class="font-semibold">40L/Person &amp; 70L/Cattle Daily</span>
               </div>
-              <div class="hero-meta-item">
-                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                <span class="font-medium text-gray-800">14-Day Advance Warning</span>
+              <div class="flex items-center gap-space-xs text-navy-deep font-body-sm text-body-sm bg-surface-card/90 backdrop-blur-sm p-2.5 rounded shadow-sm border border-border-subtle/40">
+                <span class="material-symbols-outlined text-ocean-signal text-[20px]">nest_clock_farsight_analog</span>
+                <span class="font-semibold">14-Day Advance Warning</span>
               </div>
-              <div class="hero-meta-item">
-                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                <span class="font-medium text-gray-800">100% Verified Delivery</span>
+              <div class="flex items-center gap-space-xs text-navy-deep font-body-sm text-body-sm bg-surface-card/90 backdrop-blur-sm p-2.5 rounded shadow-sm border border-border-subtle/40">
+                <span class="material-symbols-outlined text-telemetry-emerald text-[20px]">encrypted</span>
+                <span class="font-semibold">100% Verified Delivery</span>
               </div>
             </div>
           </div>
 
-          <!-- Hero Mockup Frame -->
-          <div>
-            <div class="hero-mockup-wrapper">
-              <div class="hero-mockup-header">
-                <span class="mockup-dot dot-red"></span>
-                <span class="mockup-dot dot-amber"></span>
-                <span class="mockup-dot dot-green"></span>
-                <span class="mockup-title">jalsanchar.gov.in/dashboard</span>
-              </div>
-              <img src="assets/hero-mockup.jpg" alt="JalSanchar Water Logistics Dashboard Mockup" class="hero-mockup-img">
-            </div>
-          </div>
-        </div>
-
-        <!-- 3 Quick Stat Cards Row -->
-        <div class="metrics-strip">
-          <div class="metric-card">
-            <div class="metric-icon-box">
-              <i data-lucide="calendar-clock" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <div class="metric-value">14 Days</div>
-              <div class="metric-label" data-i18n="pillar1_title">Advance Drought Warning</div>
-              <p class="metric-desc">Satellite radar &amp; soil sensors detect groundwater depletion 2 weeks early.</p>
-            </div>
-          </div>
-
-          <div class="metric-card">
-            <div class="metric-icon-box" style="background: #E8F8F5; color: #148F77;">
-              <i data-lucide="droplet" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <div class="metric-value">40L / 70L</div>
-              <div class="metric-label" data-i18n="hero_quota_badge">Daily Minimum Quota</div>
-              <p class="metric-desc">Algorithmic dispatch guarantees 40L per person and 70L per livestock daily.</p>
-            </div>
-          </div>
-
-          <div class="metric-card">
-            <div class="metric-icon-box" style="background: #FEF9E7; color: #D4AC0D;">
-              <i data-lucide="qr-code" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <div class="metric-value">100%</div>
-              <div class="metric-label" data-i18n="pillar2_title">Verified Tank Deliveries</div>
-              <p class="metric-desc">Dual QR code handshake at village cistern confirms delivery before payment release.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ⚠️ 2. The Challenge / Problem Section -->
-    <section id="challenge" class="section section-alt">
-      <div class="section-container">
-        <div class="section-header">
-          <div class="section-tag">THE CHALLENGE</div>
-          <h2 class="section-title">Why Traditional Rural Water Supply Fails</h2>
-          <p class="section-subtitle">
-            During seasonal droughts, millions of liters of public drinking water are diverted, delayed, or unverified. JalSanchar fixes three fundamental breakdowns:
-          </p>
-        </div>
-
-        <div class="problem-grid">
-          <div class="problem-card">
-            <div class="problem-stat">22%</div>
-            <div class="problem-title">Estimated Water Diversion</div>
-            <p class="problem-desc">
-              Without cryptographic verification, water tankers frequently divert public emergency water to unauthorized industrial buyers, leaving remote village tanks empty.
-            </p>
-          </div>
-
-          <div class="problem-card" style="border-top-color: #E67E22;">
-            <div class="problem-stat" style="color: #E67E22;">Zero</div>
-            <div class="problem-title">Advance Shortage Warning</div>
-            <p class="problem-desc">
-              Traditional administration only reacts after village wells run bone dry. Citizens are forced to wait days for emergency tenders and logistical approval.
-            </p>
-          </div>
-
-          <div class="problem-card" style="border-top-color: #1A5276;">
-            <div class="problem-stat" style="color: #1A5276;">Reactive</div>
-            <div class="problem-title">Manual Grievance Redressal</div>
-            <p class="problem-desc">
-              Panchayat leaders spend hours submitting physical complaints to Taluka offices. Lack of transparent digital audit trails delays emergency tanker authorization.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ⚙️ 3. How It Works Section (Horizontal 3-Step Process Bar) -->
-    <section id="how-it-works" class="section">
-      <div class="section-container">
-        <div class="section-header">
-          <div class="section-tag">THREE-TIER GOVERNANCE</div>
-          <h2 class="section-title" data-i18n="pillars_title">How JalSanchar Solves the Water Crisis</h2>
-          <p class="section-subtitle">
-            A reliable 3-stage process combining satellite intelligence, GPS tracking, and QR verification.
-          </p>
-        </div>
-
-        <div class="process-container">
-          <div class="process-step-card">
-            <div class="process-step-badge">1</div>
-            <h3 data-i18n="pillar1_title">1. Early Shortage Warning</h3>
-            <p data-i18n="pillar1_desc">
-              Using weather radar and NASA SMAP satellite data, we predict which village wells will run dry up to 14 days in advance, so water tankers are sent before taps run completely dry.
-            </p>
-          </div>
-
-          <div class="process-step-card">
-            <div class="process-step-badge" style="background: #148F77;">2</div>
-            <h3 data-i18n="pillar2_title">2. Stop Water Theft &amp; Diversion</h3>
-            <p data-i18n="pillar2_desc">
-              Tanker drivers must scan a time-bound QR code at the village water tank with local Gram Panchayat officials. If a tanker deviates 500m off-route, payment is frozen automatically.
-            </p>
-          </div>
-
-          <div class="process-step-card">
-            <div class="process-step-badge" style="background: #2E86C1;">3</div>
-            <h3 data-i18n="pillar3_title">3. Fair Daily Water For Everyone</h3>
-            <p data-i18n="pillar3_desc">
-              Smart route optimization guarantees at least 40 liters daily for every person and 70 liters for cattle, ensuring even the most remote hamlets receive timely deliveries.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 👥 4. Role Portals Section -->
-    <section id="portals" class="section section-alt">
-      <div class="section-container">
-        <div class="section-header">
-          <div class="section-tag">OPERATIONAL PORTALS</div>
-          <h2 class="section-title">Designed for Rural Reality and Governance</h2>
-          <p class="section-subtitle">
-            Dedicated interfaces for district officers, village panchayat representatives, tanker drivers, and citizens.
-          </p>
-        </div>
-
-        <div class="portals-grid">
-          <!-- Collector Portal -->
-          <div class="portal-card portal-collector">
-            <div>
-              <div class="portal-header">
-                <div class="portal-icon-wrap">
-                  <i data-lucide="building-2" class="w-5 h-5"></i>
+          <!-- Hero Visual: Mock Command Center Screen -->
+          <div class="lg:col-span-5 w-full">
+            <div class="bg-surface-card rounded-xl shadow-xl overflow-hidden border border-border-subtle">
+              <!-- Window Chrome -->
+              <div class="bg-navy-deep px-4 py-2.5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-critical-crimson inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-alert-amber inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-telemetry-emerald inline-block"></span>
+                  <span class="ml-2 font-mono text-[11px] text-surface-variant truncate">jalsanchar.onrender.com/telemetry</span>
                 </div>
-                <div class="text-xs font-bold uppercase tracking-wider text-[#1A5276]">Command Center</div>
-                <h3 class="portal-title" data-i18n="role_collector">District Collector</h3>
+                <span class="font-telemetry-badge text-telemetry-badge bg-navy-slate text-surface-card px-2 py-0.5 rounded font-mono">
+                  LIVE NAVIC 1-SEC MESH
+                </span>
               </div>
-              <p class="portal-desc" data-i18n="role_collector_tag">
-                Live GIS tanker fleet monitoring, contractor escrow payment releases, drought severity indexes, and automated dispatch control.
+
+              <!-- Map Simulation Frame -->
+              <div class="relative bg-surface-container-high p-4 flex flex-col gap-3">
+                <!-- Overlay Top Metrics -->
+                <div class="grid grid-cols-3 gap-2">
+                  <div class="bg-surface-card p-2 rounded shadow-sm flex flex-col border border-border-subtle/40">
+                    <span class="font-label-caps text-label-caps text-text-muted">ACTIVE TANKERS</span>
+                    <span class="font-metric-numeral text-headline-md text-navy-deep font-bold">142</span>
+                    <span class="text-[10px] text-telemetry-emerald font-semibold">↑ 100% on route</span>
+                  </div>
+                  <div class="bg-surface-card p-2 rounded shadow-sm flex flex-col border border-border-subtle/40">
+                    <span class="font-label-caps text-label-caps text-text-muted">DISPATCHED</span>
+                    <span class="font-metric-numeral text-headline-md text-navy-deep font-bold">1.42 ML</span>
+                    <span class="text-[10px] text-ocean-signal font-semibold">48 Hamlets Met</span>
+                  </div>
+                  <div class="bg-surface-card p-2 rounded shadow-sm flex flex-col border border-border-subtle/40">
+                    <span class="font-label-caps text-label-caps text-text-muted">DEVIATIONS</span>
+                    <span class="font-metric-numeral text-headline-md text-critical-crimson font-bold">0</span>
+                    <span class="text-[10px] text-telemetry-emerald font-semibold">Zero Leaks Active</span>
+                  </div>
+                </div>
+
+                <!-- Stylized Field Vector Canvas -->
+                <div class="relative h-56 w-full rounded-lg bg-surface-container-low overflow-hidden shadow-inner flex flex-col justify-between p-3 border border-border-subtle/50">
+                  <svg class="absolute inset-0 w-full h-full text-border-subtle/70" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <pattern height="32" id="grid" patternunits="userSpaceOnUse" width="32">
+                        <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" stroke-width="0.75"></path>
+                      </pattern>
+                    </defs>
+                    <rect fill="url(#grid)" height="100%" width="100%"></rect>
+                    <path class="opacity-90" d="M 40 180 Q 120 70 200 110 T 340 50" fill="none" stroke="#0077B6" stroke-dasharray="6,4" stroke-width="3"></path>
+                    <circle cx="200" cy="110" fill="rgba(0, 168, 150, 0.12)" r="46" stroke="#00A896" stroke-dasharray="3,3" stroke-width="1.5"></circle>
+                    <circle cx="340" cy="50" fill="rgba(11, 37, 69, 0.08)" r="32" stroke="#0B2545" stroke-width="1.5"></circle>
+                  </svg>
+
+                  <div class="relative z-10 flex justify-between items-start">
+                    <span class="bg-navy-deep text-surface-card text-[11px] px-2 py-0.5 rounded shadow font-mono flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[12px] text-telemetry-emerald">adjust</span>
+                      Sinnar Central Depot (Reservoir)
+                    </span>
+                    <span class="bg-telemetry-emerald text-surface-card text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                      GEOFENCE LOCKED
+                    </span>
+                  </div>
+
+                  <div class="relative z-10 self-center flex items-center gap-2 bg-surface-card/95 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-md border border-border-subtle/60">
+                    <div class="w-2.5 h-2.5 rounded-full bg-telemetry-emerald animate-ping"></div>
+                    <div>
+                      <div class="font-label-caps text-label-caps text-navy-deep font-bold">TANKER MH-15-EG-4409</div>
+                      <div class="text-[10px] font-mono text-text-muted">Volume: 10,000L • In Geofence • 9.4 km/h</div>
+                    </div>
+                  </div>
+
+                  <div class="relative z-10 flex justify-between items-end">
+                    <div class="bg-surface-card/90 px-2.5 py-1 rounded shadow-sm text-[11px] font-mono text-navy-deep border border-border-subtle/30">
+                      Pangari Cistern • Quota Req: 8,400 L
+                    </div>
+                    <div class="bg-surface-card/90 px-2 py-1 rounded shadow-sm text-[10px] font-mono text-telemetry-emerald font-bold border border-border-subtle/30">
+                      SHA-256 SYNC READY
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mini Live Fleet Status Strip -->
+                <div class="bg-surface-card p-2.5 rounded-lg shadow-sm flex items-center justify-between text-body-sm border border-border-subtle/40">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-telemetry-emerald text-[20px]">qr_code_scanner</span>
+                    <div>
+                      <span class="font-bold text-navy-deep block text-xs">Dual-QR Handshake Standby</span>
+                      <span class="text-[11px] text-text-muted">Awaiting Panchayat attestation at Khopadi tank</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-1 bg-surface-container-high rounded text-[11px] font-mono font-bold text-navy-deep">
+                    HOLD ESCROW
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Metric Pillar Cards -->
+      <section class="w-full bg-surface py-space-xl px-margin md:px-margin-desktop">
+        <div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+          
+          <!-- Card 1 -->
+          <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-space-sm">
+              <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-ocean-signal">
+                <span class="material-symbols-outlined text-[24px]">radar</span>
+              </span>
+              <span class="font-telemetry-badge text-telemetry-badge bg-surface-container-low text-navy-deep px-2.5 py-1 rounded font-bold uppercase">
+                HYDROLOGY FORECAST
+              </span>
+            </div>
+            <div>
+              <span class="font-metric-numeral text-display-hero-mobile md:text-metric-numeral text-navy-deep font-bold tracking-tight block">
+                14 Days
+              </span>
+              <h3 class="font-title-sm text-title-sm text-navy-deep font-bold mt-1">
+                Advance Drought Warning
+              </h3>
+              <p class="font-body-md text-body-md text-text-muted mt-2">
+                Satellite radar &amp; soil sensors detect groundwater depletion 2 weeks early so tankers dispatch before wells go bone dry.
               </p>
             </div>
-            <a href="dashboard.html?role=collector" class="btn btn-outline btn-block text-center">
-              Access Command Center <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+            <div class="mt-space-md pt-space-xs text-[11px] font-mono text-telemetry-emerald flex items-center gap-1 font-semibold">
+              <span class="material-symbols-outlined text-[14px]">check_circle</span>
+              Automated taluka-level early alerts
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-space-sm">
+              <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-telemetry-emerald">
+                <span class="material-symbols-outlined text-[24px]">water_full</span>
+              </span>
+              <span class="font-telemetry-badge text-telemetry-badge bg-surface-container-low text-navy-deep px-2.5 py-1 rounded font-bold uppercase">
+                SOVEREIGN QUOTA
+              </span>
+            </div>
+            <div>
+              <span class="font-metric-numeral text-display-hero-mobile md:text-metric-numeral text-navy-deep font-bold tracking-tight block">
+                40L / 70L
+              </span>
+              <h3 class="font-title-sm text-title-sm text-navy-deep font-bold mt-1">
+                Daily Minimum Quota
+              </h3>
+              <p class="font-body-md text-body-md text-text-muted mt-2">
+                Algorithmic dispatch guarantees 40L per person and 70L per livestock daily, prioritizing the most secluded hamlets.
+              </p>
+            </div>
+            <div class="mt-space-md pt-space-xs text-[11px] font-mono text-telemetry-emerald flex items-center gap-1 font-semibold">
+              <span class="material-symbols-outlined text-[14px]">check_circle</span>
+              Jal Jeevan Mission aligned allocation
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-space-sm">
+              <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-navy-deep">
+                <span class="material-symbols-outlined text-[24px]">qr_code_2</span>
+              </span>
+              <span class="font-telemetry-badge text-telemetry-badge bg-surface-container-low text-navy-deep px-2.5 py-1 rounded font-bold uppercase">
+                ZERO LEAK ESCROW
+              </span>
+            </div>
+            <div>
+              <span class="font-metric-numeral text-display-hero-mobile md:text-metric-numeral text-navy-deep font-bold tracking-tight block">
+                100%
+              </span>
+              <h3 class="font-title-sm text-title-sm text-navy-deep font-bold mt-1">
+                Verified Tank Deliveries
+              </h3>
+              <p class="font-body-md text-body-md text-text-muted mt-2">
+                Dual QR code handshake at village cistern confirms discharge before contractor billing escrow is authorized.
+              </p>
+            </div>
+            <div class="mt-space-md pt-space-xs text-[11px] font-mono text-telemetry-emerald flex items-center gap-1 font-semibold">
+              <span class="material-symbols-outlined text-[14px]">check_circle</span>
+              Tamper-proof HMAC SHA-256 tokens
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- The Challenge vs Solution Section -->
+      <section class="w-full bg-canvas-slate py-space-2xl px-margin md:px-margin-desktop border-t border-b border-border-subtle/50" id="the-problem">
+        <div class="max-w-[1440px] mx-auto">
+          <div class="text-center max-w-3xl mx-auto mb-space-xl">
+            <span class="font-label-caps text-label-caps text-ocean-signal font-bold uppercase tracking-wider block mb-space-xs">
+              THE CHALLENGE • SYSTEM BREAKDOWNS
+            </span>
+            <h2 class="font-headline-xl text-headline-xl text-navy-deep tracking-tight">
+              Why Traditional Rural Water Supply Fails
+            </h2>
+            <p class="font-body-lg text-body-lg text-text-muted mt-space-xs">
+              During seasonal droughts, millions of liters of public drinking water are diverted, delayed, or unverified. JalSanchar eliminates three systemic vulnerabilities:
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+            <!-- Challenge 1 -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-space-xs">
+                  <span class="font-metric-numeral text-display-hero-mobile md:text-metric-numeral font-bold text-critical-crimson">
+                    22%
+                  </span>
+                  <span class="w-8 h-8 rounded-full bg-error-container/40 flex items-center justify-center text-critical-crimson">
+                    <span class="material-symbols-outlined text-[18px]">no_transfer</span>
+                  </span>
+                </div>
+                <h3 class="font-title-sm text-title-sm text-navy-deep font-bold">
+                  Estimated Water Diversion
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-2">
+                  Without cryptographic verification, water tankers frequently divert public emergency water to unauthorized industrial buyers, leaving remote village tanks bone dry.
+                </p>
+              </div>
+              <div class="mt-space-md p-2.5 rounded bg-surface-container-low text-body-sm text-navy-deep">
+                <span class="font-bold text-telemetry-emerald block">JalSanchar Fix:</span>
+                Strict 500m geofencing triggers auto-lock on driver escrow payments if route diverges.
+              </div>
+            </div>
+
+            <!-- Challenge 2 -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-space-xs">
+                  <span class="font-metric-numeral text-display-hero-mobile md:text-metric-numeral font-bold text-alert-amber">
+                    Zero
+                  </span>
+                  <span class="w-8 h-8 rounded-full bg-alert-amber/10 flex items-center justify-center text-alert-amber">
+                    <span class="material-symbols-outlined text-[18px]">warning</span>
+                  </span>
+                </div>
+                <h3 class="font-title-sm text-title-sm text-navy-deep font-bold">
+                  Advance Shortage Warning
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-2">
+                  Traditional administration only reacts after village wells run dry. Citizens are forced to wait days for emergency tenders, bureaucratic tenders, and logistical approval.
+                </p>
+              </div>
+              <div class="mt-space-md p-2.5 rounded bg-surface-container-low text-body-sm text-navy-deep">
+                <span class="font-bold text-telemetry-emerald block">JalSanchar Fix:</span>
+                NASA SMAP &amp; Sentinel-2 telemetry forecasts well exhaustion 14 days ahead.
+              </div>
+            </div>
+
+            <!-- Challenge 3 -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-space-xs">
+                  <span class="font-metric-numeral text-headline-xl md:text-metric-numeral font-bold text-navy-deep">
+                    Reactive
+                  </span>
+                  <span class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-navy-deep">
+                    <span class="material-symbols-outlined text-[18px]">assignment_late</span>
+                  </span>
+                </div>
+                <h3 class="font-title-sm text-title-sm text-navy-deep font-bold">
+                  Manual Grievance Redressal
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-2">
+                  Panchayat leaders spend hours submitting physical complaints to Taluka offices. Lack of transparent digital audit trails delays emergency tanker authorization.
+                </p>
+              </div>
+              <div class="mt-space-md p-2.5 rounded bg-surface-container-low text-body-sm text-navy-deep">
+                <span class="font-bold text-telemetry-emerald block">JalSanchar Fix:</span>
+                Automated mobile attestation triggers next tanker dispatch automatically.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Three-Tier Governance Section -->
+      <section class="w-full bg-surface py-space-2xl px-margin md:px-margin-desktop" id="how-it-works">
+        <div class="max-w-[1440px] mx-auto">
+          <div class="text-center max-w-3xl mx-auto mb-space-xl">
+            <span class="font-label-caps text-label-caps text-telemetry-emerald font-bold uppercase tracking-wider block mb-space-xs">
+              THREE-TIER GOVERNANCE
+            </span>
+            <h2 class="font-headline-xl text-headline-xl text-navy-deep tracking-tight">
+              How JalSanchar Solves the Water Crisis
+            </h2>
+            <p class="font-body-lg text-body-lg text-text-muted mt-space-xs">
+              A reliable 3-stage process combining satellite intelligence, GPS tracking, and QR verification.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg relative">
+            <!-- Step 1 -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col relative overflow-hidden">
+              <div class="flex items-center gap-space-sm mb-space-md">
+                <div class="w-10 h-10 rounded-full bg-navy-deep text-surface-card flex items-center justify-center font-bold text-title-sm">
+                  1
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">STAGE 01 • PREDICT</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-navy-deep">
+                1. Early Shortage Warning
+              </h3>
+              <p class="font-body-md text-body-md text-text-muted mt-space-sm leading-relaxed">
+                Using weather radar and NASA SMAP satellite data, we predict which village wells will run dry up to 14 days in advance, so water tankers are sent before taps run completely dry.
+              </p>
+              <div class="mt-space-lg pt-space-md bg-canvas-slate p-3 rounded-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-ocean-signal text-[20px]">public</span>
+                <span class="text-xs font-mono text-navy-deep">Copernicus Surface Water Index Tracking</span>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col relative overflow-hidden">
+              <div class="flex items-center gap-space-sm mb-space-md">
+                <div class="w-10 h-10 rounded-full bg-telemetry-emerald text-surface-card flex items-center justify-center font-bold text-title-sm">
+                  2
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">STAGE 02 • PREVENT</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-navy-deep">
+                2. Stop Water Theft &amp; Diversion
+              </h3>
+              <p class="font-body-md text-body-md text-text-muted mt-space-sm leading-relaxed">
+                Tanker drivers must scan a time-bound QR code at the village water tank with local Gram Panchayat officials. If a tanker deviates 500m off-route, payment is frozen automatically.
+              </p>
+              <div class="mt-space-lg pt-space-md bg-canvas-slate p-3 rounded-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-critical-crimson text-[20px]">lock_clock</span>
+                <span class="text-xs font-mono text-navy-deep">Strict 500m Route Escrow Freeze</span>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col relative overflow-hidden">
+              <div class="flex items-center gap-space-sm mb-space-md">
+                <div class="w-10 h-10 rounded-full bg-navy-slate text-surface-card flex items-center justify-center font-bold text-title-sm">
+                  3
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">STAGE 03 • SUSTAIN</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-navy-deep">
+                3. Fair Daily Water For Everyone
+              </h3>
+              <p class="font-body-md text-body-md text-text-muted mt-space-sm leading-relaxed">
+                Smart route optimization guarantees at least 40 liters daily for every person and 70 liters for cattle, ensuring even the most remote hamlets receive timely deliveries.
+              </p>
+              <div class="mt-space-lg pt-space-md bg-canvas-slate p-3 rounded-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-telemetry-emerald text-[20px]">route</span>
+                <span class="text-xs font-mono text-navy-deep">Google OR-Tools Optimized Routing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Operational Portals Grid -->
+      <section class="w-full bg-canvas-slate py-space-2xl px-margin md:px-margin-desktop border-t border-border-subtle/50" id="operational-portals">
+        <div class="max-w-[1440px] mx-auto">
+          <div class="text-center max-w-3xl mx-auto mb-space-xl">
+            <span class="font-label-caps text-label-caps text-ocean-signal font-bold uppercase tracking-wider block mb-space-xs">
+              OPERATIONAL PORTALS
+            </span>
+            <h2 class="font-headline-xl text-headline-xl text-navy-deep tracking-tight">
+              Designed for Rural Reality and Governance
+            </h2>
+            <p class="font-body-lg text-body-lg text-text-muted mt-space-xs">
+              Dedicated interfaces for district officers, village panchayat representatives, tanker drivers, and citizens.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+            
+            <!-- Portal 1: District Collector -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-navy-deep mb-space-md">
+                  <span class="material-symbols-outlined text-[28px]">account_balance</span>
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">COMMAND CENTER</span>
+                <h3 class="font-headline-md text-headline-md text-navy-deep mt-1">
+                  District Collector
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-space-sm">
+                  Live GIS tanker fleet monitoring, contractor escrow payment releases, drought severity indexes, and automated dispatch control.
+                </p>
+              </div>
+              <div class="pt-space-lg">
+                <a class="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-lg bg-canvas-slate text-navy-deep hover:bg-surface-container-high font-title-sm text-title-sm font-semibold transition-colors" href="dashboard.html">
+                  <span>Access Command Center</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Portal 2: Gram Panchayat -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-telemetry-emerald mb-space-md">
+                  <span class="material-symbols-outlined text-[28px]">cottage</span>
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">VILLAGE LEVEL</span>
+                <h3 class="font-headline-md text-headline-md text-navy-deep mt-1">
+                  Gram Panchayat
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-space-sm">
+                  Simple task-based camera scanner for village cisterns. Confirm tanker arrival, attest water volume, and log shortage alerts.
+                </p>
+              </div>
+              <div class="pt-space-lg">
+                <a class="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-lg bg-canvas-slate text-navy-deep hover:bg-surface-container-high font-title-sm text-title-sm font-semibold transition-colors" href="panchayat.html">
+                  <span>Open Panchayat Portal</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Portal 3: Tanker Driver -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-alert-amber mb-space-md">
+                  <span class="material-symbols-outlined text-[28px]">local_shipping</span>
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">FIELD LOGISTICS</span>
+                <h3 class="font-headline-md text-headline-md text-navy-deep mt-1">
+                  Tanker Driver
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-space-sm">
+                  Offline turn-by-turn route directions, GPS location broadcast, digital trip log, and dynamic delivery verification QR generator.
+                </p>
+              </div>
+              <div class="pt-space-lg">
+                <a class="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-lg bg-canvas-slate text-navy-deep hover:bg-surface-container-high font-title-sm text-title-sm font-semibold transition-colors" href="driver.html">
+                  <span>Open Driver App</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Portal 4: Public Audit -->
+            <div class="bg-surface-card p-space-lg rounded-xl shadow-sm border border-border-subtle flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div>
+                <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-ocean-signal mb-space-md">
+                  <span class="material-symbols-outlined text-[28px]">shield</span>
+                </div>
+                <span class="font-label-caps text-label-caps text-text-muted uppercase">TRANSPARENCY</span>
+                <h3 class="font-headline-md text-headline-md text-navy-deep mt-1">
+                  Public Audit
+                </h3>
+                <p class="font-body-md text-body-md text-text-muted mt-space-sm">
+                  Publicly verifiable delivery receipts, escrow ledger status, route deviation alerts, and open water distribution reports.
+                </p>
+              </div>
+              <div class="pt-space-lg">
+                <button class="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-lg bg-canvas-slate text-navy-deep hover:bg-surface-container-high font-title-sm text-title-sm font-semibold transition-colors cursor-pointer" onclick="openAuditModal()" type="button">
+                  <span>View Audit Ledger</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Delivery Ledger Section (Embed on Page) -->
+      <section class="w-full bg-surface py-space-2xl px-margin md:px-margin-desktop border-b border-border-subtle/50" id="delivery-ledger-section">
+        <div class="max-w-[1440px] mx-auto">
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-space-lg gap-space-sm">
+            <div>
+              <div class="inline-flex items-center gap-1.5 font-label-caps text-label-caps text-telemetry-emerald uppercase tracking-wider mb-space-xs font-bold">
+                <span class="w-2 h-2 rounded-full bg-telemetry-emerald inline-block"></span>
+                LIVE AUDIT STREAM • PUBLIC VERIFICATION
+              </div>
+              <h2 class="font-headline-xl text-headline-xl text-navy-deep tracking-tight">
+                Water Delivery Audit Records
+              </h2>
+              <p class="font-body-md text-body-md text-text-muted">
+                Real-time delivery receipts verified via NavIC GPS coordinates and local Gram Panchayat QR scan tokens.
+              </p>
+            </div>
+            <div class="flex items-center gap-space-sm flex-wrap">
+              <button class="px-3 py-1.5 rounded-lg bg-navy-deep text-surface-card text-body-sm font-semibold cursor-pointer" id="btn-all" onclick="filterAudit('all')" type="button">All Records</button>
+              <button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-navy-deep text-body-sm font-semibold hover:bg-surface-variant cursor-pointer" id="btn-ver" onclick="filterAudit('VERIFIED')" type="button">Verified</button>
+              <button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-critical-crimson text-body-sm font-semibold hover:bg-surface-variant cursor-pointer" id="btn-held" onclick="filterAudit('HELD')" type="button">Payment Held</button>
+              <button class="px-3 py-1.5 rounded-lg bg-canvas-slate text-navy-deep text-body-sm font-semibold hover:bg-surface-container-high inline-flex items-center gap-1 shadow-sm border border-border-subtle/60 cursor-pointer" onclick="exportLedgerJSON()" type="button">
+                <span class="material-symbols-outlined text-[16px]">download</span> Export JSON
+              </button>
+            </div>
+          </div>
+
+          <!-- Ledger Table Container -->
+          <div class="bg-surface-card rounded-xl shadow-sm overflow-hidden border border-border-subtle">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-canvas-slate font-label-caps text-label-caps text-text-muted uppercase border-b border-border-subtle">
+                    <th class="py-3 px-4">Tanker ID</th>
+                    <th class="py-3 px-4">Target Village</th>
+                    <th class="py-3 px-4">Discharged Volume</th>
+                    <th class="py-3 px-4">Ledger Status</th>
+                    <th class="py-3 px-4">Cryptographic Token Hash</th>
+                    <th class="py-3 px-4 text-right">Verification Time</th>
+                  </tr>
+                </thead>
+                <tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-border-subtle/50" id="audit-table-body">
+                  <!-- Row 1 -->
+                  <tr class="hover:bg-canvas-slate/60 transition-colors" data-status="VERIFIED">
+                    <td class="py-3 px-4 font-mono font-bold text-navy-deep">TN-04 (MH-15)</td>
+                    <td class="py-3 px-4 font-medium">Khopadi Cistern No. 2</td>
+                    <td class="py-3 px-4 font-mono">10,000 L</td>
+                    <td class="py-3 px-4">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-telemetry-emerald/10 text-telemetry-emerald">
+                        <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald"></span>
+                        VERIFIED
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 font-mono text-xs text-text-muted">
+                      <span class="bg-canvas-slate px-2 py-0.5 rounded font-mono border border-border-subtle/40">0x9F3B4ED871A2...</span>
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono text-text-muted">Today, 14:22 IST</td>
+                  </tr>
+                  <!-- Row 2 -->
+                  <tr class="hover:bg-canvas-slate/60 transition-colors" data-status="TRANSIT">
+                    <td class="py-3 px-4 font-mono font-bold text-navy-deep">TN-12 (MH-15)</td>
+                    <td class="py-3 px-4 font-medium">Pangari South Ward</td>
+                    <td class="py-3 px-4 font-mono">10,000 L</td>
+                    <td class="py-3 px-4">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-secondary-container/40 text-ocean-signal">
+                        <span class="w-1.5 h-1.5 rounded-full bg-ocean-signal animate-pulse"></span>
+                        IN TRANSIT
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 font-mono text-xs text-text-muted">
+                      <span class="bg-canvas-slate px-2 py-0.5 rounded font-mono border border-border-subtle/40">0x32A78CB948F1...</span>
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono text-text-muted">ETA: 22 Mins</td>
+                  </tr>
+                  <!-- Row 3 -->
+                  <tr class="hover:bg-canvas-slate/60 transition-colors" data-status="HELD">
+                    <td class="py-3 px-4 font-mono font-bold text-navy-deep">TN-07 (MH-15)</td>
+                    <td class="py-3 px-4 font-medium">Wari Main Hamlet</td>
+                    <td class="py-3 px-4 font-mono">10,000 L</td>
+                    <td class="py-3 px-4">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-error-container text-critical-crimson">
+                        <span class="w-1.5 h-1.5 rounded-full bg-critical-crimson"></span>
+                        PAYMENT HELD
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 font-mono text-xs text-critical-crimson font-semibold">
+                      <span class="bg-error-container/50 px-2 py-0.5 rounded border border-critical-crimson/20">500m Off Route Alert</span>
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono text-critical-crimson">Flagged at 13:48 IST</td>
+                  </tr>
+                  <!-- Row 4 -->
+                  <tr class="hover:bg-canvas-slate/60 transition-colors" data-status="VERIFIED">
+                    <td class="py-3 px-4 font-mono font-bold text-navy-deep">TN-19 (MH-15)</td>
+                    <td class="py-3 px-4 font-medium">Gonde Taluka Cistern</td>
+                    <td class="py-3 px-4 font-mono">8,500 L</td>
+                    <td class="py-3 px-4">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-telemetry-emerald/10 text-telemetry-emerald">
+                        <span class="w-1.5 h-1.5 rounded-full bg-telemetry-emerald"></span>
+                        VERIFIED
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 font-mono text-xs text-text-muted">
+                      <span class="bg-canvas-slate px-2 py-0.5 rounded font-mono border border-border-subtle/40">0x4B8E110AC352...</span>
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono text-text-muted">Today, 12:05 IST</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Bottom Digital Seal Ribbon -->
+            <div class="bg-canvas-slate px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-text-muted border-t border-border-subtle">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-telemetry-emerald">verified</span>
+                <span>Digital Seal: <code class="font-bold text-navy-deep">SHA256:d8c47f9a12b6e45c89a01f4e</code> (Valid Sovereign Signature)</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="hover:text-navy-deep inline-flex items-center gap-1 cursor-pointer" onclick="window.print()" type="button">
+                  <span class="material-symbols-outlined text-[14px]">print</span> Print Ledger
+                </button>
+                <span>•</span>
+                <span class="text-telemetry-emerald font-semibold">Synced With District Treasury</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- System Architecture & Tech Badges -->
+      <section class="w-full bg-canvas-slate py-space-2xl px-margin md:px-margin-desktop" id="architecture">
+        <div class="max-w-[1440px] mx-auto">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+            
+            <!-- Left Architecture Details -->
+            <div class="lg:col-span-5 flex flex-col gap-space-md">
+              <span class="font-label-caps text-label-caps text-ocean-signal font-bold uppercase tracking-wider">
+                SYSTEM ARCHITECTURE
+              </span>
+              <h2 class="font-headline-xl text-headline-xl text-navy-deep tracking-tight">
+                Built for Resilient Field Operations
+              </h2>
+              <p class="font-body-md text-body-md text-text-muted leading-relaxed">
+                JalSanchar runs on low-bandwidth 2G/3G mobile networks, works completely offline when tankers cross remote valleys, and syncs cryptographically signed logs when connectivity returns.
+              </p>
+              
+              <div class="space-y-space-md mt-space-xs">
+                <div class="flex items-start gap-space-sm bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle">
+                  <span class="material-symbols-outlined text-ocean-signal text-[24px] mt-0.5">satellite_alt</span>
+                  <div>
+                    <h4 class="font-title-sm text-title-sm text-navy-deep font-bold">Satellite Hydrology Telemetry</h4>
+                    <p class="font-body-sm text-body-sm text-text-muted mt-1">
+                      Copernicus Sentinel-2 &amp; NASA SMAP moisture sensors feed groundwater forecasts directly into village risk tiers.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-space-sm bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle">
+                  <span class="material-symbols-outlined text-telemetry-emerald text-[24px] mt-0.5">alt_route</span>
+                  <div>
+                    <h4 class="font-title-sm text-title-sm text-navy-deep font-bold">OR-Tools Vehicle Routing</h4>
+                    <p class="font-body-sm text-body-sm text-text-muted mt-1">
+                      Google OR-Tools optimizes tanker routes across clustered villages, minimizing fuel burn and turnaround delays.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-space-sm bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle">
+                  <span class="material-symbols-outlined text-navy-deep text-[24px] mt-0.5">security_update_good</span>
+                  <div>
+                    <h4 class="font-title-sm text-title-sm text-navy-deep font-bold">Cryptographic Dual Handshake</h4>
+                    <p class="font-body-sm text-body-sm text-text-muted mt-1">
+                      HMAC-SHA256 signatures ensure that delivery tokens cannot be fabricated or reused by rogue suppliers.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: 8 Tech Stack Chips Grid -->
+            <div class="lg:col-span-7">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-ocean-signal">
+                    <span class="material-symbols-outlined text-[22px]">public</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">NASA SMAP</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">Soil Moisture Active Passive</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-telemetry-emerald">
+                    <span class="material-symbols-outlined text-[22px]">satellite</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">Sentinel-2</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">Copernicus Surface Water Index</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-navy-deep">
+                    <span class="material-symbols-outlined text-[22px]">hub</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">Google OR-Tools</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">Capacity Constrained VRP</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-navy-slate">
+                    <span class="material-symbols-outlined text-[22px]">enhanced_encryption</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">SHA-256 Signatures</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">Tamper-Proof Audit Records</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-alert-amber">
+                    <span class="material-symbols-outlined text-[22px]">location_searching</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">GPS Geofencing</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">500m Strict Buffer Zones</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-telemetry-emerald">
+                    <span class="material-symbols-outlined text-[22px]">wifi_off</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">Offline-First PWA</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">IndexedDB Queue &amp; Sync</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-navy-deep">
+                    <span class="material-symbols-outlined text-[22px]">lock</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">Supabase RLS</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">Role-Based Data Security</span>
+                  </div>
+                </div>
+                <div class="bg-surface-card p-space-md rounded-lg shadow-sm border border-border-subtle flex items-center gap-space-sm hover:shadow transition-shadow">
+                  <div class="w-10 h-10 rounded bg-surface-container-high flex items-center justify-center text-ocean-signal">
+                    <span class="material-symbols-outlined text-[22px]">photo_camera</span>
+                  </div>
+                  <div>
+                    <span class="font-title-sm text-title-sm text-navy-deep font-bold block">WebRTC Camera Scan</span>
+                    <span class="font-body-sm text-body-sm text-text-muted">Fast Hardware Decoders</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Call to Action Banner -->
+      <section class="w-full bg-navy-deep py-space-2xl px-margin md:px-margin-desktop text-on-primary relative overflow-hidden">
+        <div class="max-w-[1440px] mx-auto text-center flex flex-col items-center gap-space-md relative z-10">
+          <span class="font-label-caps text-label-caps text-secondary-fixed uppercase tracking-wider font-bold">
+            CIVIC WATER SECURITY COOPERATION
+          </span>
+          <h2 class="font-headline-xl text-headline-xl text-surface-card max-w-2xl tracking-tight font-bold">
+            Ready to Eliminate Water Diversion in Your Taluka?
+          </h2>
+          <p class="font-body-lg text-body-lg text-surface-variant max-w-2xl">
+            Join the Ahilyanagar &amp; Sinnar pilot grid to guarantee reliable drinking water for drought-affected citizens.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-space-sm pt-space-xs">
+            <a class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-surface-card text-navy-deep hover:bg-surface-container-low font-title-sm text-title-sm font-bold shadow-md transition-all" href="dashboard.html">
+              <span>Launch Collector Dashboard</span>
+              <span class="material-symbols-outlined text-[18px] ml-2">arrow_forward</span>
+            </a>
+            <a class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-navy-slate text-on-primary hover:bg-surface-tint font-title-sm text-title-sm font-semibold transition-all shadow-sm" href="login.html">
+              <span>Sign In to Portal</span>
             </a>
           </div>
-
-          <!-- Panchayat Portal -->
-          <div class="portal-card portal-panchayat">
-            <div>
-              <div class="portal-header">
-                <div class="portal-icon-wrap">
-                  <i data-lucide="home" class="w-5 h-5"></i>
-                </div>
-                <div class="text-xs font-bold uppercase tracking-wider text-[#148F77]">Village Level</div>
-                <h3 class="portal-title" data-i18n="role_panchayat">Gram Panchayat</h3>
-              </div>
-              <p class="portal-desc" data-i18n="role_panchayat_tag">
-                Simple task-based camera scanner for village cisterns. Confirm tanker arrival, attest water volume, and log shortage alerts.
-              </p>
-            </div>
-            <a href="panchayat.html" class="btn btn-outline btn-block text-center" style="border-color: #148F77; color: #148F77;">
-              Open Panchayat Portal <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-            </a>
-          </div>
-
-          <!-- Driver Portal -->
-          <div class="portal-card portal-driver">
-            <div>
-              <div class="portal-header">
-                <div class="portal-icon-wrap">
-                  <i data-lucide="truck" class="w-5 h-5"></i>
-                </div>
-                <div class="text-xs font-bold uppercase tracking-wider text-[#E67E22]">Field Logistics</div>
-                <h3 class="portal-title" data-i18n="role_driver">Tanker Driver</h3>
-              </div>
-              <p class="portal-desc" data-i18n="role_driver_tag">
-                Offline turn-by-turn route directions, GPS location broadcast, digital trip log, and dynamic delivery verification QR generator.
-              </p>
-            </div>
-            <a href="driver.html" class="btn btn-outline btn-block text-center" style="border-color: #E67E22; color: #E67E22;">
-              Open Driver App <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-            </a>
-          </div>
-
-          <!-- Public Audit Portal -->
-          <div class="portal-card portal-public">
-            <div>
-              <div class="portal-header">
-                <div class="portal-icon-wrap">
-                  <i data-lucide="shield-alert" class="w-5 h-5"></i>
-                </div>
-                <div class="text-xs font-bold uppercase tracking-wider text-[#D4AC0D]">Transparency</div>
-                <h3 class="portal-title">Public Audit</h3>
-              </div>
-              <p class="portal-desc">
-                Publicly verifiable delivery receipts, escrow ledger status, route deviation alerts, and open water distribution reports.
-              </p>
-            </div>
-            <button id="btnPortalsSectionAudit" class="btn btn-outline btn-block" style="border-color: #D4AC0D; color: #B7950B;">
-              View Audit Ledger <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-            </button>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- 🛰️ 5. Technology Section -->
-    <section id="technology" class="section">
-      <div class="section-container">
-        <div class="tech-split-grid">
-          <div>
-            <div class="section-tag">SYSTEM ARCHITECTURE</div>
-            <h2 class="section-title">Built for Resilient Field Operations</h2>
-            <p class="section-subtitle text-left mb-6">
-              JalSanchar runs on low-bandwidth 2G/3G mobile networks, works completely offline when tankers cross remote valleys, and syncs cryptographically signed logs when connectivity returns.
-            </p>
-            <div class="space-y-4">
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded bg-[#EBF5FB] text-[#1A5276] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i data-lucide="satellite" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold text-gray-800">Satellite Hydrology Telemetry</h4>
-                  <p class="text-sm text-gray-600">Copernicus Sentinel-2 &amp; NASA SMAP moisture sensors feed groundwater forecasts directly into village risk tiers.</p>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded bg-[#E8F8F5] text-[#148F77] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i data-lucide="map-pin" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold text-gray-800">OR-Tools Vehicle Routing</h4>
-                  <p class="text-sm text-gray-600">Google OR-Tools optimizes tanker routes across clustered villages, minimizing fuel burn and turnaround delays.</p>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded bg-[#FEF5E7] text-[#E67E22] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i data-lucide="lock" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold text-gray-800">Cryptographic Dual Handshake</h4>
-                  <p class="text-sm text-gray-600">HMAC-SHA256 signatures ensure that delivery tokens cannot be fabricated or reused by rogue suppliers.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tech Tag Cloud -->
-          <div>
-            <div class="tech-tag-cloud">
-              <div class="tech-tag-item">
-                <i data-lucide="satellite" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">NASA SMAP</span>
-                  <span class="tech-tag-sub">Soil Moisture Active Passive</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="globe" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">Sentinel-2</span>
-                  <span class="tech-tag-sub">Copernicus Surface Water Index</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="route" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">Google OR-Tools</span>
-                  <span class="tech-tag-sub">Capacity Constrained VRP</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="shield" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">SHA-256 Signatures</span>
-                  <span class="tech-tag-sub">Tamper-Proof Audit Records</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="map" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">GPS Geofencing</span>
-                  <span class="tech-tag-sub">500m Strict Buffer Zones</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="wifi-off" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">Offline-First PWA</span>
-                  <span class="tech-tag-sub">IndexedDB Queue &amp; Sync</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="database" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">Supabase RLS</span>
-                  <span class="tech-tag-sub">Role-Based Data Security</span>
-                </div>
-              </div>
-
-              <div class="tech-tag-item">
-                <i data-lucide="smartphone" class="tech-tag-icon"></i>
-                <div>
-                  <span class="tech-tag-name">WebRTC Camera Scan</span>
-                  <span class="tech-tag-sub">Fast Hardware Decoders</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 📢 6. Call to Action Navy Banner -->
-    <section class="cta-banner-section">
-      <div class="cta-banner-content">
-        <h2 class="cta-banner-title">Ready to Eliminate Water Diversion in Your Taluka?</h2>
-        <p class="cta-banner-desc">
-          Join the Ahilyanagar &amp; Sinnar pilot grid to guarantee reliable drinking water for drought-affected citizens.
-        </p>
-        <div class="cta-banner-actions">
-          <a href="dashboard.html?role=collector" class="btn btn-white btn-lg">
-            Launch Collector Dashboard <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-          </a>
-          <a href="login.html" class="btn btn-outline-white btn-lg">
-            Sign In to Portal
-          </a>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
-  <!-- 🏛️ 7. Main Footer (Clean 3-Column Light) -->
-  <footer class="main-footer">
-    <div class="footer-container">
-      <div class="footer-grid">
-        <!-- Col 1: Brand -->
-        <div class="footer-col">
-          <div class="flex items-center gap-3 mb-2">
-            <img src="assets/logo.jpg" alt="Logo" class="h-8 w-auto rounded">
-            <span class="font-display font-bold text-lg text-primary">JalSanchar</span>
-          </div>
-          <p class="footer-desc">
-            Sovereign Rural Water Supply Logistics &amp; Anti-Diversion Telemetry System. Designed to guarantee minimum daily water security across drought-hit villages.
-          </p>
-          <div class="text-xs text-gray-500 mt-4">
-            Pilot Sectors: Ahilyanagar &amp; Sinnar Taluka, Maharashtra
-          </div>
+  <!-- Interactive Modal for Detailed Water Delivery Audit Records -->
+  <div class="fixed inset-0 z-50 hidden bg-navy-deep/60 backdrop-blur-sm flex items-center justify-center p-4" id="auditModal">
+    <div class="bg-surface-card rounded-xl max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-border-subtle">
+      <!-- Modal Header -->
+      <div class="bg-navy-deep px-6 py-4 flex items-center justify-between text-on-primary">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-telemetry-emerald">receipt_long</span>
+          <h3 class="font-title-sm text-title-sm font-bold text-surface-card">Water Delivery Audit Records</h3>
         </div>
+        <button class="text-surface-variant hover:text-surface-card p-1 cursor-pointer" onclick="closeAuditModal()" type="button" aria-label="Close modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
 
-        <!-- Col 2: Portals -->
-        <div class="footer-col">
-          <h4>Operational Portals</h4>
-          <ul class="footer-links">
-            <li><a href="dashboard.html?role=collector">District Collector Command Center</a></li>
-            <li><a href="panchayat.html">Gram Panchayat Cistern Verifier</a></li>
-            <li><a href="driver.html">Tanker Driver Field Application</a></li>
-            <li><a href="login.html">Stakeholder Login Portal</a></li>
-          </ul>
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto flex flex-col gap-4">
+        <p class="font-body-md text-body-md text-text-muted">
+          Real-time delivery receipts verified via GPS coordinates and local Gram Panchayat QR scan tokens.
+        </p>
+        <div class="border border-border-subtle rounded-lg overflow-hidden">
+          <table class="w-full text-left border-collapse text-body-sm font-body-sm">
+            <thead class="bg-canvas-slate text-navy-deep font-label-caps text-label-caps">
+              <tr>
+                <th class="p-3">Tanker ID</th>
+                <th class="p-3">Village</th>
+                <th class="p-3">Volume</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Token Hash</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle">
+              <tr>
+                <td class="p-3 font-mono font-bold">TN-04 (MH-15)</td>
+                <td class="p-3">Khopadi</td>
+                <td class="p-3 font-mono">10,000 L</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-telemetry-emerald/10 text-telemetry-emerald">VERIFIED</span></td>
+                <td class="p-3 font-mono text-xs">0x9F3B4ED8</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-bold">TN-12 (MH-15)</td>
+                <td class="p-3">Pangari</td>
+                <td class="p-3 font-mono">10,000 L</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-secondary-container/40 text-ocean-signal">IN TRANSIT</span></td>
+                <td class="p-3 font-mono text-xs">0x32A78CB9</td>
+              </tr>
+              <tr class="bg-error-container/20">
+                <td class="p-3 font-mono font-bold">TN-07 (MH-15)</td>
+                <td class="p-3">Wari</td>
+                <td class="p-3 font-mono">10,000 L</td>
+                <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-error-container text-critical-crimson">PAYMENT HELD</span></td>
+                <td class="p-3 font-mono text-xs text-critical-crimson font-bold">500m Off Route</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        <!-- Col 3: Legal & Technical -->
-        <div class="footer-col">
-          <h4>Protocols &amp; Verification</h4>
-          <ul class="footer-links">
-            <li><a href="javascript:void(0)" id="btnFooterAudit">Verifiable Delivery Records</a></li>
-            <li><a href="javascript:void(0)" id="btnFooterProtocols">Emergency Drought Protocols</a></li>
-            <li><a href="presentation.html">Stakeholder Overview Slides</a></li>
-            <li><a href="https://github.com/RushalBangar/JalSanchar" target="_blank" rel="noopener">Open Source Repository</a></li>
-          </ul>
+        <div class="bg-canvas-slate p-3 rounded-lg font-mono text-xs text-text-muted flex items-center justify-between border border-border-subtle/50">
+          <span>Digital Seal: <code class="font-bold text-navy-deep">SHA256:d8c47f9a12b6e45c89a01f4e</code></span>
+          <span class="text-telemetry-emerald font-bold">✓ Valid Signature</span>
         </div>
       </div>
 
-      <div class="footer-bottom-bar">
-        <div>
-          &copy; 2026 JalSanchar (जलसंचार). All rights reserved.
+      <!-- Modal Footer -->
+      <div class="bg-canvas-slate px-6 py-3 flex items-center justify-between border-t border-border-subtle">
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1.5 rounded bg-surface-card text-navy-deep text-xs font-semibold shadow-sm hover:bg-surface-container-high flex items-center gap-1 border border-border-subtle cursor-pointer" onclick="window.print()" type="button">
+            <span class="material-symbols-outlined text-[14px]">print</span> Print Summary
+          </button>
+          <button class="px-3 py-1.5 rounded bg-surface-card text-navy-deep text-xs font-semibold shadow-sm hover:bg-surface-container-high flex items-center gap-1 border border-border-subtle cursor-pointer" onclick="exportLedgerJSON()" type="button">
+            <span class="material-symbols-outlined text-[14px]">code</span> Export JSON Ledger
+          </button>
         </div>
-        <div class="flex items-center gap-4">
-          <span class="inline-flex items-center gap-1.5 text-xs text-gray-600">
-            <span class="w-2 h-2 rounded-full bg-[#27AE60]"></span> System Online • v2.4.0
-          </span>
-          <span>|</span>
-          <a href="#" class="text-gray-600 hover:text-primary">Privacy Policy</a>
-          <span>|</span>
-          <a href="#" class="text-gray-600 hover:text-primary">Terms of Service</a>
+        <button class="px-4 py-1.5 rounded bg-navy-deep text-surface-card text-xs font-bold hover:bg-navy-slate cursor-pointer" onclick="closeAuditModal()" type="button">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full bg-navy-deep text-surface-variant mt-space-2xl">
+    <div class="bg-primary py-space-sm px-4 md:px-margin-desktop">
+      <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-space-sm">
+        <div class="flex items-center gap-space-sm font-label-caps text-label-caps text-surface-variant">
+          <span class="w-2.5 h-2.5 rounded-full bg-telemetry-emerald inline-block"></span>
+          <span>TELEMETRY MESH STATUS: ALL 18 DISTRICT GATEWAYS OPERATIONAL (99.98% DISPATCH UPTIME)</span>
+        </div>
+        <div class="flex items-center gap-space-md font-body-sm text-body-sm text-on-primary-container">
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">verified_user</span> Cryptographic SHA-256 Ledger</span>
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">satellite_alt</span> NavIC Geo-Fencing Active</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-[1440px] mx-auto px-4 md:px-margin-desktop py-space-2xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl">
+        <div class="lg:col-span-2 flex flex-col gap-space-md">
+          <div class="flex items-center gap-space-sm">
+            <img alt="JalSanchar Emblem" class="h-8 w-auto object-contain rounded" src="assets/logo.jpg" onerror="this.src='assets/logo.svg'"/>
+            <span class="font-headline-md text-headline-md text-surface-card">JalSanchar</span>
+          </div>
+          <p class="font-body-md text-body-md text-surface-variant max-w-md">
+            Sovereign public water telemetry infrastructure engineered for tamper-proof rural distribution, cryptographic dual-QR verification, and automated drought mitigation.
+          </p>
+          <div class="flex items-center gap-space-sm font-telemetry-badge text-telemetry-badge">
+            <span class="px-2.5 py-1 rounded bg-navy-slate text-surface-card">STAGE 3 AUDITED</span>
+            <span class="px-2.5 py-1 rounded bg-navy-slate text-surface-card">NIC COMPLIANT</span>
+            <span class="px-2.5 py-1 rounded bg-navy-slate text-surface-card">ZERO-TRUST GPS</span>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-title-sm text-title-sm text-surface-card mb-space-md">Pilot Sectors</h3>
+          <ul class="space-y-space-sm font-body-sm text-body-sm text-surface-variant">
+            <li><a class="hover:text-surface-card transition-colors" href="dashboard.html">Marathwada Drought Zone</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="dashboard.html">Bundelkhand Bedrock Basin</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="dashboard.html">Vidarbha Depletion Talukas</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="dashboard.html">Thar Margin Aquifer Units</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="dashboard.html">Rayalaseema Tanker Feeds</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-title-sm text-title-sm text-surface-card mb-space-md">GovTech Protocols</h3>
+          <ul class="space-y-space-sm font-body-sm text-body-sm text-surface-variant">
+            <li><a class="hover:text-surface-card transition-colors" href="presentation.html">Dual-QR Handshake Spec</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="presentation.html">Panchayat Ledger Audit Log</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="presentation.html">Flow-Meter Calibration RFC</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="https://jalsanchar.onrender.com/health" target="_blank" rel="noopener">District API Interconnect</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="https://github.com/RushalBangar/JalSanchar" target="_blank" rel="noopener">GitHub Open Source</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-title-sm text-title-sm text-surface-card mb-space-md">Verification &amp; Portals</h3>
+          <ul class="space-y-space-sm font-body-sm text-body-sm text-surface-variant">
+            <li><a class="hover:text-surface-card transition-colors" href="dashboard.html">District Collector Console</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="panchayat.html">Gram Panchayat Scanner</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="driver.html">Tanker Driver Logistics PWA</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="login.html">Role Authentication Portal</a></li>
+            <li><a class="hover:text-surface-card transition-colors" href="presentation.html">Master Architecture Deck</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-primary px-4 md:px-margin-desktop py-space-md border-t border-navy-slate/50">
+      <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-on-primary-container">
+        <p>© 2026 JalSanchar Platform. National Informatics Centre • Ministry of Jal Shakti, Government of India.</p>
+        <div class="flex items-center gap-space-md">
+          <a class="hover:text-surface-card transition-colors" href="presentation.html">Sovereignty Charter</a>
+          <a class="hover:text-surface-card transition-colors" href="presentation.html">Security &amp; Redundancy</a>
+          <a class="hover:text-surface-card transition-colors" href="https://github.com/RushalBangar/JalSanchar" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- 📑 Cryptographic Delivery Audit Records Modal -->
-  <div id="auditModal" class="modal-overlay hidden">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <div class="flex items-center gap-2">
-          <i data-lucide="file-check-2" class="w-5 h-5 text-primary"></i>
-          <h3 class="modal-title" data-i18n="audit_title">Water Delivery Audit Records</h3>
-        </div>
-        <button id="btnCloseAuditModal" class="modal-close-btn" aria-label="Close modal">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="modal-body space-y-4">
-        <p class="text-sm text-gray-600">
-          Real-time delivery receipts verified via GPS coordinates and local Gram Panchayat QR scan tokens.
-        </p>
-
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
-          <table class="w-full text-xs text-left">
-            <thead class="bg-gray-100 text-gray-700 font-semibold border-b border-gray-200">
-              <tr>
-                <th class="p-2.5">Tanker ID</th>
-                <th class="p-2.5">Village</th>
-                <th class="p-2.5">Volume</th>
-                <th class="p-2.5">Status</th>
-                <th class="p-2.5">Token Hash</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr class="hover:bg-gray-50">
-                <td class="p-2.5 font-mono font-medium">TN-04 (MH-15)</td>
-                <td class="p-2.5">Khopadi</td>
-                <td class="p-2.5">10,000 L</td>
-                <td class="p-2.5"><span class="badge badge-success">VERIFIED</span></td>
-                <td class="p-2.5 font-mono text-[11px] text-gray-500">0x9F3B4ED8</td>
-              </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="p-2.5 font-mono font-medium">TN-12 (MH-15)</td>
-                <td class="p-2.5">Pangari</td>
-                <td class="p-2.5">10,000 L</td>
-                <td class="p-2.5"><span class="badge badge-info">IN TRANSIT</span></td>
-                <td class="p-2.5 font-mono text-[11px] text-gray-500">0x32A78CB9</td>
-              </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="p-2.5 font-mono font-medium">TN-07 (MH-15)</td>
-                <td class="p-2.5">Wari</td>
-                <td class="p-2.5">10,000 L</td>
-                <td class="p-2.5"><span class="badge badge-danger">PAYMENT HELD</span></td>
-                <td class="p-2.5 font-mono text-[11px] text-red-500">500m Off Route</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 flex justify-between items-center">
-          <span>Digital Seal: <code class="font-mono text-[11px]">SHA256:d8c47f9a12b6e45c89a01f4e</code></span>
-          <span class="text-green-700 font-semibold">Valid Signature</span>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button id="btnPrintLedgerSummary" class="btn btn-outline btn-sm">
-          <i data-lucide="printer" class="w-4 h-4 mr-1"></i> Print Summary
-        </button>
-        <button id="btnExportLedgerJson" class="btn btn-primary btn-sm">
-          <i data-lucide="download" class="w-4 h-4 mr-1"></i> Export JSON Ledger
-        </button>
-        <button id="btnCloseAuditModalBtn" class="btn btn-outline btn-sm">
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 📜 Emergency Protocols Modal -->
-  <div id="protocolsModal" class="modal-overlay hidden">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <div class="flex items-center gap-2">
-          <i data-lucide="shield-alert" class="w-5 h-5 text-primary"></i>
-          <h3 class="modal-title">Emergency Drought Protocols</h3>
-        </div>
-        <button id="btnCloseProtocolsModal" class="modal-close-btn" aria-label="Close modal">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="modal-body space-y-4">
-        <div class="space-y-3">
-          <div class="p-3 rounded-lg border-l-4 border-primary bg-gray-50 border border-gray-200">
-            <h4 class="font-bold text-gray-800 text-sm">Step 1: Early Warning (14 Days in Advance)</h4>
-            <p class="text-xs text-gray-600 mt-1">
-              Satellite radar and soil sensors detect dropping groundwater 2 weeks in advance so local teams prepare early.
-            </p>
-          </div>
-
-          <div class="p-3 rounded-lg border-l-4 border-[#E67E22] bg-gray-50 border border-gray-200">
-            <h4 class="font-bold text-gray-800 text-sm">Step 2: Smart Tanker Dispatch (7 Days in Advance)</h4>
-            <p class="text-xs text-gray-600 mt-1">
-              When village tanks fall below 20%, tankers are automatically scheduled along the quickest routes.
-            </p>
-          </div>
-
-          <div class="p-3 rounded-lg border-l-4 border-[#E74C3C] bg-gray-50 border border-gray-200">
-            <h4 class="font-bold text-gray-800 text-sm">Step 3: Stop Diversion &amp; Hold Contractor Payment</h4>
-            <p class="text-xs text-gray-600 mt-1">
-              If a tanker moves 500m off-route or skips QR verification at the village tank, contractor payment is immediately held.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button id="btnCloseProtocolsModalBtn" class="btn btn-primary btn-sm">
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Core Scripts -->
-  <script src="js/lang.js"></script>
+  <!-- Interactive Modal & Micro-interactions JavaScript -->
   <script>
-    // Initialize Lucide icons
-    if (window.lucide) {
-      lucide.createIcons();
+    function openAuditModal() {
+      const modal = document.getElementById('auditModal');
+      if (modal) modal.classList.remove('hidden');
     }
 
-    // Mobile menu toggle
-    const mobileBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileBtn && mobileMenu) {
-      mobileBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-      });
-      mobileMenu.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => {
-          mobileMenu.classList.add('hidden');
-        });
+    function closeAuditModal() {
+      const modal = document.getElementById('auditModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function filterAudit(status) {
+      const rows = document.querySelectorAll('#audit-table-body tr');
+      const btnAll = document.getElementById('btn-all');
+      const btnVer = document.getElementById('btn-ver');
+      const btnHeld = document.getElementById('btn-held');
+
+      const defaultClass = 'px-3 py-1.5 rounded-lg bg-surface-container-high text-navy-deep text-body-sm font-semibold hover:bg-surface-variant cursor-pointer';
+      if (btnAll) btnAll.className = defaultClass;
+      if (btnVer) btnVer.className = defaultClass;
+      if (btnHeld) btnHeld.className = defaultClass;
+
+      if (status === 'all' && btnAll) btnAll.className = 'px-3 py-1.5 rounded-lg bg-navy-deep text-surface-card text-body-sm font-semibold cursor-pointer';
+      if (status === 'VERIFIED' && btnVer) btnVer.className = 'px-3 py-1.5 rounded-lg bg-navy-deep text-surface-card text-body-sm font-semibold cursor-pointer';
+      if (status === 'HELD' && btnHeld) btnHeld.className = 'px-3 py-1.5 rounded-lg bg-critical-crimson text-surface-card text-body-sm font-semibold cursor-pointer';
+
+      rows.forEach(row => {
+        if (status === 'all') {
+          row.style.display = '';
+        } else if (status === 'VERIFIED') {
+          row.style.display = row.getAttribute('data-status') === 'VERIFIED' ? '' : 'none';
+        } else if (status === 'HELD') {
+          row.style.display = row.getAttribute('data-status') === 'HELD' ? '' : 'none';
+        }
       });
     }
 
-    // Modal Handlers
+    function exportLedgerJSON() {
+      const ledger = [
+        { tanker: "TN-04 (MH-15)", village: "Khopadi Cistern No. 2", volume: 10000, status: "VERIFIED", hash: "0x9F3B4ED871A2", timestamp: new Date().toISOString() },
+        { tanker: "TN-12 (MH-15)", village: "Pangari South Ward", volume: 10000, status: "IN_TRANSIT", hash: "0x32A78CB948F1", timestamp: new Date().toISOString() },
+        { tanker: "TN-07 (MH-15)", village: "Wari Main Hamlet", volume: 10000, status: "PAYMENT_HELD", hash: "0xDEV_500M_OFF", timestamp: new Date().toISOString() },
+        { tanker: "TN-19 (MH-15)", village: "Gonde Taluka Cistern", volume: 8500, status: "VERIFIED", hash: "0x4B8E110AC352", timestamp: new Date().toISOString() }
+      ];
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ledger, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "jalsanchar_audit_ledger.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // Modal click outside to dismiss
     const auditModal = document.getElementById('auditModal');
-    const btnOpenAuditModal = document.getElementById('btnOpenAuditModal');
-    const btnCloseAuditModal = document.getElementById('btnCloseAuditModal');
-    const btnCloseAuditModalBtn = document.getElementById('btnCloseAuditModalBtn');
-    const btnExportLedgerJson = document.getElementById('btnExportLedgerJson');
-    const btnFooterAudit = document.getElementById('btnFooterAudit');
-
-    const protocolsModal = document.getElementById('protocolsModal');
-    const btnFooterProtocols = document.getElementById('btnFooterProtocols');
-    const btnCloseProtocolsModal = document.getElementById('btnCloseProtocolsModal');
-    const btnCloseProtocolsModalBtn = document.getElementById('btnCloseProtocolsModalBtn');
-
-    function openModal(el) {
-      if (!el) return;
-      el.classList.remove('hidden');
-      setTimeout(() => el.classList.add('active'), 10);
+    if (auditModal) {
+      auditModal.addEventListener('click', function(e) {
+        if (e.target === auditModal) closeAuditModal();
+      });
     }
 
-    function closeModal(el) {
-      if (!el) return;
-      el.classList.remove('active');
-      setTimeout(() => el.classList.add('hidden'), 200);
-    }
-
-    function openAudit() { openModal(auditModal); }
-    function closeAudit() { closeModal(auditModal); }
-
-    function openProtocols() { openModal(protocolsModal); }
-    function closeProtocols() { closeModal(protocolsModal); }
-
-    btnOpenAuditModal?.addEventListener('click', openAudit);
-    btnFooterAudit?.addEventListener('click', openAudit);
-    document.getElementById('btnPortalsSectionAudit')?.addEventListener('click', openAudit);
-    document.getElementById('btnNavAudit')?.addEventListener('click', openAudit);
-    document.getElementById('btnMobileNavAudit')?.addEventListener('click', () => {
-      mobileMenu?.classList.add('hidden');
-      openAudit();
-    });
-    btnCloseAuditModal?.addEventListener('click', closeAudit);
-    btnCloseAuditModalBtn?.addEventListener('click', closeAudit);
-    document.getElementById('btnPrintLedgerSummary')?.addEventListener('click', () => window.print());
-
-    btnFooterProtocols?.addEventListener('click', openProtocols);
-    btnCloseProtocolsModal?.addEventListener('click', closeProtocols);
-    btnCloseProtocolsModalBtn?.addEventListener('click', closeProtocols);
-
-    auditModal?.addEventListener('click', (e) => {
-      if (e.target === auditModal) closeAudit();
-    });
-    protocolsModal?.addEventListener('click', (e) => {
-      if (e.target === protocolsModal) closeProtocols();
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeAuditModal();
     });
 
     // ♿ Accessibility Text Size Scaler
-    let currentFontStep = 1; // 0: 14px, 1: 16px (default), 2: 18px
+    let currentFontStep = 1;
     const fontSizes = ['14px', '16px', '18px'];
     function applyFontStep(step) {
       currentFontStep = Math.max(0, Math.min(fontSizes.length - 1, step));
       document.documentElement.style.fontSize = fontSizes[currentFontStep];
       localStorage.setItem('jalsanchar_font_step', currentFontStep);
-      localStorage.setItem('jalsanjeevani_font_step', currentFontStep);
-      
+
       const bDec = document.getElementById('btnFontDec');
       const bRes = document.getElementById('btnFontReset');
       const bInc = document.getElementById('btnFontInc');
       if (bDec && bRes && bInc) {
-        bDec.className = currentFontStep === 0 ? "px-1.5 py-0.5 rounded bg-white text-[#154360] font-bold text-xs" : "px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors cursor-pointer";
-        bRes.className = currentFontStep === 1 ? "px-1.5 py-0.5 rounded bg-white text-[#154360] font-bold text-xs" : "px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors cursor-pointer";
-        bInc.className = currentFontStep === 2 ? "px-1.5 py-0.5 rounded bg-white text-[#154360] font-bold text-xs" : "px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors cursor-pointer";
+        bDec.className = currentFontStep === 0 ? "px-1.5 py-0.5 rounded bg-surface-container-high font-bold text-on-surface" : "px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors";
+        bRes.className = currentFontStep === 1 ? "px-1.5 py-0.5 rounded bg-surface-container-high font-bold text-on-surface" : "px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors";
+        bInc.className = currentFontStep === 2 ? "px-1.5 py-0.5 rounded bg-surface-container-high font-bold text-on-surface" : "px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors";
       }
     }
     document.getElementById('btnFontDec')?.addEventListener('click', () => applyFontStep(currentFontStep - 1));
     document.getElementById('btnFontReset')?.addEventListener('click', () => applyFontStep(1));
     document.getElementById('btnFontInc')?.addEventListener('click', () => applyFontStep(currentFontStep + 1));
     const savedStep = localStorage.getItem('jalsanchar_font_step') || localStorage.getItem('jalsanjeevani_font_step');
-    if (savedStep !== null) {
-      applyFontStep(parseInt(savedStep, 10));
-    }
+    if (savedStep !== null) applyFontStep(parseInt(savedStep, 10));
 
-    // Export Signed Ledger JSON
-    btnExportLedgerJson?.addEventListener('click', () => {
-      const auditData = {
-        taluka: "Sinnar",
-        district: "Nashik",
-        timestamp: new Date().toISOString(),
-        telemetry_source: "Copernicus Sentinel-2 & NASA SMAP",
-        records: [
-          { tanker: "TN-04", reg: "MH-15-AG-982", village: "Khopadi", liters: 10000, key: "0x9F3B4ED812C4", status: "VERIFIED" },
-          { tanker: "TN-12", reg: "MH-15-AG-402", village: "Pangari", liters: 10000, key: "0x32A78CB990E1", status: "IN_TRANSIT" },
-          { tanker: "TN-07", reg: "MH-15-TK-889", status: "ANOMALY_ESCROW_FROZEN", deviation_km: 12 }
-        ],
-        signature: "SHA256:d8c47f9a12b6e45c89a01f4e"
-      };
-      const blob = new Blob([JSON.stringify(auditData, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "jalsanchar_sinnar_audit.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    // PWA Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register note:', err));
+    // Language Selector Hook
+    function changeLang(lang) {
+      localStorage.setItem('jalsanchar_lang', lang);
+      localStorage.setItem('jalsanjeevani_lang', lang);
+      ['EN', 'MR', 'HI'].forEach(code => {
+        const btn = document.getElementById('btnLang' + code);
+        if (btn) {
+          if (code.toLowerCase() === lang) {
+            btn.className = "px-1.5 py-0.5 rounded bg-surface-container-high font-bold text-on-surface transition-colors";
+          } else {
+            btn.className = "px-1.5 py-0.5 rounded hover:bg-surface-container-high hover:text-on-surface text-on-surface-variant transition-colors";
+          }
+        }
       });
+      // If lang.js is loaded, trigger dynamic translation
+      if (window.JalLang && typeof window.JalLang.applyLanguage === 'function') {
+        window.JalLang.applyLanguage(lang);
+      }
     }
+    const savedLang = localStorage.getItem('jalsanchar_lang') || localStorage.getItem('jalsanjeevani_lang') || 'en';
+    changeLang(savedLang);
   </script>
 </body>
 </html>
