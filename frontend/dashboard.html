@@ -7,7 +7,7 @@
   
   <!-- 🔒 Security Configuration & Strict Content-Security-Policy -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://unpkg.com https://cdn.jsdelivr.net https://server.arcgisonline.com https://services.arcgisonline.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://*.tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com https://*.arcgisonline.com https://*.basemaps.cartocdn.com https://unpkg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:* https://jalsanchar.onrender.com https://jalsanjeevani.onrender.com https://unpkg.com https://cdn.jsdelivr.net https://server.arcgisonline.com https://services.arcgisonline.com https://router.project-osrm.org;">
 
   <!-- 🔒 Early Blocking Auth Guard -->
   <script>
@@ -550,7 +550,7 @@
                 <!-- Basemap Switcher (Clean horizontal pills) -->
                 <div class="bg-white/95 backdrop-blur-xs border border-gov-border rounded-lg shadow-sm p-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold">
                   <button id="btnSatellite" class="px-2 py-1 rounded bg-gov-navy text-white hover:bg-slate-100 transition-colors cursor-pointer" title="Satellite Imagery">Satellite</button>
-                  <button id="btnDarkCanvas" class="px-2 py-1 rounded hover:bg-slate-100 text-gov-textSecondary transition-colors cursor-pointer" title="Dark Canvas">Dark</button>
+                  <button id="btnDarkCanvas" class="px-2 py-1 rounded hover:bg-slate-100 text-gov-textSecondary transition-colors cursor-pointer" title="OpenStreetMap Road Network">Roads</button>
                   <button id="btnTerrain" class="px-2 py-1 rounded hover:bg-slate-100 text-gov-textSecondary transition-colors cursor-pointer" title="Topographic Terrain">Terrain</button>
                 </div>
 
