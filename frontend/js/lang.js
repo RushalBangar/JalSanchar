@@ -3,8 +3,8 @@
  * Supports English (en), Marathi (mr), and Hindi (hi).
  * Works across ALL pages via:
  *   1. Key-based translations ([data-i18n], [data-i18n-placeholder])
- *   2. Automatic phrase dictionary translation for DOM text nodes
- *   3. Synced localStorage ('jalsanchar_lang') & #langSwitcher across pages
+ *   2. Automatic whitespace-normalized phrase dictionary translation for DOM text nodes
+ *   3. Synced localStorage ('jalsanchar_lang') & #langSwitcher across all pages
  */
 
 (function (window, document) {
@@ -15,11 +15,10 @@
   // ----------------------------------------------------------------------------
   const translations = {
     en: {
-      // Global Navigation & Common
       nav_brand: "JalSanchar (जलसंचार)",
       nav_pillars: "How It Works",
       nav_features: "Features",
-      nav_portals: "Portals & Roles",
+      nav_portals: "Portals",
       nav_panchayat: "Panchayat Portal",
       nav_faq: "FAQ",
       nav_login: "Portal Login",
@@ -29,39 +28,10 @@
       nav_village: "Village Water",
       nav_pipelines: "Pipelines Monitor",
       nav_sources: "Sources Portal",
-      topbar_title: "JalSanchar • Rural Drought Water Supply & Tanker Telemetry Grid",
-      topbar_sector: "Ahilyanagar & Sinnar Pilot Sector",
-      topbar_text_size: "Text:",
-      topbar_skip: "Skip to Content",
-
-      // Landing / Hero
-      hero_title: "Guaranteed Clean Water For Every Drought-Hit Village",
-      hero_desc: "JalSanchar tracks rural water tankers using GPS telemetry and dual QR verification to prevent diversion and ensure rural families get their fair share of clean drinking water.",
-      hero_badge: "SMART WATER SUPPLY CHAIN (जलसंचार)",
-      hero_quota_badge: "Daily Water Relief Quota",
-      hero_quota_desc: "Ensuring 40L per person & 70L per livestock daily minimum across drought-hit hamlets.",
-      nav_tech: "Technology",
-      nav_telemetry: "Live Tanker Map",
-      nav_audit: "Delivery Records",
-      nav_impact: "Deployment",
-      hero_btn_discover: "Explore Platform Portals",
-      hero_btn_access: "View Water Dashboard",
-      pillars_title: "How JalSanchar Solves the Water Crisis",
-      pillar1_title: "1. Early Water Shortage Warning",
-      pillar1_desc: "Using weather and satellite data, we predict which village wells will run dry up to 14 days in advance, so water tankers are sent before taps run completely dry.",
-      pillar2_title: "2. Stop Water Theft & Diversion",
-      pillar2_desc: "Stop private resale of public water. Tanker drivers must scan a QR code at the village water tank with local panchayat officials to confirm delivery before payment is released.",
-      pillar3_title: "3. Fair Daily Water For Everyone",
-      pillar3_desc: "Smart route planning ensures fast and fair distribution, guaranteeing at least 40 liters daily for every person and 70 liters for cattle, without missing remote hamlets.",
-      stat_depleted: "Villages Needing Water",
-      stat_warning: "Villages on Low Water",
-      stat_human: "People: 40L Daily",
-      stat_cattle: "Cattle: 70L Daily",
-      btn_dispatch: "Send Emergency Water Tanker",
-      btn_freeze: "Hold Contractor Payment",
-      audit_title: "Water Delivery Audit Records",
-
-      // Login & Auth
+      hero_title: "Guaranteed Clean Water For Drought-Hit Villages",
+      hero_desc: "JalSanchar uses satellite hydrology data and cryptographic dual-QR proof to eliminate water tanker theft and ensure every rural family gets their statutory 40 liters of clean water daily.",
+      hero_btn_discover: "Explore All 4 Portals",
+      hero_btn_access: "Launch Collector Dashboard",
       login_back_home: "Back to Home",
       login_badge: "Official Water Supply & Relief Management",
       login_title: "Sign in to JalSanchar",
@@ -83,34 +53,18 @@
       btn_submit_signin: "Sign In →",
       btn_demo_login: "Instant 1-Click Demo Login",
       helper_title: "View Demo Login Accounts",
-
-      // V2 Subsystems
       v2_village_water_title: "Village Water Intelligence",
-      v2_village_water_subtitle: "Storage calculations, live telemetry & 14-day drought predictions",
       v2_days_left_title: "Days of Usable Water Remaining",
       v2_water_depletion_forecast: "14-Day Hydrological Depletion Forecast",
       v2_source_cards_title: "Village Water Sources (Wells, Tanks & Lakes)",
-      v2_source_type_well: "Community Open Well",
-      v2_source_type_tank: "Storage Reservoir (ESR/GLSR)",
-      v2_source_type_lake: "Percolation Lake / Pond",
-      v2_water_level: "Water Level",
-      v2_usable_capacity: "Usable Volume",
-      v2_daily_demand: "Statutory Daily Demand",
-      v2_pop_stat: "Human Quota (40L/person)",
-      v2_cattle_stat: "Cattle Quota (70L/head)",
-      v2_enter_reading: "Record Field Reading",
-      v2_register_source: "Register New Water Source",
-      v2_reading_value_label: "Measurement Value",
-      v2_submit_reading: "Submit Measurement",
       v2_disclaimer: "This tool supports local authorities and does not replace water-quality testing."
     },
 
     mr: {
-      // Global Navigation & Common
       nav_brand: "जलसंचार (JalSanchar)",
       nav_pillars: "कार्यपद्धती",
       nav_features: "वैशिष्ट्ये",
-      nav_portals: "पोर्टल आणि भूमिका",
+      nav_portals: "पोर्टल्स",
       nav_panchayat: "ग्रामपंचायत पोर्टल",
       nav_faq: "नेहमी विचारले जाणारे प्रश्न",
       nav_login: "पोर्टल लॉगिन",
@@ -120,39 +74,10 @@
       nav_village: "ग्राम जलस्थिती",
       nav_pipelines: "पाईपलाईन मॉनिटर",
       nav_sources: "जलस्रोत नोंदणी",
-      topbar_title: "जलसंचार • ग्रामीण दुष्काळ पाणी पुरवठा व टँकर ट्रॅकिंग प्रणाली",
-      topbar_sector: "अहिल्यानगर व सिन्नर विभाग",
-      topbar_text_size: "अक्षर:",
-      topbar_skip: "मुख्य भागाकडे जा",
-
-      // Landing / Hero
       hero_title: "दुष्काळग्रस्त प्रत्येक गावाला हक्काचे पिण्याचे पाणी",
-      hero_desc: "जलसंचार जीपीएस ट्रॅकिंग आणि क्यूआर कोडद्वारे टँकरच्या पाण्याची चोरी रोखते आणि प्रत्येक दुष्काळग्रस्त गावाला वेळेवर पाणी मिळण्याची खात्री करते.",
-      hero_badge: "स्मार्ट पाणी पुरवठा साखळी (जलसंचार)",
-      hero_quota_badge: "दैनिक हक्काचे पाणी प्रमाण",
-      hero_quota_desc: "दुष्काळग्रस्त गावांसाठी दररोज प्रति व्यक्ती किमान ४० लिटर आणि जनावरांसाठी ७० लिटर पाण्याचे वाटप.",
-      nav_tech: "तंत्रज्ञान",
-      nav_telemetry: "थेट टँकर नकाशा",
-      nav_audit: "पाणीवाटप नोंदी",
-      nav_impact: "प्रकल्प विस्तार",
-      hero_btn_discover: "सर्व पोर्टल पहा",
-      hero_btn_access: "पाणी डॅशबोर्ड उघडा",
-      pillars_title: "पाणीटंचाईवर जलसंचारचे ३ सोपे उपाय",
-      pillar1_title: "१. दुष्काळाची आगाऊ पूर्वसूचना",
-      pillar1_desc: "हवामान आणि सॅटेलाइट डेटावरून गावातील विहिरी पुढील १४ दिवसांत कोरड्या पडण्याचा अंदाज येतो, ज्यामुळे नळांना पाणी येणे बंद होण्यापूर्वीच टँकर पाठवले जातात.",
-      pillar2_title: "२. टँकर पाणी चोरीला पूर्ण आळा",
-      pillar2_desc: "टँकरमधील पाण्याची खासगी विक्री रोखणे. गावातील पाण्याच्या टाकीजवळ ग्रामपंचायत अधिकाऱ्यासमोर क्यूआर कोड स्कॅन केल्याशिवाय कंत्राटदाराचे बिल पास होत नाही.",
-      pillar3_title: "३. प्रत्येक नागरिकाला पुरेसे पाणी",
-      pillar3_desc: "स्मार्ट मार्ग नियोजनामुळे प्रत्येक माणसाला दररोज किमान ४० लिटर आणि जनावरांसाठी ७० लिटर पाणी वेळेवर मिळते. कोणतीही लहान वाडी किंवा वस्ती सुटत नाही.",
-      stat_depleted: "पाण्याची तातडीची गरज",
-      stat_warning: "पाणी कमी होत असलेली गावे",
-      stat_human: "माणसांसाठी: दररोज ४० लिटर",
-      stat_cattle: "जनावरांसाठी: दररोज ७० लिटर",
-      btn_dispatch: "आपत्कालीन टँकर रवाना करा",
-      btn_freeze: "कंत्राटदाराचे बिल रोखा",
-      audit_title: "पाणीवाटप तपासणी नोंदी",
-
-      // Login & Auth
+      hero_desc: "जलसंचार उपग्रह जलविज्ञान डेटा आणि दोन-स्तरीय क्यूआर पडताळणीद्वारे पाण्याची चोरी रोखते आणि प्रत्येक ग्रामीण कुटुंबाला दररोज ४० लिटर पाणी मिळण्याची खात्री करते.",
+      hero_btn_discover: "सर्व ४ पोर्टल्स पहा",
+      hero_btn_access: "जिल्हाधिकारी डॅशबोर्ड उघडा",
       login_back_home: "मुख्य पानावर परत",
       login_badge: "अधिकृत पाणीपुरवठा व दुष्काळ निवारण",
       login_title: "जलसंचार पोर्टल लॉगिन",
@@ -174,34 +99,18 @@
       btn_submit_signin: "साइन इन करा →",
       btn_demo_login: "१-क्लिक डेमो लॉगिन",
       helper_title: "डेमो लॉगिन खाती पहा",
-
-      // V2 Subsystems
       v2_village_water_title: "ग्राम जलस्थिती माहिती फलक",
-      v2_village_water_subtitle: "पाणी साठा गणित, भूजल स्थिती व १४ दिवसांचे टंचाई अंदाज",
       v2_days_left_title: "उपलब्ध पाणी साठा (दिवसांची श्रेणी)",
       v2_water_depletion_forecast: "१४ दिवसांचा जलसाठा अंदाज आलेख",
       v2_source_cards_title: "गावातील जलस्रोत (विहिरी, टाक्या व तलाव)",
-      v2_source_type_well: "सार्वजनिक खुली विहीर",
-      v2_source_type_tank: "पाण्याची टाकी (ESR / GLSR)",
-      v2_source_type_lake: "पाझर तलाव / बंधारा",
-      v2_water_level: "पाण्याची पातळी",
-      v2_usable_capacity: "उपयुक्त पाणी साठा",
-      v2_daily_demand: "दैनिक वैधानिक पाण्याची गरज",
-      v2_pop_stat: "लोकसंख्या कोटा (४० लि/व्यक्ती)",
-      v2_cattle_stat: "पशुधन कोटा (७० लि/जनावर)",
-      v2_enter_reading: "नवीन नोंदणी करा",
-      v2_register_source: "नवीन जलस्रोत नोंदणी",
-      v2_reading_value_label: "मापन संख्या (मीटरमध्ये)",
-      v2_submit_reading: "नोंदणी सबमिट करा",
       v2_disclaimer: "हे साधन स्थानिक प्रशासनाला सहकार्य करण्यासाठी असून ते पाणी गुणवत्ता चाचणीचा पर्याय नाही."
     },
 
     hi: {
-      // Global Navigation & Common
       nav_brand: "जलसंचार (JalSanchar)",
       nav_pillars: "कार्यप्रणाली",
       nav_features: "विशेषताएं",
-      nav_portals: "पोर्टल और भूमिकाएं",
+      nav_portals: "पोर्टल",
       nav_panchayat: "ग्राम पंचायत पोर्टल",
       nav_faq: "अक्सर पूछे जाने वाले प्रश्न",
       nav_login: "पोर्टल लॉगिन",
@@ -211,39 +120,10 @@
       nav_village: "ग्राम जल स्थिति",
       nav_pipelines: "पाइपलाइन निगरानी",
       nav_sources: "जलस्रोत पंजीकरण",
-      topbar_title: "जलसंचार • ग्रामीण सूखा जल आपूर्ति एवं टैंकर टेलीमेट्री ग्रिड",
-      topbar_sector: "अहिल्यानगर व सिन्नर पायलट सेक्टर",
-      topbar_text_size: "अक्षर:",
-      topbar_skip: "मुख्य भाग पर जाएं",
-
-      // Landing / Hero
       hero_title: "सूखा प्रभावित हर गाँव के लिए स्वच्छ जल की गारंटी",
-      hero_desc: "जलसंचार जीपीएस टेलीमेट्री और दोहरे क्यूआर सत्यापन से टैंकर के पानी की चोरी रोकता है और ग्रामीण परिवारों को उनके हक का पानी दिलाता है।",
-      hero_badge: "स्मार्ट जल आपूर्ति श्रृंखला (जलसंचार)",
-      hero_quota_badge: "दैनिक जल राहत कोटा",
-      hero_quota_desc: "सूखा प्रभावित बस्तियों में प्रति व्यक्ति 40L और मवेशी 70L न्यूनतम दैनिक जल सुनिश्चित करना।",
-      nav_tech: "तकनीक",
-      nav_telemetry: "लाइव टैंकर मैप",
-      nav_audit: "वितरण रिकॉर्ड",
-      nav_impact: "तैनाती",
-      hero_btn_discover: "सभी पोर्टल देखें",
-      hero_btn_access: "जल डैशबोर्ड खोलें",
-      pillars_title: "जल संकट पर जलसंचार के 3 समाधान",
-      pillar1_title: "1. जल संकट की पूर्व चेतावनी",
-      pillar1_desc: "मौसम और उपग्रह डेटा से हम 14 दिन पहले बता देते हैं कि किस गाँव का कुआं सूखेगा, ताकि पानी खत्म होने से पहले टैंकर पहुंचे।",
-      pillar2_title: "2. पानी की चोरी और कालाबाज़ारी पर रोक",
-      pillar2_desc: "टैंकर पानी की अवैध बिक्री रोकें। गाँव की पानी की टंकी पर ग्राम पंचायत प्रतिनिधि के सामने क्यूआर कोड स्कैन किए बिना टैंकर का भुगतान नहीं होगा।",
-      pillar3_title: "3. हर व्यक्ति को बराबर पानी",
-      pillar3_desc: "स्मार्ट रूट प्लानिंग से हर इंसान को 40 लीटर और मवेशियों को 70 लीटर पानी रोज मिलना तय होता है, जिससे कोई भी दूरदराज की बस्ती छूटती नहीं है।",
-      stat_depleted: "पानी की सख्त जरूरत वाले गाँव",
-      stat_warning: "कम पानी वाले गाँव",
-      stat_human: "प्रति व्यक्ति: 40 लीटर रोज",
-      stat_cattle: "प्रति मवेशी: 70 लीटर रोज",
-      btn_dispatch: "आपातकालीन टैंकर भेजें",
-      btn_freeze: "ठेकेदार का भुगतान रोकें",
-      audit_title: "जल वितरण सत्यापन रिकॉर्ड",
-
-      // Login & Auth
+      hero_desc: "जलसंचार उपग्रह जलविज्ञान डेटा और क्रिप्टोग्राफिक दोहरे क्यूआर सत्यापन से पानी की चोरी रोकता है और हर ग्रामीण परिवार को दैनिक 40 लीटर जल सुनिश्चित करता है।",
+      hero_btn_discover: "सभी 4 पोर्टल देखें",
+      hero_btn_access: "ज़िलाधिकारी डैशबोर्ड खोलें",
       login_back_home: "मुख्य पृष्ठ पर वापस",
       login_badge: "आधिकारिक जल आपूर्ति एवं सूखा राहत प्रबंधन",
       login_title: "जलसंचार पोर्टल लॉगिन",
@@ -265,82 +145,123 @@
       btn_submit_signin: "साइन इन करें →",
       btn_demo_login: "1-क्लिक डेमो लॉगिन",
       helper_title: "डेमो लॉगिन खाते देखें",
-
-      // V2 Subsystems
       v2_village_water_title: "ग्राम जल स्थिति डैशबोर्ड",
-      v2_village_water_subtitle: "जल संचय गणना, भूजल स्थिति और 14 दिनों का सूखा पूर्वानुमान",
       v2_days_left_title: "उपलब्ध जल भंडार (दिनों की सीमा)",
       v2_water_depletion_forecast: "14 दिनों का जल स्तर पूर्वानुमान",
       v2_source_cards_title: "गांव के जलस्रोत (कुएं, टंकियां और तालाब)",
-      v2_source_type_well: "सार्वजनिक खुला कुआं",
-      v2_source_type_tank: "पानी की टंकी (ESR / GLSR)",
-      v2_source_type_lake: "तालाब / जल संचय जलाशय",
-      v2_water_level: "जल स्तर",
-      v2_usable_capacity: "उपयोगी जल क्षमता",
-      v2_daily_demand: "दैनिक वैधानिक जल मांग",
-      v2_pop_stat: "नागरिक कोटा (40 ली/व्यक्ति)",
-      v2_cattle_stat: "पशुधन कोटा (70 ली/पशु)",
-      v2_enter_reading: "जल स्तर दर्ज करें",
-      v2_register_source: "नया जलस्रोत पंजीकृत करें",
-      v2_reading_value_label: "माप संख्या (मीटर में)",
-      v2_submit_reading: "रीडिंग सबमिट करें",
       v2_disclaimer: "यह उपकरण स्थानीय प्रशासन की सहायता के लिए है और पानी की गुणवत्ता परीक्षण का विकल्प नहीं है।"
     }
   };
 
   // ----------------------------------------------------------------------------
-  // 2. Comprehensive Phrase Translation Dictionary (Matches full UI strings)
+  // 2. Comprehensive Phrase Translation Dictionary
   // ----------------------------------------------------------------------------
   const PHRASE_PAIRS = [
-    // Navbar & Common Buttons
-    { en: "Portal Login", mr: "पोर्टल लॉगिन", hi: "पोर्टल लॉगिन" },
-    { en: "Sign Out", mr: "बाहेर पडा", hi: "लॉग आउट" },
-    { en: "Command Center", mr: "नियंत्रण कक्ष", hi: "कमांड सेंटर" },
+    // Top Bar & Branding
+    { en: "JalSanchar", mr: "जलसंचार", hi: "जलसंचार" },
+    { en: "Gov-Telemetry", mr: "शासकीय-टेलीमेट्री", hi: "शासकीय-टेलीमेट्री" },
+    { en: "Ministry of Jal Shakti • Smart Water Supply", mr: "जलशक्ती मंत्रालय • स्मार्ट पाणीपुरवठा", hi: "जल शक्ति मंत्रालय • स्मार्ट जल आपूर्ति" },
+    { en: "National Water Informatics Pilot • Sinnar & Ahilyanagar", mr: "राष्ट्रीय जल माहिती प्रकल्प • सिन्नर व अहिल्यानगर", hi: "राष्ट्रीय जल सूचना पायलट • सिन्नर व अहिल्यानगर" },
+    { en: "Track 3-01 • Collector Console", mr: "ट्रॅक ३-०१ • जिल्हाधिकारी कक्ष", hi: "ट्रैक 3-01 • ज़िलाधिकारी कंसोल" },
+
+    // Navigation Links
     { en: "How It Works", mr: "कार्यपद्धती", hi: "कार्यप्रणाली" },
     { en: "Portals", mr: "पोर्टल्स", hi: "पोर्टल" },
     { en: "Audit Ledger", mr: "ऑडिट लेजर", hi: "ऑडिट लेजर" },
+    { en: "Live Delivery Audit", mr: "थेट वितरण तपासणी", hi: "लाइव वितरण ऑडिट" },
+    { en: "Portal Login", mr: "पोर्टल लॉगिन", hi: "पोर्टल लॉगिन" },
+    { en: "Sign Out", mr: "बाहेर पडा", hi: "लॉग आउट" },
+    { en: "Command Center", mr: "नियंत्रण कक्ष", hi: "कमांड सेंटर" },
     { en: "Track Tanker", mr: "टँकर ट्रॅक करा", hi: "टैंकर ट्रैक करें" },
     { en: "Village Water", mr: "ग्राम जलस्थिती", hi: "ग्राम जल स्थिति" },
     { en: "Pipelines Monitor", mr: "पाईपलाईन मॉनिटर", hi: "पाइपलाइन निगरानी" },
     { en: "Sources Portal", mr: "जलस्रोत नोंदणी", hi: "जलस्रोत पंजीकरण" },
     { en: "Back to Home", mr: "मुख्य पानावर परत", hi: "मुख्य पृष्ठ पर वापस" },
-    { en: "Refresh", mr: "रिफ्रेश करा", hi: "रिफ्रेश करें" },
-    { en: "Close", mr: "बंद करा", hi: "बंद करें" },
-    { en: "Cancel", mr: "रद्द करा", hi: "रद्द करें" },
-    { en: "Save", mr: "जतन करा", hi: "सहेजें" },
-    { en: "Submit", mr: "सबमिट करा", hi: "सबमिट करें" },
-    { en: "Online", mr: "ऑनलाइन", hi: "ऑनलाइन" },
-    { en: "Offline", mr: "ऑफलाइन", hi: "ऑफलाइन" },
-    { en: "Live", mr: "थेट (LIVE)", hi: "लाइव (LIVE)" },
 
     // Landing / Hero
+    { en: "PILOT DEPLOYMENT: SINNAR & AHILYANAGAR", mr: "पायलट प्रकल्प: सिन्नर आणि अहिल्यानगर", hi: "पायलट परियोजना: सिन्नर और अहिल्यानगर" },
+    { en: "Guaranteed Clean Water For Drought-Hit Villages", mr: "दुष्काळग्रस्त प्रत्येक गावाला हक्काचे पिण्याचे पाणी", hi: "सूखा प्रभावित हर गाँव के लिए स्वच्छ जल की गारंटी" },
     { en: "Guaranteed Clean Water For Every Drought-Hit Village", mr: "दुष्काळग्रस्त प्रत्येक गावाला हक्काचे पिण्याचे पाणी", hi: "सूखा प्रभावित हर गाँव के लिए स्वच्छ जल की गारंटी" },
+    { en: "JalSanchar uses satellite hydrology data and cryptographic dual-QR proof to eliminate water tanker theft and ensure every rural family gets their statutory 40 liters of clean water daily.", mr: "जलसंचार उपग्रह जलविज्ञान डेटा आणि दोन-स्तरीय क्यूआर पडताळणीद्वारे पाण्याची चोरी रोखते आणि प्रत्येक ग्रामीण कुटुंबाला दररोज ४० लिटर पाणी मिळण्याची खात्री करते.", hi: "जलसंचार उपग्रह जलविज्ञान डेटा और क्रिप्टोग्राफिक दोहरे क्यूआर सत्यापन से पानी की चोरी रोकता है और हर ग्रामीण परिवार को दैनिक 40 लीटर जल सुनिश्चित करता है।" },
+    { en: "Launch Collector Dashboard", mr: "जिल्हाधिकारी डॅशबोर्ड उघडा", hi: "ज़िलाधिकारी डैशबोर्ड खोलें" },
+    { en: "Explore All 4 Portals", mr: "सर्व ४ पोर्टल्स पहा", hi: "सभी 4 पोर्टल देखें" },
     { en: "Explore Platform Portals", mr: "सर्व पोर्टल पहा", hi: "सभी पोर्टल देखें" },
     { en: "View Water Dashboard", mr: "पाणी डॅशबोर्ड उघडा", hi: "जल डैशबोर्ड खोलें" },
-    { en: "Daily Water Relief Quota", mr: "दैनिक हक्काचे पाणी प्रमाण", hi: "दैनिक जल राहत कोटा" },
-    { en: "How JalSanchar Solves the Water Crisis", mr: "पाणीटंचाईवर जलसंचारचे ३ सोपे उपाय", hi: "जल संकट पर जलसंचार के 3 समाधान" },
-    { en: "1. Early Water Shortage Warning", mr: "१. दुष्काळाची आगाऊ पूर्वसूचना", hi: "1. जल संकट की पूर्व चेतावनी" },
-    { en: "2. Stop Water Theft & Diversion", mr: "२. टँकर पाणी चोरीला पूर्ण आळा", hi: "2. पानी की चोरी और कालाबाज़ारी पर रोक" },
-    { en: "3. Fair Daily Water For Everyone", mr: "३. प्रत्येक नागरिकाला पुरेसे पाणी", hi: "3. हर व्यक्ति को बराबर पानी" },
-    { en: "Send Emergency Water Tanker", mr: "आपत्कालीन टँकर रवाना करा", hi: "आपातकालीन टैंकर भेजें" },
-    { en: "Hold Contractor Payment", mr: "कंत्राटदाराचे बिल रोखा", hi: "ठेकेदार का भुगतान रोकें" },
-    { en: "Water Delivery Audit Records", mr: "पाणीवाटप तपासणी नोंदी", hi: "जल वितरण सत्यापन रिकॉर्ड" },
-    { en: "Official Briefing & Deployment Overview", mr: "अधिकृत माहिती व प्रकल्प सादरीकरण", hi: "आधिकारिक ब्रीफिंग एवं परियोजना विवरण" },
 
-    // Dashboard & Roles
+    // Video Showcase
+    { en: "Field Operational Briefing", mr: "थेट क्षेत्रीय माहिती", hi: "क्षेत्रीय परिचालन ब्रीफिंग" },
+    { en: "JalSanchar: Complete Platform & Field Verification Walkthrough", mr: "जलसंचार: संपूर्ण प्रणाली व क्षेत्रीय पडताळणी सादरीकरण", hi: "जलसंचार: संपूर्ण प्रणाली एवं क्षेत्रीय सत्यापन वॉकथ्रू" },
+    { en: "HD Video & Narration", mr: "एचडी व्हिडिओ व माहिती", hi: "एचडी वीडियो व विवरण" },
+    { en: "Deployment Sector:", mr: "कार्यक्षेत्र:", hi: "तैनाती क्षेत्र:" },
+    { en: "Ahilyanagar & Sinnar Pilot Belt, Maharashtra", mr: "अहिल्यानगर व सिन्नर विभाग, महाराष्ट्र", hi: "अहिल्यानगर व सिन्नर क्षेत्र, महाराष्ट्र" },
+    { en: "Dual-QR Delivery Proof • Satellite Telemetry • OR-Tools Routing", mr: "दोन-स्तरीय क्यूआर पावती • सॅटेलाइट टेलीमेट्री • ओआर-टूल्स मार्गनियोजन", hi: "दोहरा क्यूआर प्रमाण • सैटेलाइट टेलीमेट्री • ओआर-टूल्स रूटिंग" },
+
+    // Guarantees Strip
+    { en: "40L / 70L Daily Quota", mr: "४० लि / ७० लि दैनिक कोटा", hi: "40L / 70L दैनिक कोटा" },
+    { en: "Guaranteed per citizen and livestock under state drought norms.", mr: "शासकीय दुष्काळ नियमांनुसार नागरिक आणि जनावरांसाठी हमी.", hi: "शासकीय सूखा नियमों के तहत नागरिक और मवेशियों हेतु गारंटी।" },
+    { en: "14-Day Advance Warning", mr: "१४ दिवसांची आगाऊ पूर्वसूचना", hi: "14 दिन पूर्व चेतावनी" },
+    { en: "Satellite moisture radar flags dry wells 2 weeks before taps run out.", mr: "नळांना पाणी येणे बंद होण्याच्या २ आठवडे आधी उपग्रह कोरड्या विहिरींची सूचना देतो.", hi: "उपग्रह नमी रडार नल सूखने से 2 सप्ताह पूर्व ही जल संकट की चेतावनी देता है।" },
+    { en: "Zero-Theft Escrow", mr: "चोरीमुक्त सुरक्षित पेमेंट", hi: "शून्य-चोरी सुरक्षित भुगतान" },
+    { en: "Dual-QR handshake confirms delivery before contractor payment unlocks.", mr: "पाण्याची टाकीवर पडताळणी झाल्यानंतरच कंत्राटदाराचे बिल पास होते.", hi: "गाँव की टंकी पर सत्यापन के बाद ही ठेकेदार का भुगतान स्वीकृत होता है।" },
+
+    // How It Works Section
+    { en: "Simple 3-Tier Workflow", mr: "३ सोप्या टप्प्यांतील कार्यपद्धती", hi: "3 सरल चरणों में कार्यप्रणाली" },
+    { en: "How JalSanchar Solves Water Scarcity", mr: "पाणीटंचाईवर जलसंचारचे ३ सोपे उपाय", hi: "जल संकट पर जलसंचार के 3 समाधान" },
+    { en: "A dependable system combining space satellite sensors, GPS tracking, and village-level QR confirmation.", mr: "उपग्रह सेन्सर्स, जीपीएस ट्रॅकिंग आणि गावपातळीवरील क्यूआर पडताळणीची खात्रीशीर प्रणाली.", hi: "उपग्रह सेंसर, जीपीएस ट्रैकिंग और ग्राम स्तरीय क्यूआर सत्यापन की विश्वसनीय प्रणाली।" },
+    { en: "Predict Shortages Early", mr: "टंचाईचा आगाऊ अंदाज", hi: "संकट का पूर्व अनुमान" },
+    { en: "NASA SMAP and Sentinel-2 satellites analyze groundwater anomalies, warning officials 14 days before a village well runs dry.", mr: "नासा एसएमएपी आणि सेंटिनेल-२ उपग्रह भूजलाचे विश्लेषण करून विहीर कोरडी पडण्याच्या १४ दिवस आधी सूचना देतात.", hi: "नासा एसएमएपी और सेंटिनेल-2 उपग्रह भूजल का विश्लेषण कर कुआं सूखने से 14 दिन पूर्व चेतावनी देते हैं।" },
+    { en: "Automated Satellite Telemetry", mr: "स्वयंचलित उपग्रह टेलीमेट्री", hi: "स्वचालित उपग्रह टेलीमेट्री" },
+    { en: "Prevent Tanker Diversion", mr: "टँकर पाणी चोरीला पूर्ण आळा", hi: "टैंकर डायवर्जन पर रोक" },
+    { en: "Tankers are tracked with a 500m geofence. If a driver deviates off-route, their billing escrow is automatically frozen.", mr: "५०० मीटर जिओफेन्सद्वारे टँकर ट्रॅक केले जातात. चालक मार्गावरून भरकटल्यास त्याचे बिल त्वरित रोखले जाते.", hi: "500 मीटर जियोफेंस से टैंकर ट्रैक होते हैं। चालक के मार्ग भटकने पर भुगतान तुरंत रोक दिया जाता है।" },
+    { en: "Strict 500m Geofence Lock", mr: "५०० मीटर जिओफेन्स सुरक्षा", hi: "सख्त 500 मीटर जियोफेंस सुरक्षा" },
+    { en: "Verify at the Cistern", mr: "टाकीवर प्रत्यक्ष पडताळणी", hi: "टंकी पर प्रत्यक्ष सत्यापन" },
+    { en: "The driver and village Panchayat scan a time-sensitive dual QR code at the community tank to cryptographically confirm water delivery.", mr: "चालक आणि ग्रामपंचायत गावच्या टाकीजवळ क्यूआर कोड स्कॅन करून पाणी वितरणाची खात्री करतात.", hi: "चालक और ग्राम पंचायत गाँव की टंकी पर क्यूआर कोड स्कैन करके जल वितरण की पुष्टि करते हैं।" },
+    { en: "HMAC-SHA256 Handshake", mr: "सुरक्षित क्रिप्टोग्राफिक हँडशेक", hi: "सुरक्षित क्रिप्टोग्राफिक हैंडशेक" },
+
+    // Four Dedicated Portals
+    { en: "Tailored For Field Governance", mr: "प्रशासकीय पारदर्शकतेसाठी विशेष रचना", hi: "प्रशासनिक पारदर्शिता हेतु विशेष निर्मित" },
+    { en: "Four Dedicated Portals", mr: "चार समर्पित पोर्टल्स", hi: "चार समर्पित पोर्टल" },
+    { en: "Role-specific dashboards designed to work smoothly on mobile phones, tablets, and desktop computers.", mr: "मोबाईल, टॅब्लेट आणि कॉम्प्युटरवर सहज चालणारे स्वतंत्र डॅशबोर्ड.", hi: "मोबाइल, टैबलेट और कंप्यूटर पर सुगमता से कार्य करने वाले समर्पित डैशबोर्ड।" },
     { en: "District Collector", mr: "जिल्हाधिकारी", hi: "ज़िलाधिकारी" },
-    { en: "Tanker Driver", mr: "टँकर चालक", hi: "टैंकर चालक" },
+    { en: "Collector", mr: "जिल्हाधिकारी", hi: "ज़िलाधिकारी" },
+    { en: "Real-time fleet GIS map, automated route dispatching, and contractor payment approvals.", mr: "थेट जीआयएस नकाशा, स्वयंचलित मार्ग नियोजन आणि कंत्राटदारांचे बिल मंजुरी.", hi: "रीयल-टाइम जीआईएस मैप, स्वचालित मार्ग नियोजन और ठेकेदार भुगतान स्वीकृति।" },
+    { en: "Open Console", mr: "कंसोल उघडा", hi: "कंसोल खोलें" },
     { en: "Gram Panchayat", mr: "ग्रामपंचायत", hi: "ग्राम पंचायत" },
-    { en: "Water Map & Monitoring", mr: "जल नकाशा व थेट देखरेख", hi: "जल मैप व निगरानी" },
-    { en: "GPS Route & QR Code", mr: "जीपीएस मार्ग व क्यूआर कोड", hi: "जीपीएस रूट व क्यूआर कोड" },
-    { en: "Village Tank & QR Scanner", mr: "गावाची टाकी व क्यूआर स्कॅनर", hi: "गाँव की पानी की टंकी व क्यूआर स्कैनर" },
+    { en: "Panchayat", mr: "ग्रामपंचायत", hi: "ग्राम पंचायत" },
+    { en: "Mobile camera scanner to verify tanker water volume and submit urgent shortage alerts.", mr: "टँकरचे पाणी मोजण्यासाठी मोबाईल कॅमेरा स्कॅनर आणि टंचाई सूचना.", hi: "टैंकर के जल सत्यापन हेतु मोबाइल कैमरा स्कैनर और आपातकालीन चेतावनी।" },
+    { en: "Open Scanner", mr: "स्कॅनर उघडा", hi: "स्कैनर खोलें" },
+    { en: "Tanker Driver", mr: "टँकर चालक", hi: "टैंकर चालक" },
+    { en: "Driver PWA", mr: "चालक ॲप", hi: "चालक ऐप" },
+    { en: "Offline GPS trip navigation, delivery QR generator, and turn-by-turn route directions.", mr: "ऑफलाइन जीपीएस नेव्हिगेशन, वितरण क्यूआर जनरेटर आणि रस्ता मार्गदर्शन.", hi: "ऑफलाइन जीपीएस नेविगेशन, वितरण क्यूआर जनरेटर और मोड़-दर-मोड़ दिशा निर्देश।" },
+    { en: "Open Driver App", mr: "चालक ॲप उघडा", hi: "चालक ऐप खोलें" },
+    { en: "Role Sign In", mr: "भूमिका लॉगिन", hi: "भूमिका लॉगिन" },
+    { en: "Sign In", mr: "साइन इन करा", hi: "साइन इन करें" },
+    { en: "Secure authentication for government personnel, local auditors, and field operators.", mr: "शासकीय अधिकारी, स्थानिक लेखापरीक्षक आणि क्षेत्रीय कर्मचाऱ्यांसाठी सुरक्षित लॉगिन.", hi: "सरकारी कर्मियों, स्थानीय लेखा परीक्षकों और क्षेत्रीय ऑपरेटरों हेतु सुरक्षित प्रमाणीकरण।" },
+
+    // Audit Section
+    { en: "Public Transparency Stream", mr: "सार्वजनिक पारदर्शकता माहिती", hi: "सार्वजनिक पारदर्शिता धारा" },
+    { en: "Recent Water Deliveries", mr: "पाणीवाटप नोंदी", hi: "हालिया जल वितरण" },
+    { en: "Cryptographically attested delivery records in the Sinnar & Ahilyanagar sector.", mr: "सिन्नर आणि अहिल्यानगर विभागातील अधिकृत पाणीवाटप नोंदी.", hi: "सिन्नर और अहिल्यानगर क्षेत्र में प्रमाणित जल वितरण रिकॉर्ड।" },
+    { en: "Download Audit Ledger", mr: "लेखापरीक्षण वही डाउनलोड करा", hi: "ऑडिट लेजर डाउनलोड करें" },
+    { en: "Discharged 10,000 Liters • Dual QR Verified at Cistern", mr: "१०,००० लिटर वाटप • टाकीवर दोन-स्तरीय क्यूआर द्वारे सत्यापित", hi: "10,000 लीटर वितरण • टंकी पर दोहरे क्यूआर द्वारा सत्यापित" },
+    { en: "Dispatched 10,000 Liters • Currently Inside Geofence", mr: "१०,००० लिटर रवाना • सध्या जिओफेन्सच्या आत", hi: "10,000 लीटर रवाना • वर्तमान में जियोफेंस के अंदर" },
+    { en: "500m Off-Route Detected • Contractor Escrow Frozen", mr: "५०० मीटर मार्ग विचलन आढळले • कंत्राटदाराचे पेमेंट रोखले", hi: "500 मीटर मार्ग भटकाव • ठेकेदार भुगतान रोका गया" },
+    { en: "VERIFIED", mr: "सत्यापित", hi: "सत्यापित" },
+    { en: "IN TRANSIT", mr: "मार्गावर", hi: "रास्ते में" },
+    { en: "HELD", mr: "रोखले", hi: "रोका गया" },
+
+    // Dashboard Telemetry Badges & Buttons
     { en: "Active Tankers", mr: "सक्रिय टँकर्स", hi: "सक्रिय टैंकर" },
     { en: "Critical Depletions", mr: "अतिटंचाई गावे", hi: "अति-संकटग्रस्त गाँव" },
     { en: "Escrow Frozen", mr: "रोखलेले पेमेंट्स", hi: "रोके गए भुगतान" },
     { en: "Compliance Rate", mr: "नियम पूर्तता दर", hi: "अनुपालन दर" },
     { en: "Water Allocation Matrix", mr: "पाणी वाटप मॅट्रिक्स", hi: "जल आवंटन मैट्रिक्स" },
     { en: "Emergency Dispatch", mr: "आपत्कालीन रवानगी", hi: "आपातकालीन प्रेषण" },
-    { en: "Cistern Level", mr: "टाकीतील पाणी पातळी", hi: "टंकी का जल स्तर" },
+    { en: "Water Map & Monitoring", mr: "जल नकाशा व थेट देखरेख", hi: "जल मैप व निगरानी" },
+    { en: "Normal Soil", mr: "सामान्य माती ओलावा", hi: "सामान्य मृदा नमी" },
+    { en: "Connected", mr: "जोडलेले", hi: "जुड़ा हुआ" },
+    { en: "Confidence:", mr: "विश्वासार्हता:", hi: "विश्वसनीयता:" },
+    { en: "Attested", mr: "प्रमाणित", hi: "प्रमाणित" },
 
     // Quality Badges
     { en: "Metered", mr: "मीटर मोजणी", hi: "मीटर रीडिंग" },
@@ -348,31 +269,13 @@
     { en: "Satellite", mr: "उपग्रह डेटा", hi: "उपग्रह डेटा" },
     { en: "Estimated", mr: "अंदाजित", hi: "अनुमानित" },
     { en: "Simulated", mr: "सिम्युलेटेड (चाचणी)", hi: "सिम्युलेटेड (परीक्षण)" },
-
-    // Status Badges
     { en: "Normal", mr: "सर्वसाधारण", hi: "सामान्य" },
     { en: "Watch", mr: "खबरदारी", hi: "सतर्कता" },
     { en: "Inspect", mr: "तातडीची तपासणी", hi: "तुरंत निरीक्षण" },
     { en: "Critical", mr: "गंभीर टंचाई", hi: "गंभीर संकट" },
     { en: "Stable", mr: "स्थिर", hi: "स्थिर" },
-    { en: "Moderate", mr: "मध्यम", hi: "मध्यम" },
-    { en: "En Route to Village", mr: "गावाकडे मार्गस्थ", hi: "गाँव के रास्ते में" },
-    { en: "Dispatched from Depot", mr: "डेपोतून रवाना", hi: "डिपो से रवाना" },
-    { en: "Delivery Complete", mr: "वितरण पूर्ण", hi: "वितरण पूर्ण" },
 
-    // Village Water Page
-    { en: "Village Water Intelligence", mr: "ग्राम जलस्थिती माहिती फलक", hi: "ग्राम जल स्थिति डैशबोर्ड" },
-    { en: "Days of Usable Water Remaining", mr: "उपलब्ध पाणी साठा (दिवसांची श्रेणी)", hi: "उपलब्ध जल भंडार (दिनों की सीमा)" },
-    { en: "14-Day Hydrological Depletion Forecast", mr: "१४ दिवसांचा जलसाठा अंदाज आलेख", hi: "14 दिनों का जल स्तर पूर्वानुमान" },
-    { en: "Village Water Sources (Wells, Tanks & Lakes)", mr: "गावातील जलस्रोत (विहिरी, टाक्या व तलाव)", hi: "गांव के जलस्रोत (कुएं, टंकियां और तालाब)" },
-    { en: "Statutory Daily Demand", mr: "दैनिक वैधानिक पाण्याची गरज", hi: "दैनिक वैधानिक जल मांग" },
-    { en: "Human Quota (40L/person)", mr: "लोकसंख्या कोटा (४० लि/व्यक्ती)", hi: "नागरिक कोटा (40 ली/व्यक्ति)" },
-    { en: "Cattle Quota (70L/head)", mr: "पशुधन कोटा (७० लि/जनावर)", hi: "पशुधन कोटा (70 ली/पशु)" },
-    { en: "Community Open Well", mr: "सार्वजनिक खुली विहीर", hi: "सार्वजनिक खुला कुआं" },
-    { en: "Storage Reservoir (ESR/GLSR)", mr: "पाण्याची टाकी (ESR / GLSR)", hi: "पानी की टंकी (ESR / GLSR)" },
-    { en: "Percolation Lake / Pond", mr: "पाझर तलाव / बंधारा", hi: "तालाब / जल संचय जलाशय" },
-
-    // Public Tanker Tracker
+    // Public Tracker
     { en: "Citizen Water Tanker Transparency Tracker", mr: "नागरिक पाणी टँकर पारदर्शकता पोर्टल", hi: "नागरिक जल टैंकर पारदर्शिता पोर्टल" },
     { en: "Select District", mr: "जिल्हा निवडा", hi: "ज़िला चुनें" },
     { en: "Select Taluka", mr: "तालुका निवडा", hi: "तालुका चुनें" },
@@ -380,15 +283,13 @@
     { en: "All Districts", mr: "सर्व जिल्हे", hi: "सभी ज़िले" },
     { en: "All Talukas", mr: "सर्व तालुके", hi: "सभी तालुका" },
     { en: "All Villages", mr: "सर्व गावे", hi: "सभी गाँव" },
-    { en: "Filter Dispatches", mr: "टँकर फेऱ्या शोधा", hi: "टैंकर प्रेषण खोजें" },
     { en: "Vehicle Registration", mr: "वाहन नोंदणी क्र.", hi: "वाहन पंजीकरण संख्या" },
     { en: "Tanker ID", mr: "टँकर क्रमांक", hi: "टैंकर आईडी" },
     { en: "Estimated Arrival (ETA)", mr: "अपेक्षित आगमन वेळ (ETA)", hi: "अनुमानित आगमन (ETA)" },
     { en: "Last Verified Delivery", mr: "शेवटची पडताळणी पावती", hi: "अंतिम सत्यापित वितरण" },
     { en: "View Village Water Status", mr: "गावाची जलस्थिती पहा", hi: "गाँव की जल स्थिति देखें" },
-    { en: "Citizen Privacy Guarantee", mr: "नागरिक गोपनीयता हमी", hi: "नागरिक गोपनीयता गारंटी" },
 
-    // Pipelines Monitor
+    // Pipelines Loss Monitor
     { en: "Pipeline Conveyance Loss Monitor", mr: "पाईपलाईन गळती व वितरण नियंत्रण", hi: "पाइपलाइन रिसाव व वितरण निगरानी" },
     { en: "Monitored Lines", mr: "निरीक्षणाखालील लाईन्स", hi: "निगरानी अधीन लाइनें" },
     { en: "Normal (OK)", mr: "सर्वसाधारण (OK)", hi: "सामान्य (OK)" },
@@ -407,7 +308,14 @@
     { en: "View Analysis", mr: "विश्लेषण पहा", hi: "विश्लेषण देखें" },
     { en: "7-Day Conveyance Loss Trend (%)", mr: "७ दिवसांचा गळती ट्रेंड (%)", hi: "7-दिवसीय रिसाव रुझान (%)" },
 
-    // Statutory Disclaimers
+    // Common Buttons & Actions
+    { en: "Refresh", mr: "रिफ्रेश करा", hi: "रिफ्रेश करें" },
+    { en: "Close", mr: "बंद करा", hi: "बंद करें" },
+    { en: "Cancel", mr: "रद्द करा", hi: "रद्द करें" },
+    { en: "Save", mr: "जतन करा", hi: "सहेजें" },
+    { en: "Submit", mr: "सबमिट करा", hi: "सबमिट करें" },
+    { en: "Online", mr: "ऑनलाइन", hi: "ऑनलाइन" },
+    { en: "Offline", mr: "ऑफलाइन", hi: "ऑफलाइन" },
     {
       en: "This tool supports local authorities and does not replace water-quality testing.",
       mr: "हे साधन स्थानिक प्रशासनाला सहकार्य करण्यासाठी असून ते पाणी गुणवत्ता चाचणीचा पर्याय नाही.",
@@ -415,31 +323,37 @@
     }
   ];
 
-  // Build indexed lookup maps
+  // Build indexed lookup maps using clean normalized whitespace
+  function normalizeText(str) {
+    if (!str) return "";
+    return str.replace(/\s+/g, " ").trim().toLowerCase();
+  }
+
   const PHRASE_MAP = new Map();
   PHRASE_PAIRS.forEach((item) => {
-    ["en", "mr", "hi"].forEach((srcLang) => {
-      const srcText = (item[srcLang] || "").trim();
-      if (srcText && !PHRASE_MAP.has(srcText.toLowerCase())) {
-        PHRASE_MAP.set(srcText.toLowerCase(), item);
+    ["en", "mr", "hi"].forEach((langKey) => {
+      const srcText = item[langKey];
+      if (srcText) {
+        const norm = normalizeText(srcText);
+        if (norm && !PHRASE_MAP.has(norm)) {
+          PHRASE_MAP.set(norm, item);
+        }
       }
     });
   });
 
   // ----------------------------------------------------------------------------
-  // 3. Core Translation Functions
+  // 3. Core DOM Translation Execution
   // ----------------------------------------------------------------------------
   let isTranslating = false;
 
   function translateSingleText(rawText, targetLang) {
     if (!rawText) return rawText;
-    const trimmed = rawText.trim();
-    if (!trimmed) return rawText;
+    const norm = normalizeText(rawText);
+    if (!norm) return rawText;
 
-    const lower = trimmed.toLowerCase();
-    const entry = PHRASE_MAP.get(lower);
+    const entry = PHRASE_MAP.get(norm);
     if (entry && entry[targetLang]) {
-      // Preserve leading and trailing whitespace
       const leadingWs = rawText.match(/^\s*/)[0];
       const trailingWs = rawText.match(/\s*$/)[0];
       return leadingWs + entry[targetLang] + trailingWs;
@@ -448,7 +362,7 @@
   }
 
   function translateDOM(targetLang) {
-    if (!translations[targetLang]) targetLang = "en";
+    if (!["en", "mr", "hi"].includes(targetLang)) targetLang = "en";
     if (isTranslating) return;
     isTranslating = true;
 
@@ -484,10 +398,9 @@
       // 3. Automatic text translation across elements
       const targetSelectors = "h1, h2, h3, h4, h5, h6, p, a, button, label, span, th, td, strong, small, option, .translatable";
       document.querySelectorAll(targetSelectors).forEach((el) => {
-        // Skip script, style, and code elements
         if (el.closest("script, style, code, pre, #langSwitcher, .no-translate")) return;
 
-        // If the element contains ONLY text nodes, translate safely
+        // If the element has no child HTML elements, translate textContent directly
         if (el.children.length === 0) {
           const original = el.textContent;
           const translated = translateSingleText(original, targetLang);
@@ -495,7 +408,7 @@
             el.textContent = translated;
           }
         } else {
-          // If element has mixed icon + text, only translate text nodes
+          // Translate direct text nodes only, leaving icon elements intact
           el.childNodes.forEach((node) => {
             if (node.nodeType === Node.TEXT_NODE && node.nodeValue && node.nodeValue.trim().length > 1) {
               const origVal = node.nodeValue;
@@ -527,18 +440,6 @@
         }
       });
 
-      // 6. Sync language pill buttons if present (e.g. pipelines.html)
-      document.querySelectorAll("[data-lang-btn], .lang-pill").forEach((btn) => {
-        const bLang = btn.getAttribute("data-lang") || btn.innerText.trim().toLowerCase();
-        if (bLang === targetLang) {
-          btn.classList.add("bg-gov-navy", "text-white", "font-bold");
-          btn.classList.remove("text-gov-slate", "bg-slate-100");
-        } else if (["en", "mr", "hi"].includes(bLang)) {
-          btn.classList.remove("bg-gov-navy", "text-white", "font-bold");
-          btn.classList.add("text-gov-slate");
-        }
-      });
-
     } catch (err) {
       console.warn("[JalSanchar I18n] Translation notice:", err);
     } finally {
@@ -547,7 +448,7 @@
   }
 
   function setLanguage(lang) {
-    if (!["en", "mr", "hi"].includes(lang)) lang = "mr"; // Default Marathi for Sinnar/Ahilyanagar
+    if (!["en", "mr", "hi"].includes(lang)) lang = "en";
     try {
       localStorage.setItem("jalsanchar_lang", lang);
       localStorage.setItem("preferred_lang", lang);
@@ -556,7 +457,6 @@
 
     translateDOM(lang);
 
-    // Notify other components
     try {
       window.dispatchEvent(new CustomEvent("jalsanchar_lang_changed", { detail: { lang } }));
     } catch (e) {}
@@ -568,10 +468,10 @@
         localStorage.getItem("jalsanchar_lang") ||
         localStorage.getItem("preferred_lang") ||
         localStorage.getItem("jalsanjeevani_lang") ||
-        "mr" // Default Marathi for Maharashtra pilot
+        "en"
       );
     } catch (e) {
-      return "mr";
+      return "en";
     }
   }
 
@@ -581,7 +481,6 @@
   function initLanguageEngine() {
     const activeLang = getLanguage();
 
-    // Bind all select elements
     const switchers = document.querySelectorAll("#langSwitcher, .lang-switcher, select[aria-label='Language Selector']");
     switchers.forEach((select) => {
       select.value = activeLang;
@@ -590,18 +489,9 @@
       });
     });
 
-    // Bind any language toggle buttons
-    document.querySelectorAll("[data-lang-btn]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const target = btn.getAttribute("data-lang-btn");
-        if (target) setLanguage(target);
-      });
-    });
-
-    // Apply translation immediately
     translateDOM(activeLang);
 
-    // Set up MutationObserver to re-translate dynamically added content (e.g. AJAX tables/cards)
+    // MutationObserver to translate dynamically loaded tables, cards, etc.
     let debounceTimer = null;
     const observer = new MutationObserver(() => {
       if (debounceTimer) clearTimeout(debounceTimer);

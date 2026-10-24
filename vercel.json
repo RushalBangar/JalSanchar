@@ -7,6 +7,10 @@
     { "source": "/driver", "destination": "/driver.html" },
     { "source": "/panchayat", "destination": "/panchayat.html" },
     { "source": "/login", "destination": "/login.html" },
-    { "source": "/presentation", "destination": "/presentation.html" }
+    { "source": "/presentation", "destination": "/presentation.html" },
+    { "source": "/tracker", "destination": "/tracker.html" },
+    { "source": "/village", "destination": "/village.html" },
+    { "source": "/sources", "destination": "/sources.html" },
+    { "source": "/pipelines", "destination": "/pipelines.html" }
   ]
 }
