@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
             geofenceRangeBadge.className = "bg-safe-emerald/15 text-safe-emerald px-2 py-0.5 rounded font-label-tactical text-label-tactical uppercase font-bold";
           }
           if (geofenceRadarIcon) {
-            geofenceRadarIcon.className = "material-symbols-outlined text-[20px] text-safe-emerald";
+            geofenceRadarIcon.innerHTML = `<i data-lucide="map-pin-check" class="w-4 h-4 text-green-600"></i>`;
           }
           if (arrivalSuccessBanner) {
             arrivalSuccessBanner.classList.remove("hidden");
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
           geofenceRangeBadge.className = "bg-warning-amber/15 text-warning-amber px-2 py-0.5 rounded font-label-tactical text-label-tactical uppercase font-bold";
         }
         if (geofenceRadarIcon) {
-          geofenceRadarIcon.className = "material-symbols-outlined text-[20px] text-primary animate-pulse";
+          geofenceRadarIcon.innerHTML = `<i data-lucide="map-pin" class="w-4 h-4 text-primary animate-pulse"></i>`;
         }
         if (arrivalSuccessBanner) {
           arrivalSuccessBanner.classList.add("hidden");
@@ -391,9 +391,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const origContent = copyTokenBtn.innerHTML;
 
       const doSuccess = () => {
-        copyTokenBtn.innerHTML = `<span class="material-symbols-outlined text-[16px] text-safe-emerald">check</span><span class="font-label-tactical text-label-tactical font-semibold text-safe-emerald">Copied!</span>`;
+        copyTokenBtn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 mr-1 text-green-600 inline"></i><span class="text-xs font-semibold text-green-700">Copied!</span>`;
+        if (window.lucide) lucide.createIcons();
         showToast("📋 Token JSON copied to clipboard!");
-        setTimeout(() => { copyTokenBtn.innerHTML = origContent; }, 1800);
+        setTimeout(() => { copyTokenBtn.innerHTML = origContent; if (window.lucide) lucide.createIcons(); }, 1800);
       };
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -447,9 +448,10 @@ document.addEventListener("DOMContentLoaded", () => {
         link.click();
 
         const origContent = saveImageBtn.innerHTML;
-        saveImageBtn.innerHTML = `<span class="material-symbols-outlined text-[16px] text-safe-emerald">done</span><span class="font-label-tactical text-label-tactical font-semibold text-safe-emerald">Saved Offline</span>`;
+        saveImageBtn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 mr-1 text-green-600 inline"></i><span class="text-xs font-semibold text-green-700">Saved!</span>`;
+        if (window.lucide) lucide.createIcons();
         showToast("💾 QR Code Image Downloaded!");
-        setTimeout(() => { saveImageBtn.innerHTML = origContent; }, 1800);
+        setTimeout(() => { saveImageBtn.innerHTML = origContent; if (window.lucide) lucide.createIcons(); }, 1800);
       } else {
         showToast("Generating image, please try again in 1s");
       }

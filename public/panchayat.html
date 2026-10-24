@@ -191,7 +191,7 @@
 
       <!-- Video Scanner Window Frame -->
       <div class="w-full h-64 bg-gray-900 rounded-lg overflow-hidden relative flex items-center justify-center border-2 border-primary mb-3" id="scannerWindow">
-        <div id="qrReader"></div>
+        <div id="qrReader" class="w-full h-full"></div>
         
         <!-- Placeholder when camera inactive -->
         <div id="scannerPlaceholder" class="flex flex-col items-center justify-center text-white/70 p-4 text-center z-10">
@@ -201,13 +201,10 @@
         </div>
 
         <!-- Laser Guide Line -->
-        <div id="scannerLaser" class="hidden absolute left-4 right-4 h-0.5 bg-red-500 shadow-[0_0_8px_#ef4444] z-20"></div>
+        <div id="scannerLaser" class="hidden absolute left-4 right-4 h-0.5 bg-red-500 shadow-[0_0_8px_#ef4444] z-20 pointer-events-none"></div>
 
         <!-- Feedback Overlay -->
-        <div id="scanFeedback" class="hidden absolute inset-0 bg-green-900/40 flex items-center justify-center z-30">
-          <div class="p-3 bg-white text-green-800 rounded-lg font-bold text-xs shadow-lg">
-            ✓ QR Code Verified!
-          </div>
+        <div id="scanFeedback" class="hidden absolute inset-0 bg-gray-950/85 backdrop-blur-sm flex flex-col items-center justify-center z-30 p-4 text-center">
         </div>
       </div>
 
@@ -262,6 +259,14 @@
           <strong id="verifiedVolume" class="text-green-700 font-bold">10,000 Liters</strong>
         </div>
         <div class="flex justify-between py-1 border-b border-gray-100">
+          <span class="text-gray-500">Driver Key:</span>
+          <code id="verifiedDriverKey" class="font-mono text-gray-900 font-bold">0x9F3B4ED812C4</code>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-100">
+          <span class="text-gray-500">Cistern Key:</span>
+          <code id="verifiedCisternKey" class="font-mono text-gray-900 font-bold">0x74CE8A1109B2</code>
+        </div>
+        <div class="flex justify-between py-1 border-b border-gray-100">
           <span class="text-gray-500">GPS Geofence:</span>
           <strong id="verifiedGeofence" class="text-green-700">Within 150m (Verified)</strong>
         </div>
@@ -295,6 +300,36 @@
     </div>
 
   </main>
+
+  <!-- Manual Token Paste Modal -->
+  <div id="pasteModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-4 shadow-2xl border border-gray-200">
+      <div class="flex items-center justify-between pb-2 mb-3 border-b border-gray-100">
+        <h4 class="font-display font-bold text-base text-gray-900 flex items-center gap-1.5">
+          <i data-lucide="clipboard" class="w-4 h-4 text-primary"></i> Paste Delivery Token
+        </h4>
+        <button id="btnClosePasteModal" class="p-1 text-gray-400 hover:text-gray-700 rounded">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-gray-600 mb-2">
+        Paste the cryptographic token JSON payload copied from the Tanker Driver Cockpit:
+      </p>
+      <textarea id="pasteModalTextarea" rows="4" class="w-full text-xs font-mono p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mb-3 bg-gray-50" placeholder='{"protocol":"JALSANCHAR_POD_V2","tanker_id":"TN-SN-02",...}'></textarea>
+      <div class="flex justify-end gap-2">
+        <button id="btnCancelPasteModal" class="btn btn-outline btn-sm">Cancel</button>
+        <button id="btnSubmitPasteModal" class="btn btn-primary btn-sm font-bold">Verify &amp; Disburse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compatibility DOM Bindings -->
+  <div class="hidden" aria-hidden="true">
+    <span id="gaugePercentText">7%</span>
+    <svg><circle id="gaugeProgressArc"></circle></svg>
+    <div id="scannerSection"></div>
+    <button id="btnDismissFeedback"></button>
+  </div>
 
   <!-- Toast Notification -->
   <div id="toastNotification" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-2 px-4 rounded-full shadow-lg z-50">
