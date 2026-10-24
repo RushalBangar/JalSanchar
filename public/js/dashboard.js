@@ -990,7 +990,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       tanker: "TN-SN-01",
       name: "Sinnar South-West Loop",
-      color: "#00e5ff",
+      color: "#0284c7",
       depot: [19.8450, 74.0000],
       corridor: "NH-160 & Sinnar-Dubere Major District Road",
       waypoints: [
@@ -1016,7 +1016,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       tanker: "TN-AH-01",
       name: "Pathardi & Shevgaon Eastern Arc",
-      color: "#3491ff",
+      color: "#2563eb",
       depot: [19.1120, 74.7710],
       corridor: "NH-61 Kalyan-Nirmal National Highway",
       waypoints: [
@@ -1028,7 +1028,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       tanker: "TN-AH-02",
       name: "Parner & Karjat Arid Strip",
-      color: "#f59e0b",
+      color: "#d97706",
       depot: [19.1120, 74.7710],
       corridor: "NH-160 Nagar-Pune Highway & Karjat Link",
       waypoints: [
@@ -1040,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       tanker: "TN-AH-03",
       name: "Jamkhed & Shrigonda Corridor",
-      color: "#a855f7",
+      color: "#9333ea",
       depot: [19.1120, 74.7710],
       corridor: "Nagar-Solapur Highway & Jamkhed-Shrigonda Link",
       waypoints: [
@@ -1052,7 +1052,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       tanker: "TN-AH-04",
       name: "Sangamner & Rahuri Northern Line",
-      color: "#ec4899",
+      color: "#db2777",
       depot: [19.5772, 74.2085],
       corridor: "SH-10 Kopargaon-Sangamner & Pravara Basin Road",
       waypoints: [
@@ -1060,37 +1060,134 @@ document.addEventListener("DOMContentLoaded", () => {
         [19.3905, 74.6514]  // Vambori (AH-07)
       ],
       quota: 196000
+    },
+    {
+      tanker: "TN-SN-03",
+      name: "Khopadi Critical Rapid Feeder",
+      color: "#059669",
+      depot: [19.8450, 74.0000],
+      corridor: "Sinnar-Khopadi Express Rural Route",
+      waypoints: [
+        [19.9015, 74.1030], // Khopadi (SN-02)
+        [19.8512, 73.9540]  // Pangari Bk (SN-01)
+      ],
+      quota: 154000
+    },
+    {
+      tanker: "TN-SN-04",
+      name: "Dapur & Dubere Foothill Spur",
+      color: "#0891b2",
+      depot: [19.8450, 74.0000],
+      corridor: "Dubere-Dapur Foothill Bypass",
+      waypoints: [
+        [19.8210, 73.9120], // Dubere (SN-04)
+        [19.8820, 73.9210]  // Dapur (SN-05)
+      ],
+      quota: 138000
+    },
+    {
+      tanker: "TN-AH-05",
+      name: "Tisgaon Emergency Priority Surge",
+      color: "#4f46e5",
+      depot: [19.1120, 74.7710],
+      corridor: "NH-61 Eastern Fast-Track",
+      waypoints: [
+        [19.1415, 75.0512]  // Tisgaon (AH-01)
+      ],
+      quota: 165000
+    },
+    {
+      tanker: "TN-AH-06",
+      name: "Supa Industrial-Rural Arterial",
+      color: "#ca8a04",
+      depot: [19.1120, 74.7710],
+      corridor: "Parner MIDC-Supa Rural Link",
+      waypoints: [
+        [18.9984, 74.4568], // Supa (AH-02)
+        [19.1120, 74.7710]  // Bhingar Rural (AH-09)
+      ],
+      quota: 149000
+    },
+    {
+      tanker: "TN-AH-07",
+      name: "Kharki Drought Feedlot Spur",
+      color: "#7c3aed",
+      depot: [19.1120, 74.7710],
+      corridor: "Jamkhed-Beed Border Road",
+      waypoints: [
+        [18.7280, 75.3120]  // Kharki (AH-03)
+      ],
+      quota: 136000
+    },
+    {
+      tanker: "TN-AH-08",
+      name: "Rashin Arid Agricultural Loop",
+      color: "#ea580c",
+      depot: [19.1120, 74.7710],
+      corridor: "Karjat-Rashin Major Canal Spur",
+      waypoints: [
+        [18.5526, 75.0064], // Rashin (AH-04)
+        [18.6148, 74.6969]  // Kashti (AH-08)
+      ],
+      quota: 178000
+    },
+    {
+      tanker: "TN-SN-05",
+      name: "Nandur Shingote Border Corridor",
+      color: "#0d9488",
+      depot: [19.8450, 74.0000],
+      corridor: "Pune-Nashik NH-60 Southern Toll Link",
+      waypoints: [
+        [19.7820, 73.9010], // Nandur Shingote (SN-06)
+        [19.8130, 74.0520]  // Wadgaon (SN-03)
+      ],
+      quota: 160000
+    },
+    {
+      tanker: "TN-AH-09",
+      name: "Shevgaon & Rahuri Agro-Basin Line",
+      color: "#c026d3",
+      depot: [19.1120, 74.7710],
+      corridor: "Pravara-Godavari Canal Basin Route",
+      waypoints: [
+        [19.3486, 75.2185], // Bodhegaon (AH-05)
+        [19.3905, 74.6514]  // Vambori (AH-07)
+      ],
+      quota: 182000
     }
   ];
 
   async function runInteractiveSolver(options = {}) {
     const isExecute = options.execute === true;
-    const tankerCount = parseInt(tankerRangeInput?.value || "4", 10);
+    const tankerCount = parseInt(tankerRangeInput?.value || "14", 10);
     const isRoadClosed = toggleRoadClosure?.checked || false;
-    const reliefMandate = selectReliefMandate?.value || "statutory";
+    const reliefMandate = selectReliefMandate?.value || "both";
 
+    // Synchronize both element IDs: tankerRangeVal and legacy tankerCountVal
+    const tankerRangeVal = document.getElementById("tankerRangeVal");
+    if (tankerRangeVal) tankerRangeVal.textContent = `${tankerCount} Tankers`;
     const tankerCountVal = document.getElementById("tankerCountVal");
     if (tankerCountVal) tankerCountVal.textContent = tankerCount;
 
     document.querySelectorAll(".btn-tanker-scale").forEach(btn => {
       const c = parseInt(btn.getAttribute("data-count") || "0", 10);
       if (c === tankerCount) {
-        btn.classList.add("bg-primary-container", "text-on-primary-container", "font-bold");
-        btn.classList.remove("bg-surface-panel");
+        btn.classList.add("bg-gov-navy", "text-white", "font-bold");
+        btn.classList.remove("bg-white", "text-gov-textPrimary");
       } else {
-        btn.classList.remove("bg-primary-container", "text-on-primary-container", "font-bold");
-        btn.classList.add("bg-surface-panel");
+        btn.classList.remove("bg-gov-navy", "text-white", "font-bold");
+        btn.classList.add("bg-white", "text-gov-textPrimary");
       }
     });
 
     const roadClosureBadge = document.getElementById("roadClosureBadge");
     if (roadClosureBadge) {
       if (isRoadClosed) {
-        roadClosureBadge.textContent = "NH-60 BLOCKED (Detour Active)";
-        roadClosureBadge.className = "text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-alert-crimson/20 text-alert-crimson border border-alert-crimson/30 animate-pulse";
+        roadClosureBadge.classList.remove("hidden");
+        roadClosureBadge.className = "text-[11px] text-amber-900 bg-amber-50 border border-amber-300 p-2 rounded-lg font-semibold flex items-center gap-1.5 animate-pulse";
+        roadClosureBadge.innerHTML = '<span class="material-symbols-outlined text-[16px] text-amber-700">warning</span><span>Sinnar-Ghat Diversion Active (+18.4km SH-44 Detour)</span>';
       } else {
-        roadClosureBadge.textContent = "Corridor Open";
-        roadClosureBadge.className = "text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container text-outline";
+        roadClosureBadge.classList.add("hidden");
       }
     }
 
@@ -1110,7 +1207,22 @@ document.addEventListener("DOMContentLoaded", () => {
     routeLayer.clearLayers();
     activePolylines = [];
 
-    const selectedRoutes = TANKER_ROUTES.slice(0, tankerCount);
+    // Synthesize routes for requested fleet scale (up to 24)
+    const selectedRoutes = [];
+    for (let i = 0; i < tankerCount; i++) {
+      if (i < TANKER_ROUTES.length) {
+        selectedRoutes.push(TANKER_ROUTES[i]);
+      } else {
+        const base = TANKER_ROUTES[i % TANKER_ROUTES.length];
+        selectedRoutes.push({
+          ...base,
+          tanker: `TN-RES-${String(i + 1).padStart(2, "0")}`,
+          name: `${base.name} (Surge Fleet #${i + 1})`,
+          quota: Math.round(base.quota * 0.9)
+        });
+      }
+    }
+
     let totalAllocation = 0;
     let totalRoadKm = 0;
 
@@ -1128,8 +1240,9 @@ document.addEventListener("DOMContentLoaded", () => {
       rawWaypoints.push(startDepot);
 
       let quotaMultiplier = 1.0;
-      if (reliefMandate === "critical_only") quotaMultiplier = 1.25;
-      else if (reliefMandate === "livestock_heavy") quotaMultiplier = 1.40;
+      if (reliefMandate === "human" || reliefMandate === "critical_only") quotaMultiplier = 0.65;
+      else if (reliefMandate === "cattle" || reliefMandate === "livestock_heavy") quotaMultiplier = 1.35;
+      else if (reliefMandate === "both" || reliefMandate === "statutory") quotaMultiplier = 1.0;
       const circuitAllocation = Math.round(r.quota * quotaMultiplier);
       totalAllocation += circuitAllocation;
 
@@ -1194,18 +1307,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let dieselSavings = "-28.4%";
     if (isRoadClosed) {
-      dieselSavings = tankerCount <= 3 ? "-16.8%" : "-21.2%";
+      const savings = Math.max(14.0, (26.0 - tankerCount * 0.5)).toFixed(1);
+      dieselSavings = `-${savings}% (Detour Burn)`;
     } else {
-      if (tankerCount === 2) dieselSavings = "-34.1%";
-      else if (tankerCount === 3) dieselSavings = "-31.0%";
-      else if (tankerCount === 4) dieselSavings = "-28.4%";
-      else if (tankerCount === 5) dieselSavings = "-25.6%";
-      else if (tankerCount === 6) dieselSavings = "-23.2%";
+      const savings = Math.max(18.0, (36.0 - tankerCount * 0.6)).toFixed(1);
+      dieselSavings = `-${savings}%`;
     }
 
     const solverResultText = document.getElementById("solverResultText");
     if (solverResultText) {
-      solverResultText.innerHTML = `${tankerCount} Road Circuits Generated • ${totalRoadKm.toFixed(0)} km Paved Roads • ${totalAllocation.toLocaleString()}L Allocated • <span class="text-tertiary font-bold">${dieselSavings} Diesel Burn</span>`;
+      let mandateTag = "";
+      if (reliefMandate === "human") mandateTag = " (Human Priority 40L)";
+      else if (reliefMandate === "cattle") mandateTag = " (Cattle Feedlot 70L)";
+      solverResultText.innerHTML = `<strong>${tankerCount} Circuits Generated</strong> • ${totalRoadKm.toFixed(0)} km Roads • ${totalAllocation.toLocaleString()}L Allocated${mandateTag} • <strong class="text-green-700 font-bold">${dieselSavings} Diesel Burn</strong>`;
     }
 
     if (solverResultBox) {
@@ -1219,14 +1333,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (btnAllocate) {
-        btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span><span>Dispatches Transmitted ✓</span>';
-        btnAllocate.classList.remove("bg-primary-container");
-        btnAllocate.classList.add("bg-safe-emerald");
+        btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[16px]">done_all</span><span>Dispatches Transmitted ✓</span>';
+        btnAllocate.classList.remove("bg-gov-navy", "hover:bg-gov-dark");
+        btnAllocate.classList.add("bg-gov-green", "hover:bg-green-700");
         btnAllocate.style.opacity = "1";
         setTimeout(() => {
-          btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[18px]">local_shipping</span><span>Execute Emergency Dispatch</span>';
-          btnAllocate.classList.remove("bg-safe-emerald");
-          btnAllocate.classList.add("bg-primary-container");
+          btnAllocate.innerHTML = '<span class="material-symbols-outlined text-[16px]">local_shipping</span><span>Dispatch Water Tankers</span>';
+          btnAllocate.classList.remove("bg-gov-green", "hover:bg-green-700");
+          btnAllocate.classList.add("bg-gov-navy", "hover:bg-gov-dark");
         }, 4000);
       }
 
