@@ -325,11 +325,20 @@ document.addEventListener("DOMContentLoaded", () => {
             window.JalSupabase.updateTankerLocation(manifest.tanker_id, 19.9015, 74.1030, false, "arrived");
             console.log(`🌊 Driver arrival coordinates synced to Supabase for Tanker ${manifest.tanker_id}.`);
           }
+
+          // Closed-loop Tri-Party lifecycle notification
+          if (window.JalMissions && typeof window.JalMissions.onDriverArrival === "function") {
+            window.JalMissions.onDriverArrival(manifest.tanker_id || "TN-SN-02");
+          }
         }, 700);
 
       } else {
         // Reset state for re-testing
         isArrived = false;
+
+        if (window.JalMissions && typeof window.JalMissions.resetMissionsWorkflow === "function") {
+          window.JalMissions.resetMissionsWorkflow();
+        }
 
         if (geofenceStatusText) {
           geofenceStatusText.textContent = "Geofence: 180m from Target";

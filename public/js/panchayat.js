@@ -800,7 +800,15 @@ document.addEventListener("DOMContentLoaded", () => {
           .catch((err) => console.warn("Supabase village update error:", err));
       }
     }
+
+    // Closed-loop Tri-Party lifecycle notification
+    if (window.JalMissions && typeof window.JalMissions.onHandshakeComplete === "function") {
+      window.JalMissions.onHandshakeComplete(tankerId, targetVillage, volume, receipt);
+    }
   }
+
+  // Expose onScanSuccess globally for simulation and instant verification
+  window.onScanSuccess = onScanSuccess;
 
   // Camera Toggle Button Handler
   if (btnToggleCamera) {
@@ -904,6 +912,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (gaugePercentText) {
       gaugePercentText.textContent = "7%";
+    }
+
+    if (window.JalMissions && typeof window.JalMissions.resetMissionsWorkflow === "function") {
+      window.JalMissions.resetMissionsWorkflow();
     }
 
     triggerToast("Reset complete. Ready for next tanker delivery.");

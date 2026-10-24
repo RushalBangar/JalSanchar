@@ -134,6 +134,18 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
+# ─── Modular V2 Subsystem Routers ───────────────────────────────────────────
+try:
+    from backend.routes import missions, sources, pipelines, forecast, public
+except ImportError:
+    from routes import missions, sources, pipelines, forecast, public
+
+app.include_router(missions.router)
+app.include_router(sources.router)
+app.include_router(pipelines.router)
+app.include_router(forecast.router)
+app.include_router(public.router)
+
 
 # =============================================================================
 # Password Hashing Utilities (bcrypt)
