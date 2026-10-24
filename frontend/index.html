@@ -186,15 +186,15 @@
 
     <!-- Main Navigation Bar -->
     <div class="max-w-[1440px] mx-auto px-4 md:px-margin-desktop">
-      <div class="h-20 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-space-md group">
-          <img alt="JalSanchar Emblem" class="h-9 w-auto object-contain rounded" src="assets/logo.jpg" onerror="this.src='assets/logo.svg'"/>
+      <div class="h-20 flex items-center justify-between gap-2">
+        <a href="index.html" class="flex items-center gap-space-md group flex-shrink-0">
+          <img alt="JalSanchar Emblem" class="h-8 md:h-9 w-auto object-contain rounded" src="assets/logo.jpg" onerror="this.src='assets/logo.svg'"/>
           <div class="flex flex-col">
             <div class="flex items-center gap-space-xs">
-              <span class="font-headline-md text-title-sm text-text-sovereign font-bold group-hover:text-ocean-signal transition-colors">JalSanchar</span>
-              <span class="font-telemetry-badge text-telemetry-badge bg-surface-container-high text-on-surface px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Gov-Telemetry</span>
+              <span class="font-headline-md text-base md:text-title-sm text-text-sovereign font-bold group-hover:text-ocean-signal transition-colors">JalSanchar</span>
+              <span class="font-telemetry-badge text-[10px] md:text-telemetry-badge bg-surface-container-high text-on-surface px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Gov-Telemetry</span>
             </div>
-            <span class="font-body-sm text-body-sm text-on-surface-variant hidden sm:inline">Sovereign Rural Water &amp; Anti-Diversion Telemetry</span>
+            <span class="font-body-sm text-xs text-on-surface-variant hidden sm:inline">Sovereign Rural Water &amp; Anti-Diversion Telemetry</span>
           </div>
         </a>
 
@@ -208,16 +208,109 @@
         </nav>
 
         <!-- Header Actions -->
-        <div class="flex items-center gap-space-sm">
-          <a class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-lg bg-surface-card text-on-surface hover:bg-surface-container-low border border-border-subtle transition-colors font-body-md text-body-md font-semibold" href="login.html">
+        <div class="flex items-center gap-1.5 sm:gap-space-sm">
+          <a class="hidden md:inline-flex items-center justify-center px-3.5 py-2 rounded-lg bg-surface-card text-on-surface hover:bg-surface-container-low border border-border-subtle transition-colors font-body-md text-body-md font-semibold" href="login.html">
             Portal Login
           </a>
-          <a class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-navy-deep text-on-primary hover:bg-navy-slate transition-colors font-body-md text-body-md font-semibold shadow-sm" href="dashboard.html">
+          <a class="hidden sm:inline-flex items-center justify-center px-3.5 py-2 rounded-lg bg-navy-deep text-on-primary hover:bg-navy-slate transition-colors font-body-md text-body-md font-semibold shadow-sm" href="dashboard.html">
             <span class="material-symbols-outlined text-[18px] mr-1.5">monitoring</span>Command Center
           </a>
-          <a href="login.html" title="Sign In" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1 text-on-primary hover:bg-navy-slate transition-colors">
+          <a href="login.html" title="Sign In" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary hover:bg-navy-slate transition-colors">
             <span class="material-symbols-outlined text-[18px]">person</span>
           </a>
+
+          <!-- Mobile Hamburger / Bars Toggle Button -->
+          <button id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" class="xl:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-variant text-navy-deep transition-colors cursor-pointer border border-border-subtle" type="button">
+            <span id="mobileMenuIcon" class="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer / Dropdown -->
+    <div id="mobileMenu" class="hidden xl:hidden border-t border-border-subtle bg-surface-card/98 backdrop-blur-2xl px-4 py-4 shadow-2xl max-h-[calc(100vh-7rem)] overflow-y-auto">
+      <div class="max-w-[1440px] mx-auto flex flex-col gap-3">
+        <!-- Main Section Links -->
+        <div class="flex flex-col space-y-1">
+          <span class="font-label-caps text-[10px] uppercase text-text-muted px-2 py-1 tracking-wider font-bold">Navigation</span>
+          <a class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-lg text-navy-deep hover:bg-surface-container-high font-medium text-sm transition-colors" href="#the-problem">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-critical-crimson text-[20px]">warning</span>
+              The Problem
+            </span>
+            <span class="material-symbols-outlined text-[16px] text-text-muted">chevron_right</span>
+          </a>
+          <a class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-lg text-navy-deep hover:bg-surface-container-high font-medium text-sm transition-colors" href="#how-it-works">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-telemetry-emerald text-[20px]">settings_suggest</span>
+              How It Works
+            </span>
+            <span class="material-symbols-outlined text-[16px] text-text-muted">chevron_right</span>
+          </a>
+          <a class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-lg text-navy-deep hover:bg-surface-container-high font-medium text-sm transition-colors" href="#operational-portals">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-ocean-signal text-[20px]">apps</span>
+              Operational Portals
+            </span>
+            <span class="material-symbols-outlined text-[16px] text-text-muted">chevron_right</span>
+          </a>
+          <a class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-lg text-navy-deep hover:bg-surface-container-high font-medium text-sm transition-colors" href="#architecture">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-navy-slate text-[20px]">schema</span>
+              System Architecture
+            </span>
+            <span class="material-symbols-outlined text-[16px] text-text-muted">chevron_right</span>
+          </a>
+          <a class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-lg text-navy-deep hover:bg-surface-container-high font-medium text-sm transition-colors" href="#delivery-ledger-section">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-telemetry-emerald text-[20px]">receipt_long</span>
+              Delivery Audit Records
+            </span>
+            <span class="material-symbols-outlined text-[16px] text-text-muted">chevron_right</span>
+          </a>
+        </div>
+
+        <div class="h-px bg-border-subtle my-1"></div>
+
+        <!-- Quick Access Operational Portals -->
+        <div class="flex flex-col space-y-1">
+          <span class="font-label-caps text-[10px] uppercase text-text-muted px-2 py-1 tracking-wider font-bold">Portals &amp; Applications</span>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <a class="flex items-center gap-2 p-2.5 rounded-lg bg-canvas-slate hover:bg-surface-container-high border border-border-subtle text-navy-deep font-semibold text-xs transition-colors" href="dashboard.html">
+              <span class="material-symbols-outlined text-navy-deep text-[18px]">account_balance</span>
+              <span>Collector</span>
+            </a>
+            <a class="flex items-center gap-2 p-2.5 rounded-lg bg-canvas-slate hover:bg-surface-container-high border border-border-subtle text-navy-deep font-semibold text-xs transition-colors" href="panchayat.html">
+              <span class="material-symbols-outlined text-telemetry-emerald text-[18px]">cottage</span>
+              <span>Panchayat</span>
+            </a>
+            <a class="flex items-center gap-2 p-2.5 rounded-lg bg-canvas-slate hover:bg-surface-container-high border border-border-subtle text-navy-deep font-semibold text-xs transition-colors" href="driver.html">
+              <span class="material-symbols-outlined text-alert-amber text-[18px]">local_shipping</span>
+              <span>Driver PWA</span>
+            </a>
+            <a class="flex items-center gap-2 p-2.5 rounded-lg bg-canvas-slate hover:bg-surface-container-high border border-border-subtle text-navy-deep font-semibold text-xs transition-colors" href="login.html">
+              <span class="material-symbols-outlined text-ocean-signal text-[18px]">lock_open</span>
+              <span>Sign In</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mobile Language & Accessibility Strip -->
+        <div class="mt-2 pt-2 border-t border-border-subtle flex items-center justify-between text-xs text-on-surface-variant">
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Language:</span>
+            <div class="flex items-center gap-1 font-mono">
+              <button onclick="changeLang('en')" class="px-2 py-0.5 rounded bg-surface-container-high font-bold text-navy-deep cursor-pointer">EN</button>
+              <button onclick="changeLang('mr')" class="px-2 py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant cursor-pointer">MR</button>
+              <button onclick="changeLang('hi')" class="px-2 py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant cursor-pointer">HI</button>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 font-mono">
+            <span class="font-medium mr-1">Text:</span>
+            <button onclick="applyFontStep(currentFontStep - 1)" class="px-1.5 py-0.5 rounded bg-surface-container-high cursor-pointer">A-</button>
+            <button onclick="applyFontStep(1)" class="px-1.5 py-0.5 rounded bg-surface-container-high font-bold cursor-pointer">A</button>
+            <button onclick="applyFontStep(currentFontStep + 1)" class="px-1.5 py-0.5 rounded bg-surface-container-high cursor-pointer">A+</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1318,6 +1411,44 @@
     }
     const savedLang = localStorage.getItem('jalsanchar_lang') || localStorage.getItem('jalsanjeevani_lang') || 'en';
     changeLang(savedLang);
+
+    // 📱 Mobile Navigation Menu Toggle (Bars)
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+    function toggleMobileMenu(forceState) {
+      if (!mobileMenu || !mobileMenuBtn) return;
+      const willOpen = forceState !== undefined ? forceState : mobileMenu.classList.contains('hidden');
+      if (willOpen) {
+        mobileMenu.classList.remove('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        if (mobileMenuIcon) mobileMenuIcon.textContent = 'close';
+      } else {
+        mobileMenu.classList.add('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        if (mobileMenuIcon) mobileMenuIcon.textContent = 'menu';
+      }
+    }
+
+    mobileMenuBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMobileMenu();
+    });
+
+    // Close mobile menu when clicking any anchor inside the mobile menu
+    mobileMenu?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => toggleMobileMenu(false));
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+        if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+          toggleMobileMenu(false);
+        }
+      }
+    });
   </script>
 </body>
 </html>
