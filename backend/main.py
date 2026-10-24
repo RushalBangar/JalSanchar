@@ -266,6 +266,9 @@ async def require_role(request: Request, allowed_roles: list) -> dict:
         )
     return session
 
+# ─── V2 Subsystems (Registered Routers: one line per router) ─────────────────
+app.include_router(__import__("backend.routes.sources" if os.path.exists("backend") else "routes.sources", fromlist=["router"]).router)
+app.include_router(__import__("backend.routes.public" if os.path.exists("backend") else "routes.public", fromlist=["router"]).router)
 
 # =============================================================================
 # Pydantic Request & Response Models
@@ -1173,8 +1176,6 @@ async def export_manifest(session: dict = Depends(require_auth)):
         "cryptographic_signature": generate_handshake_signature("FLEET", "SINNAR", 455500, timestamp)
     }
 
-# ─── V2 Subsystems (Registered Routers) ──────────────────────────────────────
-app.include_router(__import__("backend.routes.sources" if os.path.exists("backend") else "routes.sources", fromlist=["router"]).router)
 
 if __name__ == "__main__":
     import uvicorn

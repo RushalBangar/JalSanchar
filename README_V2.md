@@ -93,3 +93,31 @@ python -m py_compile backend/routes/sources.py
 python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); res = c.get('/api/village/SN-01/status'); print('Status:', res.status_code, res.json()['days_left'])"
 ```
 
+---
+
+## Step 3: Public Tanker Tracker & Transparency Portal
+
+### 1. Backend: `backend/routes/public.py`
+Registered via a single line in `backend/main.py` (`app.include_router(public.router)`):
+- `GET /api/villages?district=&taluka=`: Public list of pilot villages filtered by administrative jurisdiction.
+- `GET /api/tankers/public?village=`: Real-time public water tanker dispatches with strict privacy controls:
+  - **Citizen Privacy Guarantee**: Driver full name, phone number, and internal license keys are rigorously stripped and never exposed.
+  - **Rate Limiting**: IP-based in-memory sliding window rate limiting (60 requests per minute) returning `429 Too Many Requests` on abuse.
+  - Returns Tanker ID, vehicle registration, dispatch status, ETA in minutes, last verified QR delivery receipt, and telemetry data quality badge.
+
+### 2. Frontend: `frontend/tracker.html` & `public/tracker.html`
+- Citizen-first transparency tracker adhering to Government Formal Light design standards (`#1A5276`, `#148F77`, `#27AE60`, `#E67E22`).
+- 3 cascading administrative dropdowns (**District** -> **Taluka** -> **Village**) with automatic URL parameter persistence (`?village=SN-02`).
+- Displays live dispatch cards with:
+  - Tanker ID & Vehicle Registration
+  - Real-time ETA status badge
+  - Last verified Panchayat dual-QR delivery timestamp and volume
+  - Seamless jump link to the village's water balance page (`village.html?id=...`)
+- Responsive and accessible in direct sunlight, includes offline indicator banner and formal disclaimer.
+
+### 3. How to Test Step 3
+```powershell
+python -m py_compile backend/routes/public.py
+python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r1 = c.get('/api/villages?district=Nashik&taluka=Sinnar'); assert r1.status_code == 200; r2 = c.get('/api/tankers/public?village=SN-02'); assert r2.status_code == 200; assert 'driver_phone' not in str(r2.content); print('Step 3 verified successfully!')"
+```
+
