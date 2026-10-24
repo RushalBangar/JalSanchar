@@ -11,6 +11,7 @@
     { "source": "/tracker", "destination": "/tracker.html" },
     { "source": "/village", "destination": "/village.html" },
     { "source": "/sources", "destination": "/sources.html" },
-    { "source": "/pipelines", "destination": "/pipelines.html" }
+    { "source": "/pipelines", "destination": "/pipelines.html" },
+    { "source": "/forecast", "destination": "/forecast.html" }
   ]
 }

@@ -163,3 +163,43 @@ python -m py_compile backend/routes/pipelines.py
 python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r = c.get('/api/pipelines'); assert r.status_code == 200; assert len(r.json()) == 3; print('Step 4 verified successfully!')"
 ```
 
+---
+
+## Step 5: 14-Day Drought & Water Storage Forecast + GIS Risk Map
+
+### 1. Backend: `backend/routes/forecast.py`
+Registered via a single line in `backend/main.py`:
+- `GET /api/forecasts`: Regional overview of all pilot villages for the Leaflet GIS map and ranked priority list (`High`, `Medium`, `Low`).
+- `GET /api/forecast/{village_id}`: Comprehensive 14-day projection combining:
+  - **Inputs Ingested**: NASA SMAP soil moisture (`0.11 m³/m³`), Copernicus Sentinel-2 NDWI (`-0.38`), Open-Meteo 14-day rainfall sum & FAO ET0 evapotranspiration, and CGWB static piezometer drop rates (`-3.8 cm/day`).
+  - **Confidence Bounds**: Calculates `days_left_low`, `days_left_expected`, and `days_left_high`.
+  - **Water Depletion Index (WDI)**: Urgency score (0-100%) governing priority ranking.
+  - **Scientific Note**: *"Satellites give an early signal, not exact groundwater volume. Local readings calibrate the model."*
+  - **Statutory Disclaimer**: *"This tool supports local authorities and does not replace water-quality testing."*
+
+### 2. Frontend: `frontend/forecast.html` & `public/forecast.html`
+- Government Formal Light Cockpit designed for District Collectors and Water Resources Authorities.
+- **Interactive Leaflet GIS Map**:
+  - Color-coded pins for pilot villages in Sinnar and Ahilyanagar:
+    - 🔴 Red pulsing marker: High Risk ($\le 7$ days remaining)
+    - 🟡 Amber marker: Medium Risk ($8 - 14$ days remaining)
+    - 🟢 Green marker: Low Risk ($> 14$ days remaining)
+  - Interactive popups with village telemetry and *"Inspect 14-Day Forecast"* action.
+- **Ranked Scarcity Priority List**:
+  - Filter chips: `All`, `High Risk`, `Medium Risk`, `Low Risk` + Taluka selector.
+  - Sorted by critical vulnerability.
+- **14-Day Hydro-Forecast Cockpit Drawer**:
+  - Big Range display: e.g. *"6 to 12 Days"* (Expected: 9 Days).
+  - WDI Urgency Progress Meter and Action Directive Banner.
+  - 14-Day Projection Chart with shaded Low/Expected/High confidence bands.
+  - 4-Tile Telemetry Grid (NASA SMAP, Open-Meteo Rain, Evapotranspiration ET0, CGWB Piezometer).
+  - Quick action link: *"Allocate Relief"* routing to the CVRP dispatch console.
+  - Fully translated across English, Marathi (`mr`), and Hindi (`hi`).
+
+### 3. How to Test Step 5
+```powershell
+python -m py_compile backend/routes/forecast.py
+python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r1 = c.get('/api/forecasts'); assert r1.status_code == 200; assert len(r1.json()['forecasts']) == 5; r2 = c.get('/api/forecast/SN-01'); assert r2.status_code == 200; assert r2.json()['risk'] == 'High'; print('Step 5 verified successfully!')"
+```
+
+

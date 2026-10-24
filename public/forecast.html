@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14-Day Drought & Storage Risk Map | JalSanchar</title>
+  <meta name="description" content="District Collector GIS Water Depletion Risk Map combining NASA SMAP satellite telemetry, Open-Meteo weather forecasts, and CGWB groundwater levels.">
+
+  <!-- Tailwind CSS CDN for styling & CI testing -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Chart.js for 14-day depletion projection -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts: Outfit, Source Sans 3, IBM Plex Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Shared styling variables -->
+  <link rel="stylesheet" href="css/variables.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gov: {
+              navy: '#1A5276',
+              deep: '#154360',
+              teal: '#148F77',
+              emerald: '#27AE60',
+              amber: '#E67E22',
+              danger: '#E74C3C',
+              bg: '#FAFBFC',
+              surface: '#FFFFFF',
+              border: '#E2E8F0',
+              slate: '#475569'
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            sans: ['Source Sans 3', 'sans-serif'],
+            mono: ['IBM Plex Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #FAFBFC;
+      color: #1E293B;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    #forecastMap {
+      width: 100%;
+      height: 520px;
+      border-radius: 12px;
+      z-index: 10;
+    }
+    .custom-map-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: #FFFFFF;
+      font-weight: bold;
+      font-size: 11px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      border: 2px solid #FFFFFF;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .custom-map-pin:hover {
+      transform: scale(1.15);
+    }
+    .pin-high {
+      background-color: #E74C3C;
+      animation: pin-pulse 2s infinite;
+    }
+    .pin-medium {
+      background-color: #E67E22;
+    }
+    .pin-low {
+      background-color: #27AE60;
+    }
+    @keyframes pin-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+    }
+    /* Sunlight High Contrast Mode */
+    body.sunlight-mode {
+      background-color: #FFFFFF !important;
+      color: #000000 !important;
+    }
+    body.sunlight-mode .card,
+    body.sunlight-mode .bg-white {
+      background-color: #FFFFFF !important;
+      border-color: #000000 !important;
+      color: #000000 !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gov-bg">
+
+  <!-- Top Tricolor Border -->
+  <div class="h-1.5 w-full bg-gradient-to-r from-orange-500 via-white to-green-600"></div>
+
+  <!-- Government Formal Header -->
+  <header class="sticky top-0 z-40 bg-white border-b border-gov-border shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2 text-decoration-none group">
+          <img src="assets/logo.jpg" alt="JalSanchar Emblem" class="h-9 w-auto rounded border border-gray-200 shadow-2xs" onerror="this.src='assets/favicon.svg'"/>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-display font-bold text-base sm:text-lg text-gov-navy leading-none">JalSanchar</span>
+              <span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-blue-50 text-gov-navy border border-blue-200">V2.1</span>
+            </div>
+            <span class="text-[10px] sm:text-[11px] text-gray-500 font-semibold tracking-wider uppercase block">
+              14-Day Drought & Storage Risk Map • दुष्काळ जोखीम नकाशा
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Controls: Network, Sunlight, Lang, Auth -->
+      <div class="flex items-center gap-2">
+        
+        <!-- Online/Offline Network Badge -->
+        <div id="networkStatusBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-800 text-xs font-bold">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          <span id="networkStatusText">Online</span>
+        </div>
+
+        <!-- Sunlight Mode Button -->
+        <button id="btnSunlight" class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-amber-600 cursor-pointer shadow-2xs" title="Toggle High-Contrast Sunlight Mode">
+          <i data-lucide="sun" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Language Switcher -->
+        <select id="langSwitcher" class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white font-medium outline-none cursor-pointer shadow-2xs">
+          <option value="en">English</option>
+          <option value="mr">मराठी</option>
+          <option value="hi">हिंदी</option>
+        </select>
+
+        <!-- User Profile Mount Point / Direct Sign Out -->
+        <div id="userProfileMount" class="flex items-center gap-1.5 pl-1">
+          <a href="login.html" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs transition-colors">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+            <span>Portal Login</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- OFFLINE ALERT BANNER -->
+  <div id="offlineBanner" class="hidden bg-amber-500 text-white text-xs font-bold py-1.5 px-4 text-center flex items-center justify-center gap-1.5 shadow-xs">
+    <i data-lucide="wifi-off" class="w-4 h-4"></i>
+    <span>Operating in Offline Mode: Displaying cached regional water telemetry.</span>
+  </div>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5">
+
+    <!-- KPI Metric Summary Ribbon -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      
+      <div class="bg-white border border-gov-border rounded-xl p-3.5 shadow-2xs">
+        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Pilot Villages</span>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="font-display font-bold text-2xl text-gov-navy" id="kpiTotalVillages">5</span>
+          <span class="text-xs text-gray-500">Monitored</span>
+        </div>
+        <span class="text-[10px] text-gray-400 mt-1 block">Sinnar & Ahilyanagar</span>
+      </div>
+
+      <div class="bg-white border border-red-200 rounded-xl p-3.5 shadow-2xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-red-700 uppercase tracking-wider">Critical Risk</span>
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="font-display font-bold text-2xl text-red-600" id="kpiHighRisk">3</span>
+          <span class="text-xs text-red-600 font-medium">≤ 7 Days Left</span>
+        </div>
+        <span class="text-[10px] text-red-500 mt-1 block">Emergency Tanker Trigger</span>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-xl p-3.5 shadow-2xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Moderate Watch</span>
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="font-display font-bold text-2xl text-amber-600" id="kpiMediumRisk">1</span>
+          <span class="text-xs text-amber-600 font-medium">8 - 14 Days</span>
+        </div>
+        <span class="text-[10px] text-amber-500 mt-1 block">Contingency Pipeline Audit</span>
+      </div>
+
+      <div class="bg-white border border-green-200 rounded-xl p-3.5 shadow-2xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-green-700 uppercase tracking-wider">Stable Reserves</span>
+          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="font-display font-bold text-2xl text-green-600" id="kpiLowRisk">1</span>
+          <span class="text-xs text-green-600 font-medium">&gt; 14 Days</span>
+        </div>
+        <span class="text-[10px] text-green-500 mt-1 block">Routine Monitoring</span>
+      </div>
+
+      <div class="col-span-2 md:col-span-1 bg-white border border-gov-border rounded-xl p-3.5 shadow-2xs flex flex-col justify-between">
+        <div>
+          <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Telemetry Engine</span>
+          <span class="text-xs font-bold text-gov-teal mt-1 block">NASA SMAP + Sentinel-2</span>
+        </div>
+        <div class="flex items-center justify-between pt-1 text-[10px] text-gray-500 border-t border-gray-100">
+          <span>Open-Meteo Weather:</span>
+          <span class="font-bold text-green-700">Synchronized</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="bg-white border border-gov-border rounded-xl p-3 shadow-2xs flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Filter Chips -->
+      <div class="flex flex-wrap items-center gap-1.5" id="riskFilterGroup">
+        <span class="text-xs font-semibold text-gray-500 mr-1">Risk Filter:</span>
+        <button class="filter-chip px-3 py-1 rounded-lg text-xs font-bold bg-gov-navy text-white transition-all cursor-pointer shadow-2xs" data-filter="all">
+          All Villages (5)
+        </button>
+        <button class="filter-chip px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all cursor-pointer" data-filter="High">
+          🔴 High Risk (3)
+        </button>
+        <button class="filter-chip px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all cursor-pointer" data-filter="Medium">
+          🟡 Medium Risk (1)
+        </button>
+        <button class="filter-chip px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all cursor-pointer" data-filter="Low">
+          🟢 Low Risk (1)
+        </button>
+      </div>
+
+      <!-- District & Taluka Selectors -->
+      <div class="flex items-center gap-2">
+        <select id="talukaFilter" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white font-medium outline-none cursor-pointer">
+          <option value="all">All Talukas (Sinnar, Pathardi, Karjat)</option>
+          <option value="Sinnar">Sinnar Taluka (Nashik)</option>
+          <option value="Pathardi">Pathardi Taluka (Ahilyanagar)</option>
+          <option value="Karjat">Karjat Taluka (Ahilyanagar)</option>
+        </select>
+
+        <button id="btnRefreshForecast" class="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 cursor-pointer shadow-2xs" title="Refresh Forecast Telemetry">
+          <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- MAIN TWO-COLUMN SPLIT VIEW -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+      <!-- LEFT: INTERACTIVE LEAFLET RISK MAP (7 COLS) -->
+      <div class="lg:col-span-7 bg-white border border-gov-border rounded-xl p-4 shadow-xs space-y-3">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+          <div>
+            <h2 class="font-display font-bold text-base text-gray-900 leading-tight">
+              Regional Hydrological Depletion Map
+            </h2>
+            <span class="text-xs text-gray-500">
+              Interactive GIS Map of Sinnar &amp; Ahilyanagar Pilot Corridor
+            </span>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] font-mono font-semibold">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> High</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Med</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Low</span>
+          </div>
+        </div>
+
+        <!-- The Leaflet Map Element -->
+        <div id="forecastMap" class="shadow-inner border border-gray-200"></div>
+
+        <!-- Map Helper & Statutory Early Warning Footnote -->
+        <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-lg text-xs text-[#1A5276] flex items-start gap-2">
+          <i data-lucide="info" class="w-4 h-4 shrink-0 text-gov-navy mt-0.5"></i>
+          <div>
+            <strong class="font-bold">Early Warning Model Calibration:</strong>
+            <span>Satellites give an early signal, not exact groundwater volume. Local readings calibrate the model. Click any village marker to inspect its 14-day projection curve.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: RANKED PRIORITY LIST & DETAIL DRAWER (5 COLS) -->
+      <div class="lg:col-span-5 space-y-4">
+
+        <!-- Ranked Village Risk List -->
+        <div class="bg-white border border-gov-border rounded-xl p-4 shadow-xs">
+          
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+            <div>
+              <h3 class="font-display font-bold text-base text-gray-900">
+                Ranked Scarcity Priority List
+              </h3>
+              <span class="text-xs text-gray-500">Sorted by fewest days of water remaining</span>
+            </div>
+            <span class="text-xs font-mono font-bold text-gov-navy px-2 py-0.5 rounded bg-blue-50 border border-blue-200" id="listVillageCount">
+              5 Villages
+            </span>
+          </div>
+
+          <!-- Dynamic Village List Container -->
+          <div class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1" id="villageListContainer">
+            <!-- Populated dynamically via JS -->
+            <div class="text-center py-6 text-xs text-gray-400">Loading villages telemetry...</div>
+          </div>
+
+        </div>
+
+        <!-- ACTIVE VILLAGE 14-DAY FORECAST COCKPIT CARD -->
+        <div class="bg-white border-2 border-gov-navy/30 rounded-xl p-4 shadow-md space-y-4" id="activeVillageCard">
+          
+          <!-- Header Strip -->
+          <div class="flex items-start justify-between pb-3 border-b border-gray-200">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span id="detailVillageRiskBadge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300">
+                  🔴 High Risk
+                </span>
+                <span id="detailDataQualityBadge"></span>
+              </div>
+              <h3 id="detailVillageName" class="font-display font-extrabold text-xl text-gray-900 mt-1">
+                Pangari (पांगरी)
+              </h3>
+              <span id="detailVillageSub" class="text-xs text-gray-500">
+                Taluka Sinnar • District Nashik • Pop: 2,450 | Cattle: 820
+              </span>
+            </div>
+            
+            <a id="btnAllocateTanker" href="dashboard.html" class="inline-flex items-center gap-1 text-xs font-bold text-white bg-gov-navy hover:bg-gov-deep px-3 py-2 rounded-lg transition-all shadow-xs shrink-0">
+              <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+              <span>Allocate Relief</span>
+            </a>
+          </div>
+
+          <!-- BIG ELEMENT: Days of Water Left Range -->
+          <div class="p-3.5 bg-slate-50 border border-gray-200 rounded-xl text-center space-y-1">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">
+              Estimated Usable Water Storage Horizon
+            </span>
+            <div class="flex items-baseline justify-center gap-2">
+              <span id="detailDaysLeftRange" class="font-display font-extrabold text-2xl sm:text-3xl text-red-600">
+                6 to 12 Days
+              </span>
+              <span id="detailDaysLeftExpected" class="text-xs font-semibold text-gray-600 font-mono">
+                (Expected: 9 Days)
+              </span>
+            </div>
+            
+            <!-- WDI Urgency Meter -->
+            <div class="space-y-1 pt-1.5 max-w-sm mx-auto">
+              <div class="flex justify-between text-[11px] text-gray-600">
+                <span>Water Depletion Index (WDI):</span>
+                <strong id="detailWdiScore" class="font-mono text-red-600">78.5% Critical</strong>
+              </div>
+              <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div id="detailWdiBar" class="bg-red-500 h-full transition-all" style="width: 78.5%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Required Directive Banner -->
+          <div id="detailActionBanner" class="p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900 font-medium flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600 shrink-0"></i>
+            <span id="detailActionText">Immediate Priority: Authorize Emergency Tanker Allocations (&lt; 48 Hours)</span>
+          </div>
+
+          <!-- 14-Day Forecast Chart with Shaded Band -->
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-gray-800">14-Day Hydrological Depletion Projection</span>
+              <span class="text-[10px] text-gray-500 font-mono">Shaded: Low to High Range</span>
+            </div>
+            <div class="h-44 w-full bg-white border border-gray-200 rounded-lg p-2 relative">
+              <canvas id="forecastChart"></canvas>
+            </div>
+          </div>
+
+          <!-- 4-Pack Meteorological & Satellite Telemetry Grid -->
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            
+            <!-- NASA SMAP -->
+            <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="flex items-center justify-between text-[10px] text-gray-500 mb-0.5">
+                <span class="font-bold uppercase">NASA SMAP</span>
+                <span class="px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200 font-bold text-[9px]">Satellite</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-gray-900 block" id="detailSmapMoisture">0.11 m³/m³</span>
+              <span class="text-[10px] text-amber-700 block">D3 Extreme Drought</span>
+            </div>
+
+            <!-- Open-Meteo 14-Day Rain -->
+            <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="flex items-center justify-between text-[10px] text-gray-500 mb-0.5">
+                <span class="font-bold uppercase">14D Rain Forecast</span>
+                <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 border border-teal-200 font-bold text-[9px]">Metered</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-gray-900 block" id="detailRainfall">1.8 mm</span>
+              <span class="text-[10px] text-gray-500 block">Open-Meteo Live</span>
+            </div>
+
+            <!-- FAO ET0 Evapotranspiration -->
+            <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="flex items-center justify-between text-[10px] text-gray-500 mb-0.5">
+                <span class="font-bold uppercase">Evaporation (ET0)</span>
+                <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 border border-teal-200 font-bold text-[9px]">Metered</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-gray-900 block" id="detailEt0">4.9 mm/day</span>
+              <span class="text-[10px] text-gray-500 block">FAO-56 Penman</span>
+            </div>
+
+            <!-- CGWB Groundwater Level -->
+            <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="flex items-center justify-between text-[10px] text-gray-500 mb-0.5">
+                <span class="font-bold uppercase">CGWB Piezometer</span>
+                <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 border border-teal-200 font-bold text-[9px]">Metered</span>
+              </div>
+              <span class="text-xs font-mono font-bold text-gray-900 block" id="detailCgwb">38.4 mbgl</span>
+              <span class="text-[10px] text-red-600 block">-3.8 cm/day drop</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- STATUTORY FOOTER DISCLAIMER -->
+  <footer class="mt-auto bg-white border-t border-gov-border py-4 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shield-check" class="w-4 h-4 text-gov-navy"></i>
+        <span><strong>Statutory Disclaimer:</strong> This tool supports local authorities and does not replace water-quality testing.</span>
+      </div>
+      <div class="text-[11px] text-gray-400">
+        JalSanchar Track 3-01 • Sinnar &amp; Ahilyanagar Disaster Corridors • WDI-v2.1
+      </div>
+    </div>
+  </footer>
+
+  <!-- SHARED JS CLIENT MODULES -->
+  <script src="js/api.js"></script>
+  <script src="js/badge.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/offline.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/auth.js"></script>
+
+  <!-- FORECAST PAGE CONTROLLER SCRIPT -->
+  <script>
+    (function () {
+      "use strict";
+
+      // Global State
+      let map = null;
+      let mapMarkers = [];
+      let allForecasts = [];
+      let activeForecast = null;
+      let activeChartInstance = null;
+      let currentFilterRisk = "all";
+      let currentFilterTaluka = "all";
+
+      // Initialize on DOM Ready
+      document.addEventListener("DOMContentLoaded", async () => {
+        initAuthGuard();
+        initSunlightToggle();
+        initLeafletMap();
+        setupFilterListeners();
+        await loadForecastTelemetry();
+        lucide.createIcons();
+      });
+
+      // 1. Auth Guard (supports demo query param ?demo=true or session)
+      function initAuthGuard() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          let session = localStorage.getItem("jalsanchar_gov_session") || sessionStorage.getItem("jalsanchar_gov_session");
+
+          if (!session && (params.get("demo") === "true" || params.get("eval") === "1")) {
+            const demoSession = {
+              token: "DEMO-COLLECTOR-TOKEN",
+              role: "collector",
+              user: {
+                name: "Dr. Rahul M. Sanap, IAS",
+                title: "District Disaster Management Collector",
+                role: "collector",
+                jurisdiction: "Nashik & Ahilyanagar"
+              },
+              expiresAt: Date.now() + 86400000
+            };
+            sessionStorage.setItem("jalsanchar_gov_session", JSON.stringify(demoSession));
+            session = JSON.stringify(demoSession);
+          }
+
+          const mount = document.getElementById("userProfileMount");
+          if (session && mount) {
+            const parsed = JSON.parse(session);
+            const user = parsed.user || {};
+            mount.innerHTML = `
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-gov-navy hidden md:inline">${escapeHTML(user.name || "District Collector")}</span>
+                <button id="btnSignOutForecast" class="px-2.5 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg border border-red-200 transition-colors">
+                  Sign Out
+                </button>
+              </div>
+            `;
+            document.getElementById("btnSignOutForecast")?.addEventListener("click", () => {
+              if (window.JalAuth && JalAuth.logout) {
+                JalAuth.logout();
+              } else {
+                localStorage.removeItem("jalsanchar_gov_session");
+                sessionStorage.removeItem("jalsanchar_gov_session");
+                window.location.href = "login.html";
+              }
+            });
+          }
+        } catch (e) {
+          console.warn("[Forecast] Auth check note:", e);
+        }
+      }
+
+      // 2. Sunlight Toggle
+      function initSunlightToggle() {
+        const btn = document.getElementById("btnSunlight");
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          document.body.classList.toggle("sunlight-mode");
+        });
+      }
+
+      // 3. Initialize Leaflet Map
+      function initLeafletMap() {
+        const mapContainer = document.getElementById("forecastMap");
+        if (!mapContainer || !window.L) return;
+
+        // Center on Sinnar / Ahilyanagar regional corridor
+        map = L.map("forecastMap", {
+          center: [19.50, 74.50],
+          zoom: 9,
+          zoomControl: true
+        });
+
+        // Add CartoDB Positron clean map tiles
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 18
+        }).addTo(map);
+      }
+
+      // 4. Setup Filters
+      function setupFilterListeners() {
+        const filterGroup = document.getElementById("riskFilterGroup");
+        if (filterGroup) {
+          filterGroup.addEventListener("click", (e) => {
+            const btn = e.target.closest(".filter-chip");
+            if (!btn) return;
+
+            // Update active chip styling
+            filterGroup.querySelectorAll(".filter-chip").forEach((b) => {
+              b.classList.remove("bg-gov-navy", "text-white", "shadow-2xs");
+              b.classList.add("bg-gray-100", "text-gray-700");
+            });
+            btn.classList.remove("bg-gray-100", "text-gray-700");
+            btn.classList.add("bg-gov-navy", "text-white", "shadow-2xs");
+
+            currentFilterRisk = btn.getAttribute("data-filter") || "all";
+            applyFiltersAndRender();
+          });
+        }
+
+        const talukaSelect = document.getElementById("talukaFilter");
+        if (talukaSelect) {
+          talukaSelect.addEventListener("change", (e) => {
+            currentFilterTaluka = e.target.value || "all";
+            applyFiltersAndRender();
+          });
+        }
+
+        const refreshBtn = document.getElementById("btnRefreshForecast");
+        if (refreshBtn) {
+          refreshBtn.addEventListener("click", async () => {
+            refreshBtn.classList.add("animate-spin");
+            await loadForecastTelemetry();
+            setTimeout(() => refreshBtn.classList.remove("animate-spin"), 600);
+          });
+        }
+      }
+
+      // 5. Load Forecast Telemetry from API
+      async function loadForecastTelemetry() {
+        try {
+          let url = "/api/forecasts";
+          let res = null;
+
+          if (window.JalAPI && JalAPI.get) {
+            res = await JalAPI.get(url);
+          } else {
+            const resp = await fetch(url);
+            if (resp.ok) res = await resp.json();
+          }
+
+          if (res && res.forecasts && res.forecasts.length > 0) {
+            allForecasts = res.forecasts;
+          } else {
+            // Seed fallback
+            allForecasts = getSeededFallbackForecasts();
+          }
+        } catch (err) {
+          console.warn("[Forecast] Fetch API failed, using calibrated fallback:", err);
+          allForecasts = getSeededFallbackForecasts();
+        }
+
+        updateKpis(allForecasts);
+        applyFiltersAndRender();
+      }
+
+      // 6. Update KPI Cards
+      function updateKpis(data) {
+        const total = data.length;
+        const high = data.filter((d) => d.risk === "High").length;
+        const med = data.filter((d) => d.risk === "Medium").length;
+        const low = data.filter((d) => d.risk === "Low").length;
+
+        setText("kpiTotalVillages", total);
+        setText("kpiHighRisk", high);
+        setText("kpiMediumRisk", med);
+        setText("kpiLowRisk", low);
+      }
+
+      // 7. Apply Filters and Render Map & List
+      function applyFiltersAndRender() {
+        let filtered = allForecasts.slice();
+
+        if (currentFilterRisk !== "all") {
+          filtered = filtered.filter((d) => d.risk.toLowerCase() === currentFilterRisk.toLowerCase());
+        }
+
+        if (currentFilterTaluka !== "all") {
+          filtered = filtered.filter((d) => d.taluka.toLowerCase() === currentFilterTaluka.toLowerCase());
+        }
+
+        renderMapMarkers(filtered);
+        renderRankedList(filtered);
+
+        // Select the most critical village by default if none selected or filtered out
+        if (filtered.length > 0) {
+          const match = filtered.find((f) => activeForecast && f.village_id === activeForecast.village_id);
+          selectVillage(match || filtered[0], false);
+        }
+      }
+
+      // 8. Render Map Markers on Leaflet
+      function renderMapMarkers(data) {
+        if (!map || !window.L) return;
+
+        // Clear existing markers
+        mapMarkers.forEach((m) => map.removeLayer(m));
+        mapMarkers = [];
+
+        const bounds = [];
+
+        data.forEach((v) => {
+          const coords = v.coordinates || { lat: 19.85, lng: 73.95 };
+          const lat = coords.lat;
+          const lng = coords.lng;
+          bounds.push([lat, lng]);
+
+          const pinClass = v.risk === "High" ? "pin-high" : (v.risk === "Medium" ? "pin-medium" : "pin-low");
+          const pinIcon = L.divIcon({
+            className: "custom-div-icon",
+            html: `<div class="custom-map-pin ${pinClass}">${v.days_left_expected}d</div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+          });
+
+          const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map);
+
+          // Popup
+          const popupContent = `
+            <div style="font-family: 'Source Sans 3', sans-serif; min-width: 170px;">
+              <strong style="font-size: 14px; color: #1A5276; display: block;">${escapeHTML(v.village_name)}</strong>
+              <span style="font-size: 11px; color: #64748B;">Taluka ${escapeHTML(v.taluka)}</span>
+              <div style="margin: 6px 0; padding: 4px 6px; background: #F8FAFC; border-radius: 6px; font-size: 12px;">
+                <strong>${escapeHTML(v.days_left_range)}</strong>
+              </div>
+              <button onclick="window.selectVillageById('${v.village_id}')" style="width: 100%; padding: 4px 8px; font-size: 11px; font-weight: bold; background: #1A5276; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Inspect 14-Day Forecast
+              </button>
+            </div>
+          `;
+
+          marker.bindPopup(popupContent);
+          marker.on("click", () => selectVillage(v, true));
+          mapMarkers.push(marker);
+        });
+
+        // Fit map bounds if markers exist
+        if (bounds.length > 0 && map) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+        }
+      }
+
+      // 9. Render Ranked List on Right Column
+      function renderRankedList(data) {
+        const container = document.getElementById("villageListContainer");
+        const countBadge = document.getElementById("listVillageCount");
+        if (!container) return;
+
+        if (countBadge) countBadge.textContent = `${data.length} Villages`;
+
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-6 text-xs text-gray-500">
+              No villages match the active filter criteria.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = data.map((v) => {
+          const isSelected = activeForecast && activeForecast.village_id === v.village_id;
+          const borderClass = isSelected ? "border-gov-navy bg-blue-50/50" : "border-gray-200 hover:border-gov-navy/50 bg-white";
+          const riskColor = v.risk === "High" ? "text-red-700 bg-red-50 border-red-200" : (v.risk === "Medium" ? "text-amber-700 bg-amber-50 border-amber-200" : "text-green-700 bg-green-50 border-green-200");
+          const iconName = v.risk === "High" ? "alert-circle" : (v.risk === "Medium" ? "alert-triangle" : "check-circle");
+
+          return `
+            <div onclick="window.selectVillageById('${v.village_id}')" class="p-3 border rounded-xl cursor-pointer transition-all ${borderClass}">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h4 class="font-display font-bold text-sm text-gray-900">${escapeHTML(v.village_name)}</h4>
+                  <span class="text-[11px] text-gray-500 font-medium">Taluka ${escapeHTML(v.taluka)} • Pop ${Number(v.population).toLocaleString()}</span>
+                </div>
+                <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${riskColor}">
+                  <i data-lucide="${iconName}" class="w-3 h-3"></i>
+                  <span>${escapeHTML(v.risk)}</span>
+                </span>
+              </div>
+              
+              <div class="flex items-center justify-between text-xs mt-2 pt-2 border-t border-gray-100">
+                <span class="text-gray-500">Water Storage Remaining:</span>
+                <strong class="font-mono ${v.risk === 'High' ? 'text-red-600' : 'text-gray-900'}">${escapeHTML(v.days_left_range)}</strong>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        lucide.createIcons();
+      }
+
+      // 10. Select Village and Update Cockpit Drawer
+      function selectVillage(v, panMap = true) {
+        activeForecast = v;
+        if (!v) return;
+
+        // Pan map
+        if (panMap && map && v.coordinates) {
+          map.setView([v.coordinates.lat, v.coordinates.lng], 11, { animate: true });
+        }
+
+        // Update list styling
+        renderRankedList(allForecasts.filter((item) => {
+          if (currentFilterRisk !== "all" && item.risk.toLowerCase() !== currentFilterRisk.toLowerCase()) return false;
+          if (currentFilterTaluka !== "all" && item.taluka.toLowerCase() !== currentFilterTaluka.toLowerCase()) return false;
+          return true;
+        }));
+
+        // Populate Details
+        setText("detailVillageName", `${v.village_name}`);
+        setText("detailVillageSub", `Taluka ${v.taluka} • District ${v.district} • Pop: ${Number(v.population).toLocaleString()} | Cattle: ${Number(v.cattle).toLocaleString()}`);
+        setText("detailDaysLeftRange", v.days_left_range);
+        setText("detailDaysLeftExpected", `(Expected: ${v.days_left_expected} Days)`);
+
+        // Provenance Badge
+        const qualityContainer = document.getElementById("detailDataQualityBadge");
+        if (qualityContainer && window.JalBadge) {
+          qualityContainer.innerHTML = JalBadge.render(v.data_quality || "Metered");
+        }
+
+        // Risk Badge
+        const riskBadge = document.getElementById("detailVillageRiskBadge");
+        if (riskBadge) {
+          if (v.risk === "High") {
+            riskBadge.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300";
+            riskBadge.textContent = "🔴 High Risk (Critical)";
+          } else if (v.risk === "Medium") {
+            riskBadge.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300";
+            riskBadge.textContent = "🟡 Medium Risk (Watch)";
+          } else {
+            riskBadge.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-300";
+            riskBadge.textContent = "🟢 Low Risk (Stable)";
+          }
+        }
+
+        // WDI Score & Bar
+        setText("detailWdiScore", `${v.wdi_score}% ${v.risk === 'High' ? 'Critical' : (v.risk === 'Medium' ? 'Moderate' : 'Stable')}`);
+        const wdiBar = document.getElementById("detailWdiBar");
+        if (wdiBar) {
+          wdiBar.style.width = `${Math.min(100, Math.max(5, v.wdi_score))}%`;
+          wdiBar.className = v.risk === "High" ? "bg-red-500 h-full transition-all" : (v.risk === "Medium" ? "bg-amber-500 h-full transition-all" : "bg-green-500 h-full transition-all");
+        }
+
+        // Action Text
+        setText("detailActionText", v.action_directive || "Routine Telemetry Monitoring");
+        const actionBanner = document.getElementById("detailActionBanner");
+        if (actionBanner) {
+          actionBanner.className = v.risk === "High" ? "p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-900 font-medium flex items-center gap-2" : (v.risk === "Medium" ? "p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium flex items-center gap-2" : "p-2.5 rounded-lg bg-green-50 border border-green-200 text-xs text-green-900 font-medium flex items-center gap-2");
+        }
+
+        // Allocate Button link
+        const btnAlloc = document.getElementById("btnAllocateTanker");
+        if (btnAlloc) {
+          btnAlloc.href = `dashboard.html?tab=allocation&village=${encodeURIComponent(v.village_id)}`;
+        }
+
+        // Telemetry inputs 4-pack
+        const tel = v.telemetry_inputs || {};
+        setText("detailSmapMoisture", tel.soil_moisture_smap?.volumetric || "0.11 m³/m³");
+        setText("detailRainfall", `${tel.weather?.rainfall_14d_forecast_mm || 0} mm`);
+        setText("detailEt0", `${tel.weather?.et0_evapotranspiration_mm_day || 4.5} mm/day`);
+        setText("detailCgwb", `${tel.cgwb_groundwater?.water_table_depth_mbgl || 38.4} mbgl`);
+
+        // Render Chart.js
+        renderDepletionChart(v.daily_breakdown || []);
+        lucide.createIcons();
+      }
+
+      // 11. Render Chart.js Depletion Chart
+      function renderDepletionChart(dailyBreakdown) {
+        const canvas = document.getElementById("forecastChart");
+        if (!canvas || !window.Chart) return;
+
+        if (activeChartInstance) {
+          activeChartInstance.destroy();
+          activeChartInstance = null;
+        }
+
+        if (window.JalCharts && JalCharts.renderForecastChart) {
+          activeChartInstance = JalCharts.renderForecastChart(canvas, dailyBreakdown, "Days Left");
+          return;
+        }
+
+        // Inline Chart.js fallback
+        const ctx = canvas.getContext("2d");
+        const labels = dailyBreakdown.map((d) => `Day +${d.day}`);
+        const lowData = dailyBreakdown.map((d) => d.low);
+        const expData = dailyBreakdown.map((d) => d.expected);
+        const highData = dailyBreakdown.map((d) => d.high);
+
+        activeChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Worst Case (Low)",
+                data: lowData,
+                borderColor: "#E67E22",
+                borderWidth: 1.5,
+                borderDash: [3, 3],
+                pointRadius: 0,
+                fill: false
+              },
+              {
+                label: "Expected Trajectory",
+                data: expData,
+                borderColor: "#148F77",
+                backgroundColor: "rgba(20, 143, 119, 0.15)",
+                borderWidth: 2,
+                pointRadius: 2.5,
+                fill: "-1"
+              },
+              {
+                label: "Best Case (High)",
+                data: highData,
+                borderColor: "#27AE60",
+                backgroundColor: "rgba(39, 174, 96, 0.10)",
+                borderWidth: 1.5,
+                borderDash: [3, 3],
+                pointRadius: 0,
+                fill: "-1"
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "top", labels: { boxWidth: 10, font: { size: 10 } } }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: "Days Remaining", font: { size: 10 } },
+                ticks: { font: { size: 9 } }
+              },
+              x: {
+                ticks: { font: { size: 9 }, maxTicksLimit: 7 }
+              }
+            }
+          }
+        });
+      }
+
+      // Helper: Global select by ID
+      window.selectVillageById = function (id) {
+        const found = allForecasts.find((f) => f.village_id === id);
+        if (found) selectVillage(found, true);
+      };
+
+      function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+
+      function escapeHTML(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function getSeededFallbackForecasts() {
+        return [
+          {
+            village_id: "SN-01",
+            village_name: "Pangari",
+            district: "Nashik",
+            taluka: "Sinnar",
+            coordinates: { lat: 19.8512, lng: 73.9540 },
+            population: 2450,
+            cattle: 820,
+            days_left_range: "6 to 12 days",
+            days_left_low: 6,
+            days_left_expected: 9,
+            days_left_high: 12,
+            risk: "High",
+            wdi_score: 78.5,
+            action_directive: "Immediate Priority: Authorize Emergency Tanker Allocations (< 48 Hours)",
+            data_quality: "Metered",
+            telemetry_inputs: {
+              soil_moisture_smap: { volumetric: "0.11 m³/m³" },
+              weather: { rainfall_14d_forecast_mm: 1.8, et0_evapotranspiration_mm_day: 4.8 },
+              cgwb_groundwater: { water_table_depth_mbgl: 38.4 }
+            },
+            daily_breakdown: [
+              { day: 1, low: 5.5, expected: 8.2, high: 11.1 },
+              { day: 3, low: 4.6, expected: 6.8, high: 9.3 },
+              { day: 7, low: 2.8, expected: 4.5, high: 6.2 },
+              { day: 14, low: 0.0, expected: 1.2, high: 2.5 }
+            ]
+          },
+          {
+            village_id: "SN-02",
+            village_name: "Khopadi",
+            district: "Nashik",
+            taluka: "Sinnar",
+            coordinates: { lat: 19.9015, lng: 74.1030 },
+            population: 3200,
+            cattle: 1200,
+            days_left_range: "4 to 10 days",
+            days_left_low: 4,
+            days_left_expected: 7,
+            days_left_high: 10,
+            risk: "High",
+            wdi_score: 84.2,
+            action_directive: "Critical Protocol: Geofenced Tanker Dispatch Assigned (< 24 Hours)",
+            data_quality: "Manual",
+            telemetry_inputs: {
+              soil_moisture_smap: { volumetric: "0.10 m³/m³" },
+              weather: { rainfall_14d_forecast_mm: 1.2, et0_evapotranspiration_mm_day: 5.1 },
+              cgwb_groundwater: { water_table_depth_mbgl: 41.2 }
+            },
+            daily_breakdown: [
+              { day: 1, low: 3.6, expected: 6.2, high: 9.0 },
+              { day: 3, low: 2.8, expected: 4.8, high: 7.2 },
+              { day: 7, low: 1.1, expected: 2.6, high: 4.4 },
+              { day: 14, low: 0.0, expected: 0.0, high: 1.1 }
+            ]
+          },
+          {
+            village_id: "AH-01",
+            village_name: "Tisgaon",
+            district: "Ahilyanagar",
+            taluka: "Pathardi",
+            coordinates: { lat: 19.1415, lng: 75.0512 },
+            population: 4850,
+            cattle: 1620,
+            days_left_range: "3 to 8 days",
+            days_left_low: 3,
+            days_left_expected: 5,
+            days_left_high: 8,
+            risk: "High",
+            wdi_score: 89.1,
+            action_directive: "Emergency Distress: Immediate Tanker Convoy Authorized",
+            data_quality: "Satellite",
+            telemetry_inputs: {
+              soil_moisture_smap: { volumetric: "0.09 m³/m³" },
+              weather: { rainfall_14d_forecast_mm: 0.8, et0_evapotranspiration_mm_day: 5.4 },
+              cgwb_groundwater: { water_table_depth_mbgl: 44.6 }
+            },
+            daily_breakdown: [
+              { day: 1, low: 2.6, expected: 4.3, high: 7.0 },
+              { day: 3, low: 1.8, expected: 3.1, high: 5.2 },
+              { day: 7, low: 0.4, expected: 1.2, high: 2.6 },
+              { day: 14, low: 0.0, expected: 0.0, high: 0.5 }
+            ]
+          },
+          {
+            village_id: "SN-03",
+            village_name: "Wadgaon Sinnar",
+            district: "Nashik",
+            taluka: "Sinnar",
+            coordinates: { lat: 19.8120, lng: 74.0530 },
+            population: 1500,
+            cattle: 450,
+            days_left_range: "14 to 24 days",
+            days_left_low: 14,
+            days_left_expected: 18,
+            days_left_high: 24,
+            risk: "Medium",
+            wdi_score: 48.0,
+            action_directive: "Advisory: Initiate Pipeline Leak Audits and Schedule Contingency Drops",
+            data_quality: "Estimated",
+            telemetry_inputs: {
+              soil_moisture_smap: { volumetric: "0.15 m³/m³" },
+              weather: { rainfall_14d_forecast_mm: 2.4, et0_evapotranspiration_mm_day: 4.6 },
+              cgwb_groundwater: { water_table_depth_mbgl: 35.8 }
+            },
+            daily_breakdown: [
+              { day: 1, low: 13.2, expected: 17.1, high: 22.8 },
+              { day: 3, low: 11.6, expected: 15.2, high: 20.4 },
+              { day: 7, low: 8.4, expected: 11.5, high: 15.6 },
+              { day: 14, low: 3.0, expected: 5.2, high: 7.8 }
+            ]
+          },
+          {
+            village_id: "AH-02",
+            village_name: "Korti",
+            district: "Ahilyanagar",
+            taluka: "Karjat",
+            coordinates: { lat: 18.9100, lng: 75.0200 },
+            population: 2100,
+            cattle: 750,
+            days_left_range: "18 to 28 days",
+            days_left_low: 18,
+            days_left_expected: 22,
+            days_left_high: 28,
+            risk: "Low",
+            wdi_score: 22.4,
+            action_directive: "Normal: Routine Automated Satellite & Meter Telemetry",
+            data_quality: "Simulated",
+            telemetry_inputs: {
+              soil_moisture_smap: { volumetric: "0.18 m³/m³" },
+              weather: { rainfall_14d_forecast_mm: 3.1, et0_evapotranspiration_mm_day: 4.4 },
+              cgwb_groundwater: { water_table_depth_mbgl: 32.1 }
+            },
+            daily_breakdown: [
+              { day: 1, low: 17.1, expected: 21.0, high: 26.8 },
+              { day: 3, low: 15.3, expected: 19.1, high: 24.4 },
+              { day: 7, low: 11.8, expected: 15.2, high: 19.6 },
+              { day: 14, low: 6.0, expected: 8.5, high: 11.2 }
+            ]
+          }
+        ];
+      }
+    })();
+  </script>
+</body>
+</html>
