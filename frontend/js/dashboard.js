@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const map = L.map('map', {
     zoomControl: false
   }).setView(MAP_CENTER, MAP_ZOOM);
+  window.map = map;
 
   // Wire custom tactical HUD zoom buttons
   document.getElementById("btnZoomIn")?.addEventListener("click", () => map.zoomIn());
