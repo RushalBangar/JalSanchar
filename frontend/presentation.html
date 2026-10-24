@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JalSanchar (जलसंचार) | Project Presentation Deck</title>
+  <title>JalSanchar (जलसंचार) | PRAGYAN 2K26 Presentation Deck</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <!-- Google Fonts -->
@@ -16,7 +16,7 @@
   <style>
     :root {
       --bg-dark: #070d18;
-      --card-bg: rgba(11, 20, 38, 0.85);
+      --card-bg: rgba(11, 20, 38, 0.88);
       --border-glow: rgba(0, 229, 255, 0.25);
       --primary-cyan: #00e5ff;
       --primary-emerald: #10b981;
@@ -74,8 +74,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      background: rgba(7, 13, 24, 0.8);
+      padding: 0 1.5rem;
+      background: rgba(7, 13, 24, 0.85);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 50;
@@ -99,100 +99,99 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .brand-tag {
-      font-size: 0.72rem;
       font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      background: rgba(0, 229, 255, 0.12);
       color: var(--primary-cyan);
-      background: rgba(0, 229, 255, 0.1);
       padding: 2px 8px;
       border-radius: 4px;
-      border: 1px solid rgba(0, 229, 255, 0.2);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      font-weight: 600;
     }
 
     .deck-controls {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
-
     .btn-nav {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #f1f5f9;
-      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #fff;
       border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
       transition: all 0.2s ease;
+      text-decoration: none;
     }
     .btn-nav:hover {
-      background: rgba(0, 229, 255, 0.15);
-      border-color: var(--primary-cyan);
-      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Slide Progress Bar */
+    /* Progress Bar */
     .progress-bar-container {
       position: fixed;
       top: 60px;
       left: 0;
       right: 0;
       height: 3px;
-      background: rgba(255, 255, 255, 0.08);
-      z-index: 55;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 50;
     }
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #00e5ff, #10b981);
+      background: linear-gradient(90deg, #00e5ff, #10b981, #f5a623);
       width: 8.33%;
       transition: width 0.3s ease;
     }
 
-    /* Deck Main Viewport */
+    /* Main Slides Viewport */
     .deck-viewport {
       position: relative;
-      height: calc(100vh - 60px);
-      margin-top: 60px;
-      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      padding-top: 75px;
+      padding-bottom: 25px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
       z-index: 10;
     }
 
-    /* Slide Cards */
     .slide-card {
       position: absolute;
-      width: 100%;
-      max-width: 1200px;
-      height: calc(100vh - 120px);
-      max-height: 740px;
+      width: 92vw;
+      max-width: 1280px;
+      height: calc(100vh - 105px);
+      max-height: 800px;
       background: var(--card-bg);
-      backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
-      padding: 2.5rem 3rem;
+      padding: 2.2rem 2.8rem;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
       opacity: 0;
       visibility: hidden;
-      transform: translateY(20px) scale(0.98);
-      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+      transform: scale(0.97) translateY(15px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       overflow-y: auto;
     }
 
     .slide-card.active {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0) scale(1);
+      transform: scale(1) translateY(0);
     }
 
-    /* Slide Content Typography */
+    /* Slide Typography */
     .slide-badge {
       display: inline-flex;
       align-items: center;
@@ -202,22 +201,22 @@
       color: var(--primary-cyan);
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
     .slide-title {
-      font-size: 2.2rem;
+      font-size: 1.85rem;
       font-weight: 800;
       color: #fff;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
       line-height: 1.2;
     }
     .slide-subtitle {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
-      margin-bottom: 2rem;
-      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      line-height: 1.45;
     }
 
     /* Grid Layouts */
@@ -245,7 +244,7 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.25rem;
       display: flex;
       flex-direction: column;
       transition: all 0.25s ease;
@@ -273,244 +272,84 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.75rem;
     }
     .box-icon {
-      font-size: 1.5rem;
-      padding: 8px;
+      font-size: 1.35rem;
+      padding: 6px;
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.06);
     }
     .box-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: #fff;
     }
     .box-desc {
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       color: #94a3b8;
       line-height: 1.5;
     }
 
-    /* Comparison Table */
-    .deck-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
-      margin-top: 0.5rem;
-    }
-    .deck-table th {
-      text-align: left;
-      padding: 12px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--primary-cyan);
-      text-transform: uppercase;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(0, 229, 255, 0.05);
-    }
-    .deck-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      color: #cbd5e1;
-    }
-    .deck-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    /* Metric Badges */
     .metric-value {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       font-weight: 800;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      margin-bottom: 0.35rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--primary-cyan);
+      margin-bottom: 0.25rem;
     }
     .metric-sub {
-      font-size: 0.78rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: #94a3b8;
+      font-size: 0.75rem;
+      color: #64748b;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    /* Deck Footer */
-    .deck-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 48px;
+    /* Footer in Slide */
+    .slide-footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      background: rgba(7, 13, 24, 0.9);
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      align-items: center;
       font-size: 0.75rem;
       font-family: 'JetBrains Mono', monospace;
       color: #64748b;
-      z-index: 50;
     }
 
-    .key-hint {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .kbd-pill {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: #fff;
-      font-size: 0.7rem;
-    }
-
-    /* Print & PDF Export Styling (Ctrl + P) - Ultra-Vibrant & Colorful */
+    /* Print Styles */
     @media print {
-      * {
+      body {
+        overflow: visible !important;
+        background: #070d18 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        color-adjust: exact !important;
       }
-
-      @page {
-        size: landscape;
-        margin: 6mm;
-      }
-
-      html, body {
-        overflow: visible !important;
-        height: auto !important;
-        background-color: #070d18 !important;
-        color: #f1f5f9 !important;
-        font-family: 'Inter', -apple-system, sans-serif !important;
-      }
-
-      .deck-header, 
-      .deck-footer, 
-      .progress-bar-container, 
-      .ambient-glow {
+      .deck-header, .ambient-glow, .progress-bar-container {
         display: none !important;
       }
-
       .deck-viewport {
-        margin: 0 !important;
         padding: 0 !important;
-        height: auto !important;
         display: block !important;
+        height: auto !important;
       }
-
       .slide-card {
         position: relative !important;
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
         page-break-after: always !important;
-        break-after: page !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
         height: 100vh !important;
         max-height: 100vh !important;
-        box-shadow: none !important;
-        border: 1.5px solid rgba(0, 229, 255, 0.35) !important;
-        background: #0b1426 !important;
-        color: #f1f5f9 !important;
-        margin: 0 0 10mm 0 !important;
-        padding: 2.5rem 3rem !important;
-        box-sizing: border-box !important;
-        border-radius: 12px !important;
-        overflow: hidden !important;
-      }
-
-      .slide-card:last-child {
-        page-break-after: auto !important;
-        break-after: auto !important;
-      }
-
-      .slide-title {
-        color: #ffffff !important;
-      }
-
-      .slide-subtitle {
-        color: #94a3b8 !important;
-      }
-
-      .slide-badge {
-        color: #00e5ff !important;
-      }
-
-      /* Vibrant Content Cards in Print */
-      .card-box {
-        background: #0f1c35 !important;
-        border: 1px solid rgba(255, 255, 255, 0.14) !important;
-        color: #f1f5f9 !important;
-        box-shadow: none !important;
-      }
-
-      .card-box.highlight {
-        background: rgba(0, 229, 255, 0.08) !important;
-        border: 1.5px solid #00e5ff !important;
-      }
-
-      .card-box.crimson {
-        background: rgba(239, 68, 68, 0.08) !important;
-        border: 1.5px solid #ef4444 !important;
-      }
-
-      .card-box.emerald {
-        background: rgba(16, 185, 129, 0.08) !important;
-        border: 1.5px solid #10b981 !important;
-      }
-
-      .box-title {
-        color: #ffffff !important;
-      }
-
-      .box-desc {
-        color: #94a3b8 !important;
-      }
-
-      .metric-value {
-        color: #00e5ff !important;
-      }
-
-      .card-box.crimson .metric-value {
-        color: #ef4444 !important;
-      }
-
-      .card-box.emerald .metric-value {
-        color: #10b981 !important;
-      }
-
-      /* Colorful Comparison Table in Print */
-      .deck-table {
-        background: #0b1426 !important;
-      }
-
-      .deck-table th {
-        background: #0e243f !important;
-        color: #00e5ff !important;
-        border-bottom: 2px solid #00e5ff !important;
-      }
-
-      .deck-table td {
-        color: #e2e8f0 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-      }
-
-      pre, code {
-        background: #050a14 !important;
-        color: #38bdf8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        margin-bottom: 2rem !important;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Ambient Glow Backgrounds -->
+  <!-- Ambient Glows -->
   <div class="ambient-glow glow-cyan"></div>
   <div class="ambient-glow glow-emerald"></div>
 
@@ -519,11 +358,11 @@
     <div class="deck-brand">
       <img src="assets/logo.jpg" alt="Logo">
       <span class="brand-title">JalSanchar (जलसंचार)</span>
-      <span class="brand-tag">EXECUTIVE PITCH DECK</span>
+      <span class="brand-tag">PRAGYAN 2K26</span>
     </div>
 
     <div class="deck-controls">
-      <span id="slideIndicator" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #94a3b8;">Slide 1 / 10</span>
+      <span id="slideIndicator" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #94a3b8;">Slide 1 / 12</span>
       <button type="button" class="btn-nav" id="btnPrev" title="Previous Slide (←)">
         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
         <span>Prev</span>
@@ -532,13 +371,17 @@
         <span>Next</span>
         <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
       </button>
+      <a href="JalSanchar_Pragyan2K26_Vision2030.pptx" download class="btn-nav" style="background: rgba(245, 166, 35, 0.2); border-color: #f5a623; color: #f5a623;" title="Download PowerPoint Deck (.PPTX)">
+        <span class="material-symbols-outlined text-[16px]">download</span>
+        <span>Download .PPTX</span>
+      </a>
       <button type="button" class="btn-nav" id="btnPrintDeck" onclick="window.print()" title="Print / Export Colorful PDF (Ctrl+P)" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #10b981;">
         <span class="material-symbols-outlined text-[16px]">print</span>
-        <span>Export PDF (Ctrl+P)</span>
+        <span>Export PDF</span>
       </button>
       <a href="dashboard.html" class="btn-nav" style="background: rgba(0, 229, 255, 0.2); border-color: var(--primary-cyan); color: #00e5ff;">
         <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
-        <span>Open Live App</span>
+        <span>Open App</span>
       </a>
     </div>
   </header>
@@ -548,55 +391,71 @@
     <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
-  <!-- Main Slides Viewport -->
+  <!-- Slides Viewport -->
   <main class="deck-viewport">
 
-    <!-- SLIDE 1: Title & Executive Overview -->
+    <!-- SLIDE 01: Challenge & Track Identification -->
     <section class="slide-card active" id="slide-1" data-index="1">
       <div class="slide-badge">
-        <span class="material-symbols-outlined text-[14px]">water_drop</span> Sovereign Drought Logistics &amp; Escrow Platform
+        <span class="material-symbols-outlined text-[14px]">flag</span> PRAGYAN 2K26 | SANJIVANI UNIVERSITY
       </div>
-      <h1 class="slide-title">JalSanchar (जलसंचार)</h1>
-      <p class="slide-subtitle">Predicting 14-day water scarcity via satellite telemetry, stopping tanker diversion with dual-key cryptographic escrow, and mathematically optimizing emergency relief routes.</p>
-      
-      <div class="grid-3" style="margin-top: 1rem;">
-        <div class="card-box highlight">
+      <h1 class="slide-title">Challenge &amp; Track Identification</h1>
+      <p class="slide-subtitle">Sovereign Drought Supply Chain &amp; Cryptographic Escrow Intelligence Engine</p>
+
+      <div class="grid-2">
+        <div class="card-box highlight" style="border-left: 4px solid #10b981;">
           <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">satellite_alt</span>
-            <div class="box-title">Predictive Intelligence</div>
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">group</span>
+            <div class="box-title">Team Identity</div>
           </div>
-          <p class="box-desc">NASA SMAP &amp; Copernicus satellite observation projects groundwater exhaustion curves 14 days in advance, ending reactive crisis firefighting.</p>
+          <div style="space-y: 0.75rem; font-size: 0.95rem; line-height: 1.8;">
+            <div><strong>Team Name:</strong> <span style="color: #00e5ff; font-weight: 700;">Vision 2030</span></div>
+            <div><strong>Team ID:</strong> <span style="font-family: 'JetBrains Mono'; font-weight: 700; color: #f59e0b;">8E1986</span></div>
+            <div><strong>Institution:</strong> Matoshri College Of Engineering and Research Centre, Nashik</div>
+            <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1);">
+              <strong>Project:</strong> <span style="color: #fff; font-weight: 700;">JalSanchar (जलसंचार)</span><br>
+              <span style="font-size: 0.82rem; color: #94a3b8;">Target Sector: Ahilyanagar &amp; Sinnar Taluka, Maharashtra</span>
+            </div>
+          </div>
         </div>
 
-        <div class="card-box highlight">
+        <div class="card-box highlight" style="border-left: 4px solid #00e5ff;">
           <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">calculate</span>
-            <div class="box-title">OR-Tools Optimization</div>
+            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">psychology</span>
+            <div class="box-title">Track &amp; Problem Statement</div>
           </div>
-          <p class="box-desc">Google Operations Research (CVRP) solver mathematically routes multi-tanker fleets, slashing 28.4% fuel burn and guaranteeing Article 21 statutory quotas.</p>
-        </div>
-
-        <div class="card-box highlight">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">lock_clock</span>
-            <div class="box-title">Anti-Diversion Escrow</div>
+          <div style="font-size: 0.95rem; line-height: 1.7;">
+            <div style="margin-bottom: 0.5rem;">
+              <strong>Track:</strong><br>
+              <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #10b981; font-weight: 700; margin-top: 4px;">
+                ☑ Smart Operations &amp; Sustainable Supply Chain
+              </span>
+            </div>
+            <div style="margin-top: 0.75rem;">
+              <strong>Problem Statement ID / Title:</strong><br>
+              <span style="color: #f59e0b; font-weight: 700;">Track-3-01: Climate-Resilient Water Intelligence for Campuses, Towns and Small Industries</span>
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.84rem; color: #cbd5e1;">
+              <strong>One-Sentence Challenge Summary:</strong><br>
+              Building an intelligent, closed-loop drought supply chain that predicts 14-day water depletion via satellite telemetry, mathematically optimizes emergency relief routes with Google OR-Tools, and eliminates tanker diversion using geofenced dual-key cryptographic proof-of-delivery tied to state treasury escrow.
+            </div>
           </div>
-          <p class="box-desc">Zero contractor bill clearance without geofenced dual-key cryptographic proof-of-delivery, permanently shutting down the 22% tanker mafia leakage.</p>
         </div>
       </div>
 
-      <div style="margin-top: 2rem; display: flex; gap: 1rem; align-items: center;">
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #64748b;">Target Pilot: Ahilyanagar &amp; Sinnar Taluka, Maharashtra • Government of Maharashtra</span>
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>01 / 12</span>
       </div>
     </section>
 
-    <!-- SLIDE 2: Problem Statement -->
+    <!-- SLIDE 02: Problem Statement & Ground Reality -->
     <section class="slide-card" id="slide-2" data-index="2">
       <div class="slide-badge" style="color: #ef4444;">
-        <span class="material-symbols-outlined text-[14px]">warning</span> 1️⃣ The Problem and Why It Matters
+        <span class="material-symbols-outlined text-[14px]">warning</span> 1. The Ground Reality
       </div>
-      <h1 class="slide-title">The Triple Crisis in Maharashtra's Rain-Shadow</h1>
-      <p class="slide-subtitle">In talukas like Sinnar and Ahilyanagar, groundwater extraction exceeds 120% of net recharge during dry months, causing cascading human and financial catastrophe.</p>
+      <h1 class="slide-title">The Triple Scarcity Crisis in Maharashtra</h1>
+      <p class="slide-subtitle">In rain-shadow talukas like Sinnar and Ahilyanagar, dry-season extraction exceeds 120% of net recharge.</p>
 
       <div class="grid-3">
         <div class="card-box crimson">
@@ -604,7 +463,7 @@
             <span class="material-symbols-outlined box-icon" style="color: #ef4444;">hourglass_disabled</span>
             <div class="box-title">1. Information Blindness</div>
           </div>
-          <p class="box-desc">Relief operations are entirely reactive. Administration moves only after paper petitions arrive, by which time aquifers have run dry and livestock perish.</p>
+          <p class="box-desc">Relief operations are 100% reactive. Administration moves only after paper petitions arrive, by which time aquifers have run dry, livestock perish, and schools shut down.</p>
         </div>
 
         <div class="card-box crimson">
@@ -612,407 +471,481 @@
             <span class="material-symbols-outlined box-icon" style="color: #ef4444;">local_shipping</span>
             <div class="box-title">2. Tanker Mafia Diversion</div>
           </div>
-          <p class="box-desc">Over 22% of subsidized state relief tankers are diverted mid-transit to private commercial grape vineyards, stone quarries, and construction sites.</p>
+          <p class="box-desc">Over 22% of subsidized state relief tankers never reach assigned villages. Water is diverted mid-transit to private commercial grape vineyards and stone quarries with zero audit trail.</p>
         </div>
 
         <div class="card-box crimson">
           <div class="box-header">
             <span class="material-symbols-outlined box-icon" style="color: #ef4444;">route</span>
-            <div class="box-title">3. Uncoordinated Logistics</div>
+            <div class="box-title">3. Unoptimized Logistics</div>
           </div>
-          <p class="box-desc">Ad-hoc dispatch leads to overlapping paths, deadhead miles, +30% excess diesel burn, and chronic skipping of remote underprivileged hamlets.</p>
+          <p class="box-desc">Ad-hoc dispatch wastes up to 30% of diesel budgets on overlapping paths. Tankers break down on unpaved roads while remote wadis wait days past zero-reserve.</p>
         </div>
       </div>
 
-      <div class="card-box" style="margin-top: 1.25rem; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.04);">
-        <div style="font-size: 0.92rem; color: #fca5a5; font-weight: 600;">Constitutional Significance (Article 21):</div>
-        <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px;">Water is a fundamental right to life. Illicit diversion forces impoverished rural citizens to purchase back state-subsidized water from black-market cartels at extortionate rates (up to ₹2,500 per trip).</p>
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>02 / 12</span>
       </div>
     </section>
 
-    <!-- SLIDE 3: The Proposed Solution -->
+    <!-- SLIDE 03: Proposed Solution -->
     <section class="slide-card" id="slide-3" data-index="3">
       <div class="slide-badge" style="color: #10b981;">
-        <span class="material-symbols-outlined text-[14px]">psychology</span> 2️⃣ The Proposed Solution
+        <span class="material-symbols-outlined text-[14px]">psychology</span> 2. Proposed Solution
       </div>
-      <h1 class="slide-title">JalSanchar: The 3-Pillar Framework</h1>
-      <p class="slide-subtitle">An integrated end-to-end digital governance platform connecting orbital earth observation, mathematical operations research, and sovereign smart escrow.</p>
+      <h1 class="slide-title">JalSanchar: 3-Layer Defense Engine</h1>
+      <p class="slide-subtitle">Sovereign drought resilience uniting predictive AI, mathematical routing, and cryptographic settlement.</p>
 
       <div class="grid-3">
-        <div class="card-box emerald">
+        <div class="card-box highlight">
           <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">satellite</span>
-            <div class="box-title">Pillar 1: Predictive Scarcity</div>
+            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">satellite_alt</span>
+            <div class="box-title">Layer 1: Predictive AI</div>
           </div>
-          <p class="box-desc">• Ingests NASA SMAP soil moisture &amp; Copernicus MNDWI data.<br>• Generates 14-day early warning depletion curve.<br>• Alerts District Collector before cisterns reach critical dry state.</p>
+          <p class="box-desc">Copernicus / Sentinel satellite soil moisture telemetry + operator logbooks compute Water Deficit Index (WDI) and predict day-of-zero-reserve 14 days in advance.</p>
         </div>
 
-        <div class="card-box emerald">
+        <div class="card-box highlight">
           <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">alt_route</span>
-            <div class="box-title">Pillar 2: CVRP Solver</div>
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">calculate</span>
+            <div class="box-title">Layer 2: CVRP Routing</div>
           </div>
-          <p class="box-desc">• Google OR-Tools multi-vehicle routing solver.<br>• Enforces Article 21 statutory quotas: 40L/capita human, 70L/head cattle.<br>• Eliminates skipped hamlets and cuts fleet diesel costs by 28.4%.</p>
+          <p class="box-desc">Google Operations Research (OR-Tools) solver computes shortest paved routes on OpenStreetMap/OSRM highway network, cutting fuel burn by 28.4% and fulfilling Article 21 quotas.</p>
         </div>
 
-        <div class="card-box emerald">
+        <div class="card-box highlight">
           <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">verified_user</span>
-            <div class="box-title">Pillar 3: Anti-Diversion Escrow</div>
+            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">lock_clock</span>
+            <div class="box-title">Layer 3: Smart Escrow</div>
           </div>
-          <p class="box-desc">• "No Proof = No Bill Payment" treasury enforcement.<br>• Dual-Key optical handshake (Driver key + Panchayat cistern key).<br>• Geofenced proximity lock (&le;100m) with rolling HMAC QR tokens.</p>
+          <p class="box-desc">Dynamic TOTP QR codes with HMAC-SHA256 signatures and dual geokeys (Driver + Cistern). Zero contractor bill payment without cryptographic proof-of-delivery.</p>
         </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>03 / 12</span>
       </div>
     </section>
 
-    <!-- SLIDE 4: Unfair Advantage & Uniqueness -->
+    <!-- SLIDE 04: Tri-Party Closed-Loop Architecture -->
     <section class="slide-card" id="slide-4" data-index="4">
       <div class="slide-badge" style="color: #00e5ff;">
-        <span class="material-symbols-outlined text-[14px]">star</span> 3️⃣ What Makes JalSanchar Unique
+        <span class="material-symbols-outlined text-[14px]">sync_alt</span> 3. Stakeholder Ecosystem
       </div>
-      <h1 class="slide-title">Technological Uniqueness &amp; Differentiation</h1>
-      <p class="slide-subtitle">Why traditional GPS trackers and commercial fleet management tools fail in rural drought enforcement.</p>
-
-      <table class="deck-table">
-        <thead>
-          <tr>
-            <th>Evaluation Dimension</th>
-            <th>Legacy Systems (GPS Trackers / Logs)</th>
-            <th>Commercial Fleet Tech (Fleetx/LogiNext)</th>
-            <th>JalSanchar (जलसंचार)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Payment Enforcement</strong></td>
-            <td>Post-facto paper bills; paid regardless of fraud.</td>
-            <td>Vehicle tracking only; zero link to state treasury.</td>
-            <td style="color: #00e5ff; font-weight: 700;">State Treasury Escrow: Zero bill payout without cryptographic proof.</td>
-          </tr>
-          <tr>
-            <td><strong>Delivery Proof</strong></td>
-            <td>Forged rubber stamps &amp; odometer slips.</td>
-            <td>Driver single-tap button or digital signature.</td>
-            <td style="color: #00e5ff; font-weight: 700;">Dual-Key Optical Handshake: Driver Key + Panchayat Private Key.</td>
-          </tr>
-          <tr>
-            <td><strong>Replay Attack Defense</strong></td>
-            <td>None; paper slips duplicated.</td>
-            <td>Static QR codes vulnerable to WhatsApp sharing.</td>
-            <td style="color: #00e5ff; font-weight: 700;">Dynamic HMAC-SHA256 tokens (10m lifespan, 60s rotation, nonce dedup).</td>
-          </tr>
-          <tr>
-            <td><strong>Geofence Verification</strong></td>
-            <td>Tanker GPS only (easily spoofed or unplugged).</td>
-            <td>Single-point circular radius.</td>
-            <td style="color: #00e5ff; font-weight: 700;">Dual-Factor Geofencing: Tanker GPS + Sarpanch Device GPS &le;100m.</td>
-          </tr>
-          <tr>
-            <td><strong>Rural Offline Resilience</strong></td>
-            <td>Fails completely without active 4G data.</td>
-            <td>Cloud-dependent; crashes in hill valleys.</td>
-            <td style="color: #00e5ff; font-weight: 700;">Sovereign IndexedDB queue + Service Worker Background Sync.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- SLIDE 5: Cryptographic Proof Deep-Dive -->
-    <section class="slide-card" id="slide-5" data-index="5">
-      <div class="slide-badge" style="color: #38bdf8;">
-        <span class="material-symbols-outlined text-[14px]">key</span> Anti-Replay Cryptographic Handshake
-      </div>
-      <h1 class="slide-title">The Dual-Key Optical Handshake Protocol</h1>
-      <p class="slide-subtitle">Mathematically proving that the physical water was discharged into the authorized village cistern before releasing state treasury funds.</p>
-
-      <div class="grid-2">
-        <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">qr_code_2</span>
-            <div class="box-title">Driver PWA Rolling QR Generation</div>
-          </div>
-          <pre style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #a5f3fc; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; line-height: 1.4; overflow-x: auto;">
-Payload = {
-  "tanker_id": "TN-SN-04",
-  "driver_id": "USR-DRV-15",
-  "timestamp": 1791736460,
-  "nonce": "a7f9c2d1b8e403fa",
-  "coords": [19.8452, 74.0211],
-  "sig": HMAC_SHA256(data, DRIVER_SECRET)
-}
-// Automatically rotated every 60 seconds
-// Max validity: 10 minutes</pre>
-          <p class="box-desc" style="margin-top: 10px;">Even if photographed or forwarded over WhatsApp, unauthorized recipients cannot redeem the token due to strict time-windows and geofence locks.</p>
-        </div>
-
-        <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">pin_drop</span>
-            <div class="box-title">Panchayat Verification Engine</div>
-          </div>
-          <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
-            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-              <span style="color: #00e5ff; font-weight: 700;">1.</span>
-              <span><strong>Haversine Proximity Lock:</strong> Verifier's HTML5 GPS must be &le;100m from registered cistern coordinates.</span>
-            </div>
-            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-              <span style="color: #00e5ff; font-weight: 700;">2.</span>
-              <span><strong>Nonce Deduplication:</strong> Single-use cryptographic nonce is recorded; duplicate claims are immediately rejected.</span>
-            </div>
-            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-              <span style="color: #00e5ff; font-weight: 700;">3.</span>
-              <span><strong>Dual-Key Signature:</strong> Attestation generated combining Driver Ephemeral Key + Panchayat Hardware Key.</span>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <span style="color: #00e5ff; font-weight: 700;">4.</span>
-              <span><strong>Smart Escrow Settlement:</strong> Valid proof unlocks payment in state database; anomalies trigger instant escrow freeze.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 6: Mathematical Logistics Engine -->
-    <section class="slide-card" id="slide-6" data-index="6">
-      <div class="slide-badge" style="color: #10b981;">
-        <span class="material-symbols-outlined text-[14px]">route</span> Google OR-Tools Fleet Solver
-      </div>
-      <h1 class="slide-title">Capacitated Vehicle Routing Problem (CVRP)</h1>
-      <p class="slide-subtitle">Transforming ad-hoc, politically influenced tanker dispatch into mathematically optimal relief circuits.</p>
+      <h1 class="slide-title">Tri-Party Closed-Loop Architecture</h1>
+      <p class="slide-subtitle">Instant &lt;15ms synchronization connecting Gram Panchayat, District Collector, and Tanker Driver.</p>
 
       <div class="grid-3">
-        <div class="card-box">
-          <div class="metric-value" style="color: #10b981;">-28.4%</div>
-          <div class="metric-sub">Fleet Diesel Fuel Burn</div>
-          <p class="box-desc" style="margin-top: 8px;">Eliminates redundant overlapping paths and wasteful return runs from central water headworks.</p>
-        </div>
-
-        <div class="card-box">
-          <div class="metric-value" style="color: #00e5ff;">100%</div>
-          <div class="metric-sub">Statutory Quota Fulfillment</div>
-          <p class="box-desc" style="margin-top: 8px;">Guarantees mandatory Article 21 allocations: 40L per human and 70L per cattle head across all hamlets.</p>
-        </div>
-
-        <div class="card-box">
-          <div class="metric-value" style="color: #f59e0b;">0</div>
-          <div class="metric-sub">Skipped Vulnerable Hamlets</div>
-          <p class="box-desc" style="margin-top: 8px;">Fair, algorithmic multi-objective optimization prevents remote marginalized communities from being bypassed.</p>
-        </div>
-      </div>
-
-      <div class="card-box" style="margin-top: 1.5rem;">
-        <div class="box-header">
-          <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">analytics</span>
-          <div class="box-title">Solver Formulation in JalSanchar:</div>
-        </div>
-        <p class="box-desc">The engine departs tankers from major municipal headworks (Kapurbawdi &amp; Sinnar), takes village cistern demands, vehicle capacity constraints (5,000L / 10,000L / 12,000L), road speed limitations, and outputs turn-by-turn route manifests directly to drivers' mobile cockpits.</p>
-      </div>
-    </section>
-
-    <!-- SLIDE 7: Feasibility & Deployment Model -->
-    <section class="slide-card" id="slide-7" data-index="7">
-      <div class="slide-badge" style="color: #f59e0b;">
-        <span class="material-symbols-outlined text-[14px]">check_circle</span> 4️⃣ Feasibility and Potential Impact
-      </div>
-      <h1 class="slide-title">Zero-Capex Rural Deployment Model</h1>
-      <p class="slide-subtitle">Designed to deploy rapidly across Maharashtra without requiring expensive proprietary hardware or months of training.</p>
-
-      <div class="grid-2">
-        <div class="card-box">
+        <div class="card-box" style="border-left: 3px solid #10b981;">
           <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">devices</span>
-            <div class="box-title">1. Technical &amp; Hardware Feasibility</div>
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">agriculture</span>
+            <div class="box-title">🌾 Gram Panchayat</div>
           </div>
           <p class="box-desc">
-            • <strong>Zero New Hardware:</strong> Runs on existing commodity Android smartphones via lightweight PWA.<br>
-            • <strong>No App Store Friction:</strong> Operates directly in standard mobile browsers with WebRTC camera access.<br>
-            • <strong>Offline Resilience:</strong> Sovereign IndexedDB queue handles zero-connectivity rural valleys and auto-syncs.<br>
-            • <strong>Open Standards:</strong> Built with standard Web standards (HTML5, Vanilla JS, FastAPI, Supabase).
+            • Sarpanch &amp; Water Vigilance Officer<br>
+            • Monitors cistern level (e.g. 7% Critical)<br>
+            • Raises ticket #TKT-SN-02 (10,000L)<br>
+            • Scans driver QR code at cistern<br>
+            • Storage updates to 29% (+10,000L)
           </p>
         </div>
 
-        <div class="card-box">
+        <div class="card-box" style="border-left: 3px solid #00e5ff;">
           <div class="box-header">
             <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">account_balance</span>
-            <div class="box-title">2. Administrative &amp; Economic Feasibility</div>
+            <div class="box-title">🏛️ District Collector</div>
           </div>
           <p class="box-desc">
-            • <strong>Zero Additional Budget:</strong> Funded via existing disaster relief allocation; self-financing through fraud elimination.<br>
-            • <strong>Hierarchical Alignment:</strong> Maps directly to District Collector &rarr; Tehsildar &rarr; Talathi &rarr; Gram Panchayat structure.<br>
-            • <strong>Legal Admissibility:</strong> Cryptographic audit trails conform to Section 65B of the Indian Evidence Act.<br>
-            • <strong>Immediate Payback:</strong> Saves ~₹1.87 Crores in diverted water losses in a single 90-day drought season.
+            • Command Center &amp; Disaster Authority<br>
+            • Receives live priority distress queue<br>
+            • Authorizes OR-Tools CVRP dispatch<br>
+            • Tracks fleet live GPS and 15m geofence<br>
+            • Releases ₹15,000 escrow payment
+          </p>
+        </div>
+
+        <div class="card-box" style="border-left: 3px solid #f59e0b;">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">local_shipping</span>
+            <div class="box-title">🚚 Tanker Driver</div>
+          </div>
+          <p class="box-desc">
+            • Contractor Fleet Pilot (Field PWA)<br>
+            • Receives turn-by-turn verified route<br>
+            • Reaches destination cistern (&lt;15m)<br>
+            • Unlocks dynamic HMAC QR code<br>
+            • Completes delivery handshake
           </p>
         </div>
       </div>
-    </section>
 
-    <!-- SLIDE 8: Working & Operational Consoles -->
-    <section class="slide-card" id="slide-8" data-index="8">
-      <div class="slide-badge" style="color: #00e5ff;">
-        <span class="material-symbols-outlined text-[14px]">desktop_windows</span> 5️⃣ Working &amp; Key Features
-      </div>
-      <h1 class="slide-title">Tailored Multi-Stakeholder Consoles</h1>
-      <p class="slide-subtitle">Four integrated touchpoints engineered specifically for the realities of field disaster governance.</p>
-
-      <div class="grid-4">
-        <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">shield_person</span>
-            <div class="box-title" style="font-size: 1rem;">Collector Command</div>
-          </div>
-          <p class="box-desc" style="font-size: 0.82rem;">Photorealistic 3D GIS satellite map, anomaly radar, instant escrow freeze, and Relief Order PDF generation.</p>
-        </div>
-
-        <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">local_shipping</span>
-            <div class="box-title" style="font-size: 1rem;">Driver Cockpit</div>
-          </div>
-          <p class="box-desc" style="font-size: 0.82rem;">Offline-first PWA, GPS arrival lock, rolling encrypted QR token generator, and emergency SOS panic beacon.</p>
-        </div>
-
-        <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">account_balance</span>
-            <div class="box-title" style="font-size: 1rem;">Panchayat Verifier</div>
-          </div>
-          <p class="box-desc" style="font-size: 0.82rem;">WebRTC optical camera scanner, digital cistern gauge gauge, and offline attestation queue.</p>
-        </div>
-
-        <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #38bdf8;">public</span>
-            <div class="box-title" style="font-size: 1rem;">Public Ledger</div>
-          </div>
-          <p class="box-desc" style="font-size: 0.82rem;">Open citizen transparency audit portal in English, मराठी (Marathi), and हिंदी (Hindi).</p>
-        </div>
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>04 / 12</span>
       </div>
     </section>
 
-    <!-- SLIDE 9: Expected Outcomes & Metrics -->
-    <section class="slide-card" id="slide-9" data-index="9">
-      <div class="slide-badge" style="color: #10b981;">
-        <span class="material-symbols-outlined text-[14px]">trending_up</span> Expected Outcomes &amp; Impact
+    <!-- SLIDE 05: Technical Architecture & System Workflow -->
+    <section class="slide-card" id="slide-5" data-index="5">
+      <div class="slide-badge">
+        <span class="material-symbols-outlined text-[14px]">account_tree</span> 4. Technical Architecture
       </div>
-      <h1 class="slide-title">Measurable Governance Transformation</h1>
-      <p class="slide-subtitle">Quantifiable impact across the 100-tanker pilot deployment in Sinnar &amp; Ahilyanagar.</p>
+      <h1 class="slide-title">System Architecture &amp; Data Pipeline</h1>
+      <p class="slide-subtitle">Offline-first PWA, high-performance FastAPI engine, and resilient state synchronization.</p>
+
+      <div class="grid-2">
+        <div class="card-box highlight">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">layers</span>
+            <div class="box-title">Modular Technology Stack</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            <strong>Frontend:</strong> Pure HTML5, Vanilla CSS, Modular ES6 JS, PWA Service Worker (100% offline-ready), Leaflet.js with OSRM highway circuits.<br>
+            <strong>Backend:</strong> Python FastAPI with 33 REST endpoints, Google OR-Tools CVRP routing solver, Web Crypto API SubtleCrypto.<br>
+            <strong>Data &amp; Bus:</strong> Supabase PostgreSQL with Row Level Security (RLS), BroadcastChannel cross-tab bus (&lt;15ms latency), IndexedDB offline queue.
+          </p>
+        </div>
+
+        <div class="card-box highlight">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">alt_route</span>
+            <div class="box-title">End-to-End Operational Pipeline</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            1. <strong>Telemetry Ingestion:</strong> Satellite indices + logbooks trigger scarcity velocity.<br>
+            2. <strong>Automated Ticket:</strong> Panchayat logs emergency demand to Collector.<br>
+            3. <strong>Algorithmic Dispatch:</strong> OR-Tools allocates optimal tanker on SH-7 corridor.<br>
+            4. <strong>Dual Handshake:</strong> Driver reaches 12m geofence; Sarpanch verifies QR; escrow unlocked and citizen tracker updated.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>05 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 06: Mathematical Modeling & Optimization -->
+    <section class="slide-card" id="slide-6" data-index="6">
+      <div class="slide-badge" style="color: #f59e0b;">
+        <span class="material-symbols-outlined text-[14px]">functions</span> 5. Mathematical Formulation
+      </div>
+      <h1 class="slide-title">Mathematical Modeling &amp; CVRP Algorithm</h1>
+      <p class="slide-subtitle">Quantifying aquifer exhaustion and capacitated fleet distribution.</p>
 
       <div class="grid-3">
+        <div class="card-box">
+          <div class="box-title" style="color: #00e5ff; margin-bottom: 0.5rem;">1. Water Deficit Index</div>
+          <p class="box-desc" style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #fff;">
+            WDI = 0.40(1 - SoilMoisture) + 0.35(DepletionRate) + 0.25(1 - StorageRatio)
+          </p>
+          <p class="box-desc" style="margin-top: 0.5rem;">
+            Days Left = CurrentStorage / (Pop × 40L + Cattle × 70L). Triggers emergency status when Days &lt; 3.
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div class="box-title" style="color: #10b981; margin-bottom: 0.5rem;">2. Google OR-Tools CVRP</div>
+          <p class="box-desc" style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #fff;">
+            min ∑ c_ij · x_ij<br>
+            s.t. ∑ Demanded_i ≤ Q_k
+          </p>
+          <p class="box-desc" style="margin-top: 0.5rem;">
+            Solves multi-tanker routing over 16 verified highway circuits (SH-7, NH-60) fulfilling 100% of statutory quotas.
+          </p>
+        </div>
+
+        <div class="card-box">
+          <div class="box-title" style="color: #f59e0b; margin-bottom: 0.5rem;">3. Haversine 15m Geofence</div>
+          <p class="box-desc" style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #fff;">
+            d = 2R · arcsin(√(sin²(Δφ/2) + cos φ1 cos φ2 sin²(Δλ/2)))
+          </p>
+          <p class="box-desc" style="margin-top: 0.5rem;">
+            Computes spherical distance to cistern. Token generation physically locked if distance &gt; 15m.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>06 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 07: Anti-Diversion & Cryptographic Proof -->
+    <section class="slide-card" id="slide-7" data-index="7">
+      <div class="slide-badge" style="color: #00e5ff;">
+        <span class="material-symbols-outlined text-[14px]">vpn_key</span> 6. Anti-Diversion Protocol
+      </div>
+      <h1 class="slide-title">Dual-Key Optical Handshake &amp; Smart Escrow</h1>
+      <p class="slide-subtitle">"No Cryptographic Proof, No Bill Payment" — Shutting down the tanker mafia.</p>
+
+      <div class="grid-2">
+        <div class="card-box" style="border-left: 3px solid #f59e0b;">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">qr_code_scanner</span>
+            <div class="box-title">Why Diversion is Mathematically Impossible</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>Dynamic TOTP Payload:</strong> HMAC-SHA256 signature with single-use 16-hex nonce. Screenshots cannot be replayed.<br>
+            • <strong>Dual-Key Binding:</strong> Handshake requires Driver Private Key (0x9F3B...) + Cistern Statutory Key (0x74CE...). Diverted tanker at a private vineyard has no valid cistern key.<br>
+            • <strong>Strict 15m Geofence Lock:</strong> QR code generation physically fails if driver GPS is outside registered village coordinates.
+          </p>
+        </div>
+
+        <div class="card-box" style="border-left: 3px solid #10b981;">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">payments</span>
+            <div class="box-title">State Treasury Smart Escrow Settlement</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>Payment Held in Escrow:</strong> Subsidized trip compensation (₹15,000 per 10,000L trip) is held in digital escrow upon dispatch.<br>
+            • <strong>Instant Release on Verified Handshake:</strong> Dual-signature scan releases treasury token (JAL-TREASURY-AUTH-...) directly to contractor.<br>
+            • <strong>Automatic Anomaly Penalty:</strong> Route diversion &gt; 5km freezes contractor balance with ₹1,45,000 penalty and alerts RTO patrols.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>07 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 08: Real-World Pilot & District Validation -->
+    <section class="slide-card" id="slide-8" data-index="8">
+      <div class="slide-badge" style="color: #10b981;">
+        <span class="material-symbols-outlined text-[14px]">location_on</span> 7. District Pilot Validation
+      </div>
+      <h1 class="slide-title">Real-World Pilot: Ahilyanagar &amp; Sinnar Taluka</h1>
+      <p class="slide-subtitle">Tested across 8 high-vulnerability villages and 16 verified highway circuits.</p>
+
+      <div class="grid-2">
+        <div class="card-box highlight">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">map</span>
+            <div class="box-title">Pilot Operational Scope</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>High-Risk Villages:</strong> Khopadi (7%), Pangari (11%), Wadgaon (19%), Dubere (15%), Dapur, Nandur, Tisgaon, Supa.<br>
+            • <strong>Verified Corridors:</strong> State Highway 7, NH-60, Wavi Relay, Malshiras Link Roads traced via OSRM highway telemetry.<br>
+            • <strong>Citizen Impact:</strong> 45,000+ rural residents and 18,000+ livestock monitored under Article 21 quota standards.
+          </p>
+        </div>
+
+        <div class="card-box highlight">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">verified</span>
+            <div class="box-title">The Khopadi Benchmark Scenario</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>Emergency Trigger:</strong> Cistern reserve hit 7% (3,150L, 13h horizon). Sarpanch raised demand #TKT-SN-02.<br>
+            • <strong>CVRP Allocation:</strong> Collector authorized Tanker TN-SN-02 (Ramesh Patil) via SH-7 shortest verified path (15m ETA).<br>
+            • <strong>Successful Handshake:</strong> Arrived at 12m. QR scanned. 10,000L offloaded. Reserve restored to 29% (13,150L).
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>08 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 09: Quantifiable Impact & Feasibility -->
+    <section class="slide-card" id="slide-9" data-index="9">
+      <div class="slide-badge" style="color: #f59e0b;">
+        <span class="material-symbols-outlined text-[14px]">trending_up</span> 8. Quantifiable Outcomes
+      </div>
+      <h1 class="slide-title">Measurable Impact &amp; Feasibility Analysis</h1>
+      <p class="slide-subtitle">Data-backed transformation in governance, efficiency, and human lives saved.</p>
+
+      <div class="grid-4">
+        <div class="card-box emerald">
+          <div class="metric-value" style="color: #10b981;">28.4%</div>
+          <div class="metric-sub">Diesel &amp; Fleet Savings</div>
+          <p class="box-desc" style="margin-top: 0.5rem; font-size: 0.8rem;">
+            OR-Tools CVRP cuts ₹42,000 daily diesel waste across 20 tankers, slashing 12.8 tons CO2 monthly.
+          </p>
+        </div>
+
         <div class="card-box emerald">
           <div class="metric-value" style="color: #10b981;">100%</div>
-          <div class="metric-sub">Diversion Elimination</div>
-          <p class="box-desc" style="margin-top: 8px;">Zero unverified tanker deliveries can clear escrow. Unverified diversion becomes financially impossible.</p>
+          <div class="metric-sub">Diversion Eliminated</div>
+          <p class="box-desc" style="margin-top: 0.5rem; font-size: 0.8rem;">
+            Dual-key QR attestation ensures zero taxpayer funds disbursed without physical cistern delivery.
+          </p>
         </div>
 
         <div class="card-box highlight">
           <div class="metric-value" style="color: #00e5ff;">14 Days</div>
-          <div class="metric-sub">Advance Warning Buffer</div>
-          <p class="box-desc" style="margin-top: 8px;">Satellite depletion modeling alerts authorities two weeks before wells go dry, preventing emergency distress.</p>
+          <div class="metric-sub">Advance Notice</div>
+          <p class="box-desc" style="margin-top: 0.5rem; font-size: 0.8rem;">
+            Predictive AI forecasts aquifer dry-out 2 weeks ahead, ending reactive crisis firefighting.
+          </p>
         </div>
 
         <div class="card-box highlight">
-          <div class="metric-value" style="color: #f59e0b;">₹2.11 Cr</div>
-          <div class="metric-sub">Taxpayer Funds Protected</div>
-          <p class="box-desc" style="margin-top: 8px;">Saved each season through combined anti-leakage escrow enforcement and route fuel optimization.</p>
+          <div class="metric-value" style="color: #f59e0b;">40 LPCD</div>
+          <div class="metric-sub">Statutory Quota</div>
+          <p class="box-desc" style="margin-top: 0.5rem; font-size: 0.8rem;">
+            Guarantees 40L/person and 70L/cattle relief standard with immutable State Treasury audit clearance.
+          </p>
         </div>
       </div>
 
-      <div class="grid-2" style="margin-top: 1.25rem;">
-        <div class="card-box">
-          <div style="font-size: 0.9rem; font-weight: 700; color: #fff;">Social Impact: Rural Dignity &amp; Equity</div>
-          <p class="box-desc" style="margin-top: 6px;">Guarantees that women and school-age children do not walk kilometers in 43&deg;C heat for black-market water. Prevents distress cattle selling by securing 70L/day livestock quotas.</p>
-        </div>
-        <div class="card-box">
-          <div style="font-size: 0.9rem; font-weight: 700; color: #fff;">Institutional Impact: Frictionless Audit</div>
-          <p class="box-desc" style="margin-top: 6px;">Reduces 60-day manual invoice reconciliation to instantaneous cryptographic verification, freeing Tehsildar and Collector staff for critical relief work.</p>
-        </div>
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>09 / 12</span>
       </div>
     </section>
 
-    <!-- SLIDE 10: Vision & Call to Action -->
+    <!-- SLIDE 10: Scalability & Government Alignment -->
     <section class="slide-card" id="slide-10" data-index="10">
-      <div class="slide-badge" style="color: #00e5ff;">
-        <span class="material-symbols-outlined text-[14px]">flag</span> Scaling &amp; National Vision
+      <div class="slide-badge">
+        <span class="material-symbols-outlined text-[14px]">policy</span> 9. Policy &amp; Scaling
       </div>
-      <h1 class="slide-title">The Sovereign Roadmap</h1>
-      <p class="slide-subtitle">Blueprint for statewide deployment across Maharashtra and integration into national disaster frameworks.</p>
+      <h1 class="slide-title">Scalability &amp; Government Alignment</h1>
+      <p class="slide-subtitle">Direct integration into national water missions and cross-sector applicability.</p>
+
+      <div class="grid-2">
+        <div class="card-box" style="border-left: 3px solid #00e5ff;">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">assured_workload</span>
+            <div class="box-title">Government Mandate Alignment</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>Jal Jeevan Mission (Har Ghar Jal):</strong> Bridges seasonal dry-docking and intermittent supply failures.<br>
+            • <strong>Disaster Management Act (2005):</strong> Automates District Collector powers under Section 34 with immutable audit trails.<br>
+            • <strong>BIS IS-10500 Potability:</strong> Every manifest release verifies turbidity &lt; 1 NTU and free residual chlorine 0.2 - 0.5 ppm.
+          </p>
+        </div>
+
+        <div class="card-box" style="border-left: 3px solid #10b981;">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">domain</span>
+            <div class="box-title">Track-3-01 Multi-Sector Extensibility</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>University / School Campuses:</strong> Rationing student hostels and clinics during municipal supply cuts.<br>
+            • <strong>Towns &amp; Municipalities:</strong> Telemetry monitoring of bulk pipelines and equalizing pressure across wards.<br>
+            • <strong>MSME Industrial Estates (MIDC):</strong> Enforcing Tier 2 industrial quotas without starving Tier 1 civic drinking supply.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>10 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: Technology Stack & Security Compliance -->
+    <section class="slide-card" id="slide-11" data-index="11">
+      <div class="slide-badge" style="color: #00e5ff;">
+        <span class="material-symbols-outlined text-[14px]">security</span> 10. Technology &amp; Security
+      </div>
+      <h1 class="slide-title">Technology Stack &amp; Security Architecture</h1>
+      <p class="slide-subtitle">Sovereign, open-source, and cryptographically tamper-proof engineering.</p>
 
       <div class="grid-3">
         <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #00e5ff;">looks_one</span>
-            <div class="box-title">Phase 1: Sinnar Pilot</div>
-          </div>
-          <p class="box-desc">Field-test with 28 Gram Panchayats, 15 tankers, and Sinnar Disaster Management Authority (Q1 2026).</p>
+          <div class="box-title" style="color: #00e5ff; margin-bottom: 0.5rem;">Frontend &amp; Edge PWA</div>
+          <p class="box-desc">
+            • HTML5, Vanilla CSS, Modular ES6<br>
+            • PWA Service Worker (100% Offline)<br>
+            • Leaflet.js with 16 OSRM Circuits<br>
+            • Web Audio API Synthesizer
+          </p>
         </div>
 
         <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #10b981;">looks_two</span>
-            <div class="box-title">Phase 2: MahaWater Scale</div>
-          </div>
-          <p class="box-desc">District-wide expansion across Ahilyanagar and Nashik; integration with RBI e-Kuber treasury settlement (Q3 2026).</p>
+          <div class="box-title" style="color: #10b981; margin-bottom: 0.5rem;">FastAPI Engine</div>
+          <p class="box-desc">
+            • Python 3.11+ async FastAPI<br>
+            • 33 Enterprise REST Endpoints<br>
+            • Google OR-Tools CVRP Solver<br>
+            • Web Crypto API SubtleCrypto
+          </p>
         </div>
 
         <div class="card-box">
-          <div class="box-header">
-            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">looks_3</span>
-            <div class="box-title">Phase 3: National Protocol</div>
-          </div>
-          <p class="box-desc">Integration with Jal Jeevan Mission and National Disaster Management Authority (NDMA) for interstate drought management.</p>
+          <div class="box-title" style="color: #f59e0b; margin-bottom: 0.5rem;">Database &amp; Sync</div>
+          <p class="box-desc">
+            • Supabase PostgreSQL (Row-Level Security)<br>
+            • BroadcastChannel Bus (&lt;15ms)<br>
+            • IndexedDB Offline Queue<br>
+            • SHA-256 Audit Manifest Export
+          </p>
         </div>
       </div>
 
-      <div class="card-box highlight" style="margin-top: 1.5rem; text-align: center; padding: 2rem;">
-        <h2 style="font-size: 1.4rem; color: #fff; font-weight: 800; margin-bottom: 0.5rem;">"Water is a Constitutional Right, Not a Black-Market Commodity."</h2>
-        <p style="font-size: 0.95rem; color: #94a3b8; max-width: 800px; margin: 0 auto 1.5rem auto;">JalSanchar ensures that every liter of state water reaches the exact cistern it was sanctioned for—transparently, reliably, and sovereignly.</p>
-        <div style="display: flex; gap: 12px; justify-content: center;">
-          <a href="dashboard.html" class="btn-nav" style="background: linear-gradient(135deg, #00e5ff 0%, #0077b6 100%); color: #070d18; font-weight: 700; border: none; padding: 10px 24px; font-size: 0.95rem;">
-            <span>Explore Collector Console</span>
-            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </a>
-          <a href="index.html" class="btn-nav" style="padding: 10px 20px; font-size: 0.95rem;">
-            <span>Public Transparency Ledger</span>
-          </a>
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>11 / 12</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: Team Vision 2030 & Future Roadmap -->
+    <section class="slide-card" id="slide-12" data-index="12">
+      <div class="slide-badge" style="color: #10b981;">
+        <span class="material-symbols-outlined text-[14px]">rocket_launch</span> 11. Team Vision &amp; Roadmap
+      </div>
+      <h1 class="slide-title">Team Vision 2030 &amp; Strategic Roadmap</h1>
+      <p class="slide-subtitle">Matoshri College Of Engineering and Research Centre, Nashik</p>
+
+      <div class="grid-2">
+        <div class="card-box highlight">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #10b981;">workspace_premium</span>
+            <div class="box-title">Team Identity: Vision 2030 (ID: 8E1986)</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            <strong>Institution:</strong> Matoshri College Of Engineering and Research Centre<br>
+            <strong>Core Conviction:</strong> <em>"Water is not merely a logistical commodity; it is a fundamental constitutional guarantee under Article 21. JalSanchar proves that corruption and diversion can be permanently eradicated from public drought relief."</em><br>
+            <strong>Live Demo:</strong> https://jalsanchar.vercel.app<br>
+            <strong>Backend API:</strong> https://jalsanchar.onrender.com
+          </p>
         </div>
+
+        <div class="card-box highlight">
+          <div class="box-header">
+            <span class="material-symbols-outlined box-icon" style="color: #f59e0b;">route</span>
+            <div class="box-title">Strategic Roadmap</div>
+          </div>
+          <p class="box-desc" style="line-height: 1.8;">
+            • <strong>Phase 1 (Completed ✓):</strong> Working prototype with 14-day telemetry forecasting, OR-Tools CVRP routing, and dual-key QR attestation.<br>
+            • <strong>Phase 2 (Months 1 - 3):</strong> Sub-₹1,200 solar LoRaWAN ultrasonic depth sensors on rural GLSR community cisterns.<br>
+            • <strong>Phase 3 (Months 4 - 6):</strong> Statewide integration with Maharashtra Disaster Management Authority (SDMA) &amp; feature phone SMS.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>PRAGYAN 2K26 | SANJIVANI UNIVERSITY</span>
+        <span>12 / 12</span>
       </div>
     </section>
 
   </main>
 
-  <!-- Footer Navigation Info -->
-  <footer class="deck-footer">
-    <div class="key-hint">
-      <span>Navigate:</span>
-      <span class="kbd-pill">&larr;</span>
-      <span class="kbd-pill">&rarr;</span>
-      <span>or</span>
-      <span class="kbd-pill">Space</span>
-      <span style="margin-left: 12px;">Fullscreen:</span>
-      <span class="kbd-pill">F</span>
-      <span style="margin-left: 12px;">Print/PDF:</span>
-      <span class="kbd-pill">Ctrl+P</span>
-    </div>
-
-    <div>
-      <span>JalSanchar • Maharashtra State Disaster Management Innovation</span>
-    </div>
-  </footer>
-
+  <!-- Script for Navigation -->
   <script>
-    (function() {
+    (function () {
       const slides = document.querySelectorAll('.slide-card');
       const totalSlides = slides.length;
       let currentSlide = 1;
 
-      const progressBar = document.getElementById('progressBar');
       const slideIndicator = document.getElementById('slideIndicator');
+      const progressBar = document.getElementById('progressBar');
       const btnPrev = document.getElementById('btnPrev');
       const btnNext = document.getElementById('btnNext');
 
       function showSlide(index) {
-        if (index < 1) index = 1;
-        if (index > totalSlides) index = totalSlides;
+        if (index < 1 || index > totalSlides) return;
         currentSlide = index;
 
         slides.forEach((slide, i) => {
@@ -1023,7 +956,6 @@ Payload = {
           }
         });
 
-        // Update progress bar & indicator
         const pct = (currentSlide / totalSlides) * 100;
         if (progressBar) progressBar.style.width = pct + '%';
         if (slideIndicator) slideIndicator.textContent = `Slide ${currentSlide} / ${totalSlides}`;
@@ -1043,7 +975,6 @@ Payload = {
       btnNext?.addEventListener('click', nextSlide);
       btnPrev?.addEventListener('click', prevSlide);
 
-      // Keyboard navigation
       window.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
           e.preventDefault();
@@ -1066,7 +997,7 @@ Payload = {
         }
       });
 
-      // Swipe support for mobile / touch devices
+      // Touch swipe
       let touchStartX = 0;
       window.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -1081,7 +1012,6 @@ Payload = {
         }
       }, { passive: true });
 
-      // Initialize
       showSlide(1);
     })();
   </script>
