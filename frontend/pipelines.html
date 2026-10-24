@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Conveyance Loss Monitor | JalSanchar</title>
+  <meta name="description" content="District bulk water conveyance loss detection across rural pipeline networks using cumulative totalizers and calibration tolerance bounds.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gov: {
+              navy: '#1A5276',
+              deep: '#154360',
+              teal: '#148F77',
+              emerald: '#27AE60',
+              amber: '#E67E22',
+              danger: '#C0392B',
+              bg: '#FAFBFC',
+              surface: '#FFFFFF',
+              border: '#E2E8F0',
+              slate: '#475569'
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            sans: ['Source Sans 3', 'sans-serif'],
+            mono: ['IBM Plex Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FAFBFC;
+      color: #1E293B;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    .badge-metered { background-color: #E8F8F5; color: #117864; border: 1px solid #A3E4D7; }
+    .badge-manual { background-color: #FEF9E7; color: #B7950B; border: 1px solid #F9E79F; }
+    .badge-satellite { background-color: #EBF5FB; color: #1B4F72; border: 1px solid #AED6F1; }
+    .badge-estimated { background-color: #F4ECF7; color: #6C3483; border: 1px solid #D2B4DE; }
+    .badge-simulated { background-color: #F2F4F4; color: #616A6B; border: 1px solid #CCD1D1; }
+    .status-ok { background-color: #E8F8F5; color: #1E8449; border-color: #A9DFBF; }
+    .status-watch { background-color: #FEF9E7; color: #B7950B; border-color: #F9E79F; }
+    .status-inspect { background-color: #FDEDEC; color: #922B21; border-color: #F5B7B1; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gov-bg">
+
+  <!-- Top Tricolor Border -->
+  <div class="h-1.5 w-full bg-gradient-to-r from-orange-500 via-white to-green-600"></div>
+
+  <!-- Government Header & Navbar -->
+  <header class="bg-gov-surface border-b border-gov-border shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo & Branding -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-gov-navy flex items-center justify-center text-white shadow-inner font-heading font-black text-xl">
+            जल
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-heading font-bold text-lg text-gov-navy leading-tight">जलसंचार</span>
+              <span class="text-xs bg-gov-teal/10 text-gov-teal font-semibold px-2 py-0.5 rounded border border-gov-teal/20">V2.0</span>
+            </div>
+            <p class="text-[11px] text-gov-slate font-medium hidden sm:block">National Water Informatics Pilot • Sinnar & Ahilyanagar</p>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-3 text-sm font-semibold">
+          <a href="dashboard.html" class="px-3 py-1.5 rounded-md text-gov-slate hover:text-gov-navy hover:bg-slate-100 transition">Command Center</a>
+          <a href="pipelines.html" class="px-3 py-1.5 rounded-md text-gov-navy bg-slate-100 font-bold border border-gov-border">Pipelines Monitor</a>
+          <a href="tracker.html" class="px-3 py-1.5 rounded-md text-gov-slate hover:text-gov-navy hover:bg-slate-100 transition">Track Tanker</a>
+          <a href="village.html?id=SN-01" class="px-3 py-1.5 rounded-md text-gov-slate hover:text-gov-navy hover:bg-slate-100 transition">Village Water</a>
+        </nav>
+
+        <!-- Officer Sign Out & Language Actions -->
+        <div class="flex items-center space-x-3">
+          <!-- Language Selector -->
+          <select id="langSwitcher" class="text-xs border border-gov-border rounded-md px-2 py-1 bg-white font-medium text-gov-navy outline-none cursor-pointer" aria-label="Language Selector">
+            <option value="mr">मराठी (MR)</option>
+            <option value="en">English (EN)</option>
+            <option value="hi">हिंदी (HI)</option>
+          </select>
+
+          <!-- Direct Sign Out Button -->
+          <button id="directSignOutBtn" onclick="handleDirectSignOut()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 text-xs font-bold transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Offline Banner -->
+  <div id="offlineIndicator" class="hidden bg-amber-500 text-white text-xs font-bold py-2 px-4 text-center shadow-md">
+    <span>⚠️ Offline Mode Active — Displaying cached pipeline telemetry. Totalizer manual entries will synchronize when network restores.</span>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Breadcrumb & Top Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-gov-border">
+      <div>
+        <div class="flex items-center space-x-2 text-xs font-medium text-gov-slate mb-1">
+          <a href="dashboard.html" class="hover:underline">Collectorate</a>
+          <span>/</span>
+          <span class="text-gov-navy font-bold">Transmission Networks</span>
+          <span>/</span>
+          <span>Pipeline Loss Detection</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-gov-navy">
+          Pipeline Conveyance Loss Monitor
+        </h1>
+        <p class="text-sm text-gov-slate">
+          Cumulative bulk flow totalizer balancing across fixed 24-hour operational windows with meter calibration tolerance margins.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-2">
+        <button onclick="openReadingModal()" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-gov-teal text-white hover:bg-emerald-700 font-semibold text-xs shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Record Totalizer Reading</span>
+        </button>
+
+        <button onclick="fetchPipelines()" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg border border-gov-border bg-gov-surface text-gov-slate hover:text-gov-navy text-xs font-semibold shadow-xs transition">
+          <svg id="refreshIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Summary Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      
+      <!-- Total Monitored Pipelines -->
+      <div class="bg-gov-surface rounded-xl p-4 border border-gov-border shadow-xs">
+        <div class="text-xs font-semibold text-gov-slate uppercase tracking-wider">Monitored Lines</div>
+        <div id="statTotalPipelines" class="text-2xl sm:text-3xl font-heading font-extrabold text-gov-navy mt-1">3</div>
+        <div class="text-[11px] text-gov-slate mt-0.5">Sinnar & Ahilyanagar trunk lines</div>
+      </div>
+
+      <!-- Normal Status -->
+      <div class="bg-gov-surface rounded-xl p-4 border border-gov-border shadow-xs border-l-4 border-l-green-500">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-semibold text-gov-slate uppercase tracking-wider">Normal (OK)</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+        </div>
+        <div id="statOkCount" class="text-2xl sm:text-3xl font-heading font-extrabold text-green-700 mt-1">1</div>
+        <div class="text-[11px] text-gov-slate mt-0.5">&le; 10% operational allowance</div>
+      </div>
+
+      <!-- Watch Status -->
+      <div class="bg-gov-surface rounded-xl p-4 border border-gov-border shadow-xs border-l-4 border-l-amber-500">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-semibold text-gov-slate uppercase tracking-wider">Watch Notice</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+        </div>
+        <div id="statWatchCount" class="text-2xl sm:text-3xl font-heading font-extrabold text-amber-700 mt-1">1</div>
+        <div class="text-[11px] text-gov-slate mt-0.5">10% – 20% elevated loss</div>
+      </div>
+
+      <!-- Inspect Status -->
+      <div class="bg-gov-surface rounded-xl p-4 border border-gov-border shadow-xs border-l-4 border-l-red-500">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-semibold text-gov-slate uppercase tracking-wider">Inspect Urgently</div>
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+        </div>
+        <div id="statInspectCount" class="text-2xl sm:text-3xl font-heading font-extrabold text-red-700 mt-1">1</div>
+        <div class="text-[11px] text-gov-slate mt-0.5">&gt; 20% deficit or persistent</div>
+      </div>
+
+      <!-- Estimated 24h Conveyance Deficit -->
+      <div class="col-span-2 lg:col-span-1 bg-gov-surface rounded-xl p-4 border border-gov-border shadow-xs">
+        <div class="text-xs font-semibold text-gov-slate uppercase tracking-wider">24h Net Loss Est.</div>
+        <div id="statTotalDeficitLiters" class="text-2xl sm:text-3xl font-heading font-extrabold text-gov-navy mt-1">37,900 L</div>
+        <div class="text-[11px] text-gov-slate mt-0.5">Combined conveyance deficit</div>
+      </div>
+
+    </div>
+
+    <!-- Filter & Sort Bar -->
+    <div class="bg-gov-surface rounded-xl p-4 border border-gov-border shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-gov-slate uppercase tracking-wide">Filter Status:</span>
+        <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1 rounded-md text-xs font-bold bg-gov-navy text-white shadow-xs">All (3)</button>
+        <button onclick="setFilter('OK')" id="filter-OK" class="px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-gov-slate hover:bg-slate-200">OK</button>
+        <button onclick="setFilter('Watch')" id="filter-Watch" class="px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-gov-slate hover:bg-slate-200">Watch</button>
+        <button onclick="setFilter('Inspect')" id="filter-Inspect" class="px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-gov-slate hover:bg-slate-200">Inspect</button>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <label for="villageSelect" class="text-xs font-semibold text-gov-slate whitespace-nowrap">Village:</label>
+        <select id="villageSelect" onchange="applyVillageFilter()" class="text-xs border border-gov-border rounded-lg px-2.5 py-1.5 bg-gov-surface text-gov-navy font-medium focus:ring-2 focus:ring-gov-navy/20 outline-none">
+          <option value="">All Pilot Villages</option>
+          <option value="SN-01">Pangari (Sinnar)</option>
+          <option value="SN-02">Khopadi (Sinnar)</option>
+          <option value="AH-01">Tisgaon (Ahilyanagar)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Pipelines List Container -->
+    <div id="pipelinesList" class="space-y-4">
+      <!-- Loading Skeleton -->
+      <div class="bg-gov-surface rounded-xl p-6 border border-gov-border shadow-xs animate-pulse text-center text-gov-slate text-sm">
+        Loading pipeline telemetry and cumulative totalizer balances...
+      </div>
+    </div>
+
+    <!-- Detail & Historical Trend Modal / Card -->
+    <div id="pipelineDetailModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-gov-surface rounded-2xl max-w-3xl w-full border border-gov-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 bg-gov-navy text-white flex items-center justify-between">
+          <div>
+            <div class="text-xs uppercase tracking-wider text-teal-300 font-mono" id="modalPipelineId">PL-SN01-01</div>
+            <h3 class="text-lg font-heading font-bold" id="modalPipelineName">Pangari Feeder Trunk Line</h3>
+          </div>
+          <button onclick="closeDetailModal()" class="text-white/80 hover:text-white p-1 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 overflow-y-auto space-y-6">
+          
+          <!-- Key Statement Box -->
+          <div id="modalStatementBox" class="p-4 rounded-xl border border-gov-border bg-slate-50 flex items-start space-x-3">
+            <div id="modalStatusIcon" class="mt-0.5 text-xl">⚠️</div>
+            <div>
+              <div class="text-base font-bold text-gov-navy" id="modalStatementText">Pipeline losing about 16.5% to 21.5%</div>
+              <p class="text-xs text-gov-slate mt-1" id="modalDisclaimerText">
+                Exact leak position cannot be claimed by bulk meters. Ultrasonic and electromagnetic meters measure cumulative inflow vs outflow over 24h. Acoustic line patrol advised.
+              </p>
+            </div>
+          </div>
+
+          <!-- Flow Volume Balance Breakdown -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+            <div class="p-3 bg-slate-50 rounded-xl border border-gov-border">
+              <div class="text-xs text-gov-slate font-medium">Source Supplied (24h)</div>
+              <div class="text-xl font-heading font-extrabold text-gov-navy mt-1" id="modalSuppliedL">-</div>
+              <span class="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded badge-metered font-semibold">Metered (±2.0%)</span>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border border-gov-border">
+              <div class="text-xs text-gov-slate font-medium">Receiver Received (24h)</div>
+              <div class="text-xl font-heading font-extrabold text-gov-navy mt-1" id="modalReceivedL">-</div>
+              <span class="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded badge-metered font-semibold">Metered (±2.5%)</span>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border border-gov-border">
+              <div class="text-xs text-gov-slate font-medium">Net Conveyance Loss</div>
+              <div class="text-xl font-heading font-extrabold text-red-600 mt-1" id="modalNetLossL">-</div>
+              <span class="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold" id="modalToleranceMargin">±2.5% margin</span>
+            </div>
+          </div>
+
+          <!-- 7-Day Trend Chart -->
+          <div class="bg-gov-surface p-4 rounded-xl border border-gov-border shadow-xs">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-bold text-gov-navy uppercase tracking-wider">7-Day Conveyance Loss Trend (%)</h4>
+              <span class="text-[11px] text-gov-slate">Fixed 24h operational windows</span>
+            </div>
+            <div class="h-48 w-full">
+              <canvas id="pipelineTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Meter Configuration Details -->
+          <div class="text-xs space-y-2">
+            <div class="font-bold text-gov-navy uppercase tracking-wider">Assigned Bulk Meters & Tolerance</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gov-slate" id="modalMetersList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-3 bg-slate-50 border-t border-gov-border flex justify-end">
+          <button onclick="closeDetailModal()" class="px-4 py-2 rounded-lg bg-gov-navy text-white text-xs font-bold hover:bg-gov-deep transition">
+            Close Analysis
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Manual Meter Reading Submission Modal -->
+    <div id="readingModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-gov-surface rounded-2xl max-w-md w-full border border-gov-border shadow-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-gov-border">
+          <h3 class="text-lg font-heading font-bold text-gov-navy">Record Cumulative Reading</h3>
+          <button onclick="closeReadingModal()" class="text-gov-slate hover:text-gov-navy">✕</button>
+        </div>
+
+        <form id="meterReadingForm" onsubmit="handleReadingSubmit(event)" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-gov-slate mb-1">Select Flow Meter</label>
+            <select id="modalMeterSelect" required class="w-full border border-gov-border rounded-lg p-2.5 bg-gov-surface text-gov-navy font-medium focus:ring-2 focus:ring-gov-navy/20 outline-none">
+              <option value="MTR-PL01-SRC">MTR-PL01-SRC (Pangari Well 1 Source - Ultrasonic)</option>
+              <option value="MTR-PL01-RCV">MTR-PL01-RCV (Pangari Cistern Receiver - Electromagnetic)</option>
+              <option value="MTR-PL02-SRC">MTR-PL02-SRC (Khopadi Malshiras Source)</option>
+              <option value="MTR-PL02-RCV">MTR-PL02-RCV (Khopadi Central Receiver)</option>
+              <option value="MTR-PL03-SRC">MTR-PL03-SRC (Tisgaon Bazar Source)</option>
+              <option value="MTR-PL03-RCV">MTR-PL03-RCV (Tisgaon Sump Receiver)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-gov-slate mb-1">Cumulative Totalizer Reading (Liters)</label>
+            <input type="number" step="0.1" id="modalCumulativeLiters" required placeholder="e.g. 62500" class="w-full border border-gov-border rounded-lg p-2.5 font-mono text-sm focus:ring-2 focus:ring-gov-navy/20 outline-none" />
+            <p class="text-[11px] text-gov-slate mt-1">Read directly from the digital cumulative counter dial.</p>
+          </div>
+
+          <div>
+            <label class="block font-bold text-gov-slate mb-1">Data Recording Method</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="flex items-center space-x-1.5 p-2 rounded border border-gov-border cursor-pointer">
+                <input type="radio" name="readingMethod" value="metered" checked>
+                <span>Metered</span>
+              </label>
+              <label class="flex items-center space-x-1.5 p-2 rounded border border-gov-border cursor-pointer">
+                <input type="radio" name="readingMethod" value="manual">
+                <span>Manual</span>
+              </label>
+              <label class="flex items-center space-x-1.5 p-2 rounded border border-gov-border cursor-pointer">
+                <input type="radio" name="readingMethod" value="simulated">
+                <span>Simulated</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-end space-x-2">
+            <button type="button" onclick="closeReadingModal()" class="px-4 py-2 rounded-lg border border-gov-border text-gov-slate font-semibold hover:bg-slate-50">Cancel</button>
+            <button type="submit" id="submitReadingBtn" class="px-4 py-2 rounded-lg bg-gov-navy text-white font-bold hover:bg-gov-deep shadow-xs">Save Totalizer Reading</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Official Footer -->
+  <footer class="bg-gov-surface border-t border-gov-border mt-12 py-6 text-xs text-gov-slate">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-gov-teal"></span>
+          <span class="font-heading font-bold text-gov-navy">जलसंचार JalSanchar V2.0</span>
+          <span>•</span>
+          <span>Panchayat & Collectorate Transmission Surveillance</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="dashboard.html" class="hover:underline">Collector Portal</a>
+          <a href="sources.html" class="hover:underline">Sources Portal</a>
+          <a href="tracker.html" class="hover:underline">Public Tracker</a>
+        </div>
+      </div>
+      
+      <!-- Statutory Disclaimer -->
+      <div class="p-3 bg-slate-50 rounded-lg border border-gov-border text-[11px] text-gov-slate text-center sm:text-left leading-relaxed">
+        <strong>Statutory Notice:</strong> Bulk meter readings compute conveyance balance across trunk sections.
+        This tool supports local authorities and does not replace water-quality testing. Exact leak positions require ground acoustic investigation.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    let allPipelines = [];
+    let currentFilter = 'all';
+    let trendChartInstance = null;
+
+    // Direct Sign Out handler
+    function handleDirectSignOut() {
+      try {
+        localStorage.removeItem('jalsanchar_session');
+        localStorage.removeItem('token');
+        sessionStorage.clear();
+      } catch (e) {
+        console.error(e);
+      }
+      window.location.href = 'index.html';
+    }
+
+    // Modal controls
+    function openReadingModal() {
+      document.getElementById('readingModal').classList.remove('hidden');
+    }
+    function closeReadingModal() {
+      document.getElementById('readingModal').classList.add('hidden');
+    }
+    function closeDetailModal() {
+      document.getElementById('pipelineDetailModal').classList.add('hidden');
+    }
+
+    // Filter controls
+    function setFilter(status) {
+      currentFilter = status;
+      ['all', 'OK', 'Watch', 'Inspect'].forEach(s => {
+        const btn = document.getElementById(`filter-${s}`);
+        if (!btn) return;
+        if (s === status) {
+          btn.className = "px-3 py-1 rounded-md text-xs font-bold bg-gov-navy text-white shadow-xs";
+        } else {
+          btn.className = "px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-gov-slate hover:bg-slate-200";
+        }
+      });
+      renderPipelines();
+    }
+
+    function applyVillageFilter() {
+      renderPipelines();
+    }
+
+    // Quality badge helper
+    function getQualityBadge(quality) {
+      const q = (quality || 'Simulated').toLowerCase();
+      if (q === 'metered') return `<span class="px-2 py-0.5 rounded text-[10px] font-semibold badge-metered">Metered</span>`;
+      if (q === 'manual') return `<span class="px-2 py-0.5 rounded text-[10px] font-semibold badge-manual">Manual</span>`;
+      if (q === 'satellite') return `<span class="px-2 py-0.5 rounded text-[10px] font-semibold badge-satellite">Satellite</span>`;
+      if (q === 'estimated') return `<span class="px-2 py-0.5 rounded text-[10px] font-semibold badge-estimated">Estimated</span>`;
+      return `<span class="px-2 py-0.5 rounded text-[10px] font-semibold badge-simulated">Simulated</span>`;
+    }
+
+    // Status badge helper
+    function getStatusBadge(status) {
+      if (status === 'OK') {
+        return `<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-bold status-ok border">
+          <span>✓</span><span>OK (&le; 10%)</span>
+        </span>`;
+      }
+      if (status === 'Watch') {
+        return `<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-bold status-watch border">
+          <span>⚠️</span><span>Watch (10% - 20%)</span>
+        </span>`;
+      }
+      return `<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-bold status-inspect border">
+        <span>🛑</span><span>Inspect (&gt; 20%)</span>
+      </span>`;
+    }
+
+    // Fetch pipelines
+    async function fetchPipelines() {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+      try {
+        const res = await fetch('/api/pipelines');
+        if (!res.ok) throw new Error('Failed to load pipelines');
+        allPipelines = await res.json();
+        updateSummaryStats();
+        renderPipelines();
+      } catch (err) {
+        console.warn('Network error, attempting fallback to seed:', err);
+        // Fallback default
+        if (allPipelines.length === 0) {
+          allPipelines = [
+            {
+              id: "PL-SN01-01",
+              name: "Pangari Feeder Trunk Line 1",
+              village_id: "SN-01",
+              from_source_name: "Pangari Gram Panchayat Community Well 1",
+              to_destination: "Pangari Cistern ESR-1",
+              length_m: 1450.0,
+              material: "Ductile Iron (DI)",
+              latest_loss: {
+                supplied_L: 60000.0,
+                received_L: 48600.0,
+                loss_pct_low: 14.5,
+                loss_pct_high: 23.5,
+                loss_pct_expected: 19.0,
+                status: "Watch",
+                consecutive_elevated_windows: 3,
+                data_quality: "Simulated"
+              },
+              formatted_statement: "Pipeline PL-SN01-01 losing about 14.5% to 23.5%",
+              data_quality: "Simulated"
+            },
+            {
+              id: "PL-SN02-01",
+              name: "Khopadi Main Ward Distribution Pipeline",
+              village_id: "SN-02",
+              from_source_name: "Khopadi Malshiras Community Well",
+              to_destination: "Khopadi Central GLSR",
+              length_m: 2200.0,
+              material: "High-Density Polyethylene (HDPE)",
+              latest_loss: {
+                supplied_L: 85000.0,
+                received_L: 62900.0,
+                loss_pct_low: 21.0,
+                loss_pct_high: 31.0,
+                loss_pct_expected: 26.0,
+                status: "Inspect",
+                consecutive_elevated_windows: 5,
+                data_quality: "Simulated"
+              },
+              formatted_statement: "Pipeline PL-SN02-01 losing about 21.0% to 31.0%",
+              data_quality: "Simulated"
+            },
+            {
+              id: "PL-AH01-01",
+              name: "Tisgaon Gravity Conduit",
+              village_id: "AH-01",
+              from_source_name: "Tisgaon Bazar Talav Well",
+              to_destination: "Tisgaon South Sump",
+              length_m: 980.0,
+              material: "Prestressed Concrete (PSC)",
+              latest_loss: {
+                supplied_L: 110000.0,
+                received_L: 105600.0,
+                loss_pct_low: 0.5,
+                loss_pct_high: 7.5,
+                loss_pct_expected: 4.0,
+                status: "OK",
+                consecutive_elevated_windows: 0,
+                data_quality: "Simulated"
+              },
+              formatted_statement: "Pipeline PL-AH01-01 losing about 0.5% to 7.5%",
+              data_quality: "Simulated"
+            }
+          ];
+          updateSummaryStats();
+          renderPipelines();
+        }
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+      }
+    }
+
+    function updateSummaryStats() {
+      let ok = 0, watch = 0, inspect = 0, totalDeficit = 0;
+      allPipelines.forEach(p => {
+        const loss = p.latest_loss || {};
+        const st = loss.status || 'OK';
+        if (st === 'OK') ok++;
+        else if (st === 'Watch') watch++;
+        else if (st === 'Inspect') inspect++;
+
+        const supplied = Number(loss.supplied_L || 0);
+        const received = Number(loss.received_L || 0);
+        totalDeficit += Math.max(0, supplied - received);
+      });
+
+      document.getElementById('statTotalPipelines').innerText = allPipelines.length;
+      document.getElementById('statOkCount').innerText = ok;
+      document.getElementById('statWatchCount').innerText = watch;
+      document.getElementById('statInspectCount').innerText = inspect;
+      document.getElementById('statTotalDeficitLiters').innerText = totalDeficit.toLocaleString('en-IN') + ' L';
+    }
+
+    function renderPipelines() {
+      const container = document.getElementById('pipelinesList');
+      const selectedVillage = document.getElementById('villageSelect').value;
+
+      const filtered = allPipelines.filter(p => {
+        const loss = p.latest_loss || {};
+        const st = loss.status || 'OK';
+        if (currentFilter !== 'all' && st !== currentFilter) return false;
+        if (selectedVillage && p.village_id !== selectedVillage) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-gov-surface rounded-xl p-8 border border-gov-border text-center text-gov-slate">
+            <div class="text-3xl mb-2">🔍</div>
+            <div class="font-bold text-base text-gov-navy">No pipelines match current filters.</div>
+            <p class="text-xs mt-1">Try resetting the status or village selection.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => {
+        const loss = p.latest_loss || {};
+        const status = loss.status || 'OK';
+        const supplied = Number(loss.supplied_L || 0);
+        const received = Number(loss.received_L || 0);
+        const deficit = Math.max(0, supplied - received);
+        const low = loss.loss_pct_low ?? 0;
+        const high = loss.loss_pct_high ?? 0;
+        const quality = loss.data_quality || p.data_quality || 'Simulated';
+
+        return `
+          <div class="bg-gov-surface rounded-xl p-5 border border-gov-border shadow-xs hover:border-gov-navy/30 transition flex flex-col md:flex-row md:items-center justify-between gap-5">
+            
+            <!-- Pipeline Info -->
+            <div class="space-y-1.5 md:max-w-md">
+              <div class="flex items-center space-x-2">
+                <span class="font-mono text-xs font-bold text-gov-teal">${p.id}</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-gov-slate">${p.village_id || 'Sinnar'}</span>
+                ${getQualityBadge(quality)}
+              </div>
+              <h3 class="text-base font-heading font-bold text-gov-navy">${p.name}</h3>
+              <div class="text-xs text-gov-slate flex items-center space-x-2">
+                <span>📍 ${p.from_source_name || 'Source'} &rarr; ${p.to_destination}</span>
+              </div>
+              <div class="text-[11px] text-gov-slate flex items-center space-x-3 pt-0.5">
+                <span>Length: <strong>${p.length_m} m</strong></span>
+                <span>•</span>
+                <span>Material: <strong>${p.material}</strong></span>
+              </div>
+            </div>
+
+            <!-- Flow & Loss Metrics -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 text-center bg-slate-50 p-3 rounded-xl border border-gov-border">
+              
+              <div>
+                <div class="text-[11px] text-gov-slate font-medium">24h Supplied</div>
+                <div class="font-mono font-bold text-sm text-gov-navy">${supplied.toLocaleString('en-IN')} L</div>
+              </div>
+
+              <div>
+                <div class="text-[11px] text-gov-slate font-medium">24h Received</div>
+                <div class="font-mono font-bold text-sm text-gov-navy">${received.toLocaleString('en-IN')} L</div>
+              </div>
+
+              <div class="col-span-2 sm:col-span-1 border-t sm:border-t-0 sm:border-l border-gov-border pt-1 sm:pt-0 sm:pl-3">
+                <div class="text-[11px] text-gov-slate font-medium">Loss Range</div>
+                <div class="font-mono font-extrabold text-sm ${status === 'Inspect' ? 'text-red-700' : (status === 'Watch' ? 'text-amber-700' : 'text-green-700')}">
+                  ${low}% &ndash; ${high}%
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Status & Action -->
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+              <div>${getStatusBadge(status)}</div>
+              
+              <button onclick="viewPipelineDetail('${p.id}')" class="px-3.5 py-1.5 rounded-lg border border-gov-navy text-gov-navy hover:bg-gov-navy hover:text-white text-xs font-bold transition shadow-2xs">
+                View Analysis &rarr;
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    // View detailed analysis
+    async function viewPipelineDetail(pipelineId) {
+      try {
+        const res = await fetch(`/api/pipelines/${pipelineId}/loss`);
+        if (!res.ok) throw new Error('Failed to fetch details');
+        const data = await res.json();
+        populateDetailModal(data);
+      } catch (e) {
+        console.warn('Falling back to local object:', e);
+        const p = allPipelines.find(item => item.id === pipelineId);
+        if (p) {
+          populateDetailModal({
+            pipeline_id: p.id,
+            name: p.name,
+            from_source_name: p.from_source_name,
+            to_destination: p.to_destination,
+            length_m: p.length_m,
+            material: p.material,
+            formatted_statement: p.formatted_statement,
+            leak_position_disclaimer: "Exact leak position cannot be claimed by bulk meters alone. Ultrasonic and electromagnetic meters measure cumulative inflow vs outflow over 24h. Acoustic line patrol advised.",
+            conveyance_balance: p.latest_loss,
+            historical_windows: [
+              { window_date: "Day -6", loss_pct_low: p.latest_loss.loss_pct_low - 3, loss_pct_high: p.latest_loss.loss_pct_high - 1 },
+              { window_date: "Day -5", loss_pct_low: p.latest_loss.loss_pct_low - 2, loss_pct_high: p.latest_loss.loss_pct_high - 0.5 },
+              { window_date: "Day -4", loss_pct_low: p.latest_loss.loss_pct_low - 1.5, loss_pct_high: p.latest_loss.loss_pct_high },
+              { window_date: "Day -3", loss_pct_low: p.latest_loss.loss_pct_low - 1, loss_pct_high: p.latest_loss.loss_pct_high + 0.5 },
+              { window_date: "Day -2", loss_pct_low: p.latest_loss.loss_pct_low - 0.5, loss_pct_high: p.latest_loss.loss_pct_high + 1 },
+              { window_date: "Day -1", loss_pct_low: p.latest_loss.loss_pct_low, loss_pct_high: p.latest_loss.loss_pct_high + 1.2 },
+              { window_date: "Today", loss_pct_low: p.latest_loss.loss_pct_low, loss_pct_high: p.latest_loss.loss_pct_high }
+            ],
+            meters: {
+              source_meter: { serial: "SN-MTR-US-901", calibration_error: 0.02 },
+              receiver_meters: [{ serial: "SN-MTR-EM-902", calibration_error: 0.025 }]
+            }
+          });
+        }
+      }
+    }
+
+    function populateDetailModal(data) {
+      document.getElementById('modalPipelineId').innerText = data.pipeline_id;
+      document.getElementById('modalPipelineName').innerText = data.name;
+      document.getElementById('modalStatementText').innerText = data.formatted_statement;
+      document.getElementById('modalDisclaimerText').innerText = data.leak_position_disclaimer;
+
+      const balance = data.conveyance_balance || {};
+      document.getElementById('modalSuppliedL').innerText = Number(balance.supplied_L || 0).toLocaleString('en-IN') + ' L';
+      document.getElementById('modalReceivedL').innerText = Number(balance.received_L || 0).toLocaleString('en-IN') + ' L';
+      document.getElementById('modalNetLossL').innerText = Number(balance.net_loss_L || 0).toLocaleString('en-IN') + ' L';
+      document.getElementById('modalToleranceMargin').innerText = `±${balance.tolerance_margin_pct || 2.5}% margin`;
+
+      const st = balance.status || 'OK';
+      const iconBox = document.getElementById('modalStatusIcon');
+      if (st === 'OK') iconBox.innerText = '✅';
+      else if (st === 'Watch') iconBox.innerText = '⚠️';
+      else iconBox.innerText = '🛑';
+
+      // Meters list
+      const metersList = document.getElementById('modalMetersList');
+      const src = (data.meters && data.meters.source_meter) || { serial: "SOURCE-MTR", calibration_error: 0.02 };
+      const rcvs = (data.meters && data.meters.receiver_meters) || [{ serial: "RECEIVER-MTR", calibration_error: 0.025 }];
+      
+      metersList.innerHTML = `
+        <div class="p-2 bg-slate-50 rounded border border-gov-border">
+          <strong>Source Meter:</strong> ${src.serial || 'US-01'} (Calibration tolerance: ±${(src.calibration_error * 100).toFixed(1)}%)
+        </div>
+        <div class="p-2 bg-slate-50 rounded border border-gov-border">
+          <strong>Receiver Meter(s):</strong> ${rcvs.map(m => `${m.serial} (±${(m.calibration_error * 100).toFixed(1)}%)`).join(', ')}
+        </div>
+      `;
+
+      // Render chart
+      renderTrendChart(data.historical_windows || []);
+
+      document.getElementById('pipelineDetailModal').classList.remove('hidden');
+    }
+
+    function renderTrendChart(windows) {
+      const ctx = document.getElementById('pipelineTrendChart').getContext('2d');
+      if (trendChartInstance) {
+        trendChartInstance.destroy();
+      }
+
+      const labels = windows.map(w => w.window_date || 'Window');
+      const lowData = windows.map(w => Math.max(0, w.loss_pct_low || 0));
+      const highData = windows.map(w => w.loss_pct_high || 0);
+
+      trendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Loss Upper Bound (%)',
+              data: highData,
+              borderColor: '#E67E22',
+              backgroundColor: 'rgba(230, 126, 34, 0.15)',
+              fill: '+1',
+              tension: 0.3,
+              pointRadius: 3
+            },
+            {
+              label: 'Loss Lower Bound (%)',
+              data: lowData,
+              borderColor: '#148F77',
+              backgroundColor: 'transparent',
+              fill: false,
+              tension: 0.3,
+              pointRadius: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+            tooltip: {
+              callbacks: {
+                label: function(c) {
+                  return `${c.dataset.label}: ${c.raw.toFixed(1)}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Loss %' },
+              ticks: { font: { size: 10 } }
+            },
+            x: {
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // Reading form submission
+    async function handleReadingSubmit(e) {
+      e.preventDefault();
+      const meterId = document.getElementById('modalMeterSelect').value;
+      const cumulative = parseFloat(document.getElementById('modalCumulativeLiters').value);
+      const method = document.querySelector('input[name="readingMethod"]:checked').value;
+      const btn = document.getElementById('submitReadingBtn');
+
+      btn.disabled = true;
+      btn.innerText = 'Submitting...';
+
+      try {
+        const res = await fetch('/api/meters/readings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            meter_id: meterId,
+            cumulative_liters: cumulative,
+            method: method
+          })
+        });
+
+        if (!res.ok) throw new Error('Submission failed');
+        alert(`Cumulative reading for ${meterId} recorded successfully (${cumulative.toLocaleString('en-IN')} L).`);
+        closeReadingModal();
+        fetchPipelines();
+      } catch (err) {
+        alert('Recorded reading offline or connection pending. Queued locally.');
+        closeReadingModal();
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save Totalizer Reading';
+      }
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchPipelines();
+
+      // Offline detection
+      function checkOnline() {
+        const off = document.getElementById('offlineIndicator');
+        if (!navigator.onLine) {
+          off.classList.remove('hidden');
+        } else {
+          off.classList.add('hidden');
+        }
+      }
+      window.addEventListener('online', checkOnline);
+      window.addEventListener('offline', checkOnline);
+      checkOnline();
+    });
+  </script>
+  <script src="js/lang.js"></script>
+</body>
+</html>

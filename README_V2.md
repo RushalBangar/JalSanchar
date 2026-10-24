@@ -121,3 +121,45 @@ python -m py_compile backend/routes/public.py
 python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r1 = c.get('/api/villages?district=Nashik&taluka=Sinnar'); assert r1.status_code == 200; r2 = c.get('/api/tankers/public?village=SN-02'); assert r2.status_code == 200; assert 'driver_phone' not in str(r2.content); print('Step 3 verified successfully!')"
 ```
 
+---
+
+## Step 4: Pipeline Conveyance Loss Detection & Monitoring
+
+### 1. Backend: `backend/routes/pipelines.py`
+Registered via a single line in `backend/main.py` (`app.include_router(pipelines.router)`):
+- `POST /api/meters/readings`: Field entry for cumulative ultrasonic/electromagnetic totalizers (`manual`, `metered`, `simulated`).
+- `GET /api/pipelines`: Comprehensive overview of trunk transmission lines with status (`OK`, `Watch`, `Inspect`), supplied volume, received volume, and bounded loss range.
+- `GET /api/pipelines/{id}/loss`: Detailed 24-hour cumulative operational window balance:
+  - **Loss Balance Formula**: $\text{Loss} = \text{source\_meter\_output} - \sum \text{receiver\_meter\_inputs}$
+  - **Calibration Tolerance Propagation**: Bounds loss using meter calibration margins ($e_{\text{tol}} = (e_{\text{source}} + \bar{e}_{\text{receiver}}) \times 100\%$).
+  - **Bounded Output**: *"Pipeline P-X losing about X% to Y%"* (never single false precision).
+  - **Integrity Rule**: Strictly states *"Never claim an exact leak position. Ground acoustic survey or physical patrol required along the segment."*
+  - **Hysteresis Flagging**: Transitions to `Inspect` only when deficit exceeds baseline tolerance across consecutive windows.
+
+### 2. Frontend: `frontend/pipelines.html` & `public/pipelines.html`
+- Government Formal Light transmission cockpit for Collectors and Panchayat water engineers.
+- KPI metric cards: Monitored lines, OK (normal < 10%), Watch (10% - 20%), Inspect (> 20%), and 24h net conveyance deficit.
+- Interactive modal with 7-day conveyance loss trend chart (Chart.js) and meter tolerance breakdown.
+- In-page cumulative totalizer reading form (`POST /api/meters/readings`).
+- Direct sign-out button and statutory disclaimer: *"This tool supports local authorities and does not replace water-quality testing."*
+
+### 3. Universal Multilingual Fix Across All 9 Pages
+- **Engine**: Rewrote `frontend/js/lang.js` to provide universal automatic bidirectional text translation across English (`en`), Marathi (`mr`), and Hindi (`hi`).
+- **Persistence**: Synced across `localStorage` (`jalsanchar_lang` and `preferred_lang`).
+- **All Pages Supported**:
+  1. `index.html` (Landing page)
+  2. `login.html` (Portal Login)
+  3. `dashboard.html` (Collector Command Center)
+  4. `panchayat.html` (Gram Panchayat Terminal)
+  5. `driver.html` (Tanker Driver Logistics)
+  6. `village.html` (Citizen Village Water Status)
+  7. `sources.html` (Panchayat Source Registry)
+  8. `tracker.html` (Public Tanker Tracker)
+  9. `pipelines.html` (Pipeline Conveyance Loss Monitor)
+
+### 4. How to Test Step 4
+```powershell
+python -m py_compile backend/routes/pipelines.py
+python -c "from fastapi.testclient import TestClient; from backend.main import app; c = TestClient(app); r = c.get('/api/pipelines'); assert r.status_code == 200; assert len(r.json()) == 3; print('Step 4 verified successfully!')"
+```
+

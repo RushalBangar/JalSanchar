@@ -98,6 +98,13 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Language Selector -->
+          <select id="langSwitcher" class="text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white font-medium text-slate-700 outline-none cursor-pointer" aria-label="Language Selector">
+            <option value="en">English (EN)</option>
+            <option value="mr">मराठी (MR)</option>
+            <option value="hi">हिंदी (HI)</option>
+          </select>
+
           <a href="login.html" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
             Portal Login
           </a>
@@ -574,5 +581,6 @@
       a.remove();
     }
   </script>
+  <script src="js/lang.js"></script>
 </body>
 </html>

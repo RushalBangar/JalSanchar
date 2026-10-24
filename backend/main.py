@@ -269,6 +269,7 @@ async def require_role(request: Request, allowed_roles: list) -> dict:
 # ─── V2 Subsystems (Registered Routers: one line per router) ─────────────────
 app.include_router(__import__("backend.routes.sources" if os.path.exists("backend") else "routes.sources", fromlist=["router"]).router)
 app.include_router(__import__("backend.routes.public" if os.path.exists("backend") else "routes.public", fromlist=["router"]).router)
+app.include_router(__import__("backend.routes.pipelines" if os.path.exists("backend") else "routes.pipelines", fromlist=["router"]).router)
 
 # =============================================================================
 # Pydantic Request & Response Models
