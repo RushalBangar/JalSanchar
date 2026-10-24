@@ -8,12 +8,15 @@ body {
   background-color: var(--bg-page);
   color: var(--text-primary);
   font-family: var(--font-main);
-  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Dashboard Top Navigation */
 .dash-header {
-  height: var(--dash-header-height);
+  min-height: var(--dash-header-height);
   background: #FFFFFF;
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -23,7 +26,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
+  padding: 0.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .dash-header {
+    padding: 0.5rem 1.5rem;
+  }
 }
 
 .dash-brand-wrap {
