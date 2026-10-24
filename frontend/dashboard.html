@@ -540,21 +540,27 @@
               </div>
             </div>
 
-            <!-- Responsive Leaflet Map Container -->
-            <div id="map" class="w-full h-[380px] xs:h-[440px] sm:h-[500px] lg:h-[560px] rounded-lg border border-gov-border relative z-0"></div>
+            <!-- Responsive Leaflet Map Container with isolated HUD controls -->
+            <div class="relative w-full rounded-lg overflow-hidden border border-gov-border">
+              <div id="map" class="w-full h-[380px] xs:h-[440px] sm:h-[500px] lg:h-[560px] z-0"></div>
 
-            <!-- Floating Map HUD Tools -->
-            <div class="absolute bottom-6 right-6 z-[400] flex flex-col gap-2">
-              <div class="bg-white border border-gov-border rounded-lg shadow-md p-1 flex flex-col gap-1">
-                <button id="btnZoomIn" class="w-7 h-7 sm:w-8 sm:h-8 rounded hover:bg-slate-100 text-gov-textPrimary flex items-center justify-center font-bold cursor-pointer text-sm" title="Zoom In" aria-label="Zoom In">+</button>
-                <button id="btnZoomOut" class="w-7 h-7 sm:w-8 sm:h-8 rounded hover:bg-slate-100 text-gov-textPrimary flex items-center justify-center font-bold cursor-pointer text-sm" title="Zoom Out" aria-label="Zoom Out">-</button>
-              </div>
-              
-              <!-- Basemap Switcher -->
-              <div class="bg-white border border-gov-border rounded-lg shadow-md p-1 flex flex-col gap-1 text-[10px] sm:text-[11px] font-semibold">
-                <button id="btnSatellite" class="px-2 py-1 rounded hover:bg-slate-100 text-left cursor-pointer" title="Satellite Imagery">Satellite</button>
-                <button id="btnDarkCanvas" class="px-2 py-1 rounded hover:bg-slate-100 text-left cursor-pointer" title="Dark Canvas">Dark</button>
-                <button id="btnTerrain" class="px-2 py-1 rounded hover:bg-slate-100 text-left cursor-pointer" title="Topographic Terrain">Terrain</button>
+              <!-- Floating Map HUD Tools bounded strictly within the map canvas -->
+              <div class="absolute top-3 right-3 z-[400] flex flex-col items-end gap-2">
+                
+                <!-- Basemap Switcher (Clean horizontal pills) -->
+                <div class="bg-white/95 backdrop-blur-xs border border-gov-border rounded-lg shadow-sm p-1 flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold">
+                  <button id="btnSatellite" class="px-2 py-1 rounded bg-gov-navy text-white hover:bg-slate-100 transition-colors cursor-pointer" title="Satellite Imagery">Satellite</button>
+                  <button id="btnDarkCanvas" class="px-2 py-1 rounded hover:bg-slate-100 text-gov-textSecondary transition-colors cursor-pointer" title="Dark Canvas">Dark</button>
+                  <button id="btnTerrain" class="px-2 py-1 rounded hover:bg-slate-100 text-gov-textSecondary transition-colors cursor-pointer" title="Topographic Terrain">Terrain</button>
+                </div>
+
+                <!-- Zoom Controls -->
+                <div class="bg-white/95 backdrop-blur-xs border border-gov-border rounded-lg shadow-sm p-0.5 flex flex-col">
+                  <button id="btnZoomIn" class="w-7 h-7 sm:w-8 sm:h-8 rounded hover:bg-slate-100 text-gov-textPrimary flex items-center justify-center font-bold cursor-pointer text-sm transition-colors" title="Zoom In" aria-label="Zoom In">+</button>
+                  <div class="h-[1px] bg-gov-borderLight w-full"></div>
+                  <button id="btnZoomOut" class="w-7 h-7 sm:w-8 sm:h-8 rounded hover:bg-slate-100 text-gov-textPrimary flex items-center justify-center font-bold cursor-pointer text-sm transition-colors" title="Zoom Out" aria-label="Zoom Out">-</button>
+                </div>
+
               </div>
             </div>
 
