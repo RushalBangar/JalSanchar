@@ -31,11 +31,15 @@ except ImportError:
         get_village_by_id
     )
 
-# Supabase client import if initialized
-try:
-    from backend.main import supabase_client
-except ImportError:
-    from main import supabase_client
+def _get_supabase_client():
+    try:
+        import sys
+        mod = sys.modules.get("backend.main") or sys.modules.get("main")
+        if mod and hasattr(mod, "supabase"):
+            return mod.supabase
+        return None
+    except Exception:
+        return None
 
 router = APIRouter(tags=["Public Citizen Transparency"])
 
@@ -78,9 +82,10 @@ async def get_public_villages(
     check_public_rate_limit(request)
 
     # 1. Try querying Supabase v2_villages or villages table
-    if supabase_client:
+    sb = _get_supabase_client()
+    if sb:
         try:
-            query = supabase_client.table("v2_villages").select("*")
+            query = sb.table("v2_villages").select("*")
             if district and district.strip():
                 query = query.ilike("district", district.strip())
             if taluka and taluka.strip():

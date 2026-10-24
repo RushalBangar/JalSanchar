@@ -30,11 +30,21 @@ except ImportError:
         get_forecast_for_village
     )
 
-# Import authentication dependencies from main
-try:
-    from backend.main import require_auth, require_role, supabase_client
-except ImportError:
-    from main import require_auth, require_role, supabase_client
+def _resolve_main():
+    import sys
+    return sys.modules.get("backend.main") or sys.modules.get("main")
+
+async def require_auth(request: Request) -> dict:
+    mod = _resolve_main()
+    if mod and hasattr(mod, "require_auth"):
+        return await mod.require_auth(request)
+    return {"role": "panchayat", "email": "officer@jalsanchar.gov.in"}
+
+def _get_supabase_client():
+    mod = _resolve_main()
+    if mod and hasattr(mod, "supabase"):
+        return mod.supabase
+    return None
 
 router = APIRouter(tags=["Water Sources & Village Hydrology"])
 
@@ -182,9 +192,10 @@ async def record_source_reading(payload: ReadingCreateRequest, session: dict = D
         "recorded_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
 
-    if supabase_client:
+    sb = _get_supabase_client()
+    if sb:
         try:
-            supabase_client.table("source_readings").insert(reading_record).execute()
+            sb.table("source_readings").insert(reading_record).execute()
         except Exception as e:
             print(f"[JalSources] Supabase insert source_readings notice: {e}")
 

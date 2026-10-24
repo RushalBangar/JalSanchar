@@ -21,7 +21,10 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from pydantic import BaseModel, Field
 
 # Local seed dataset fallback
-from backend.seed_v2 import PIPELINES_SEED
+try:
+    from backend.seed_v2 import PIPELINES_SEED
+except ImportError:
+    from seed_v2 import PIPELINES_SEED
 
 router = APIRouter(prefix="/api", tags=["Pipeline Loss Detection (V2)"])
 
@@ -49,10 +52,13 @@ class MeterReadingCreate(BaseModel):
 # ------------------------------------------------------------------------------
 
 def _get_supabase_client():
-    """Lazily imports the Supabase client from backend.main if available."""
+    """Lazily retrieves the Supabase client without causing circular imports."""
     try:
-        from backend.main import supabase
-        return supabase
+        import sys
+        mod = sys.modules.get("backend.main") or sys.modules.get("main")
+        if mod and hasattr(mod, "supabase"):
+            return mod.supabase
+        return None
     except Exception:
         return None
 
