@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnUploadQR = document.getElementById("btnUploadQR");
   const qrFileInput = document.getElementById("qrFileInput");
   const btnPasteToken = document.getElementById("btnPasteToken");
-  const btnInstantDemo = document.getElementById("btnInstantDemo");
 
   // Audit Card Elements
   const statusBox = document.getElementById("statusBox");
@@ -350,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const scanner = createQrScanner();
     if (!scanner) {
       stopCameraUI();
-      setFeedback("⚠️ QR Scanner engine not loaded. Please reload page or use <b>Upload QR Image</b> / <b>Instant Demo</b>.", true);
+      setFeedback("⚠️ QR Scanner engine not loaded. Please reload page or use <b>Upload QR Image</b> or <b>Paste Token</b>.", true);
       return;
     }
 
@@ -417,7 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await stopCamera();
       const isSecure = window.isSecureContext;
       const secureNotice = !isSecure ? "<br><span class='text-amber-300 text-[10px]'>Note: WebRTC camera requires HTTPS or localhost.</span>" : "";
-      setFeedback(`⚠️ <strong>Camera Unavailable:</strong> ${err.message || 'Permission denied or webcam not detected.'}${secureNotice}<br><span class='text-[10px] text-gray-300 mt-1 block'>You can still use <strong>Upload QR Image</strong>, <strong>Paste Token</strong>, or <strong>Instant Demo</strong> below.</span>`, true);
+      setFeedback(`⚠️ <strong>Camera Unavailable:</strong> ${err.message || 'Permission denied or webcam not detected.'}${secureNotice}<br><span class='text-[10px] text-gray-300 mt-1 block'>You can still use <strong>Upload QR Image</strong> or <strong>Paste Token</strong> below.</span>`, true);
     }
   }
 
@@ -595,7 +594,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (nonce && window.JalOfflineQueue) {
       const isRedeemed = await window.JalOfflineQueue.isNonceRedeemed(nonce);
       if (isRedeemed) {
-        setFeedback(`❌ <b>Already Scanned:</b> This QR token [${nonce.slice(0, 8)}] was already redeemed. Ask the driver to tap <b>Refresh Token</b> or use Instant Demo.`, true);
+        setFeedback(`❌ <b>Already Scanned:</b> This QR token [${nonce.slice(0, 8)}] was already redeemed. Ask the driver to tap <b>Refresh Token</b> and scan the fresh QR.`, true);
         triggerToast("❌ Already Used: This QR code was already scanned");
         return;
       }
@@ -868,35 +867,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 1-Tap Instant Demo Handshake Handler
-  if (btnInstantDemo) {
-    btnInstantDemo.addEventListener("click", () => {
-      const demoNonce = "DEMO-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-      const demoPayload = {
-        protocol: "JALSANCHAR_POD_V2",
-        tanker_id: "TN-SN-02",
-        trip_id: "TRIP-TN-SN-02-" + Math.floor(Date.now() / 3600000),
-        panchayat_id: "GP-SN-104",
-        registration: "MH-15-TK-5512",
-        target_village: "Khopadi (Sinnar)",
-        volume_liters: 10000,
-        driver_key: "0x9F3B4ED812C4",
-        cistern_key: CISTERN_GEOKEY,
-        lat: KHOPADI_COORDS.lat,
-        lng: KHOPADI_COORDS.lng,
-        geofence_verified: true,
-        timestamp: new Date().toISOString(),
-        nonce: demoNonce,
-        signature: "HMAC-SHA256:8f4c2e1b9a7d3c5e00b8c6a4e321598f"
-      };
-
-      if (isCameraActive) stopCamera();
-      setFeedback("⚡ Verifying water delivery...", false);
-      setTimeout(() => {
-        onScanSuccess(JSON.stringify(demoPayload));
-      }, 300);
-    });
-  }
 
   // Reset / Scan Another Tanker Handler
   if (btnResetScan) {
